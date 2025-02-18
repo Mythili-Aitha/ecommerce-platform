@@ -1,4 +1,4 @@
-import { Box, Button, Divider } from '@mui/material'
+import { Box, Button, Divider, IconButton, Typography } from '@mui/material'
 import React from 'react'
 import InstagramIcon from '@mui/icons-material/Instagram';
 import EmailIcon from '@mui/icons-material/Email';
@@ -15,7 +15,11 @@ export default function Footer() {
             <Button variant="text">Contact</Button> <Divider orientation="vertical"  flexItem/>
             <Button variant="text">Policies</Button> <Divider orientation="vertical"  flexItem/>
         </Box>
-        <Box sx={{display:"flex", justifyContent:"flex-end", gap:1, flexDirection:"row"}}><InstagramIcon /><EmailIcon /></Box>
+        <Box sx={{display:"flex", justifyContent:"flex-end", gap:1, flexDirection:"row"}}>
+            <IconButton  color="inherit" sx={{flexDirection:"column"}}>
+            <InstagramIcon /><Typography variant="caption">Instagram</Typography></IconButton>
+            <IconButton color="inherit" sx={{flexDirection:"column"}}><EmailIcon /><Typography variant="caption">Email</Typography></IconButton>
+            </Box>
     </Box>
        
         <p>@All Copyrights reserved 2025</p>
