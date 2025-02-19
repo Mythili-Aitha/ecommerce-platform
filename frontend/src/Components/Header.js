@@ -91,53 +91,61 @@ export default function Header() {
           >
             {items}
           </Drawer>
-          <Tabs
-            value={value}
-            onChange={handleChange}
-            aria-label="Dashboard Tabs"
-          >
-            <MenuIcon fontSize="large" onClick={toggleDrawer(true)} />
-            <Tab label="Home" value="1" />
-            <Tab
-              label="Products"
-              value="2"
-              onClick={() => navigate("/products")}
+          <Box sx={{ display: "flex", alignItems: "center", width: "auto" }}>
+            <Tabs
+              value={value}
+              onChange={handleChange}
+              aria-label="Dashboard Tabs"
+            >
+              <MenuIcon fontSize="large" onClick={toggleDrawer(true)} />
+
+              <Tab label="Home" value="1" />
+              <Tab
+                label="Products"
+                value="2"
+                onClick={() => navigate("/products")}
+              />
+            </Tabs>
+          </Box>
+          <Box sx={{ display: "flex", alignItems: "center", width: "auto" }}>
+            <TextField
+              fullWidth
+              placeholder="Search..."
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon />
+                  </InputAdornment>
+                ),
+              }}
             />
-          </Tabs>
-          <TextField
-            placeholder="Search..."
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchIcon />
-                </InputAdornment>
-              ),
-            }}
-          />
-          <IconButton
-            color="inherit"
-            sx={{ flexDirection: "column" }}
-            onClick={() => navigate("/auth")}
-          >
-            <PersonIcon />
-            <Typography variant="caption">Log in/Sign Up</Typography>
-          </IconButton>
-          <IconButton
-            color="inherit"
-            sx={{ flexDirection: "column" }}
-            onClick={() => navigate("/favorite")}
-          >
-            <FavoriteBorderIcon />
-            <Typography variant="caption">Favorites</Typography>
-          </IconButton>
-          <IconButton
-            color="inherit"
-            sx={{ flexDirection: "column" }}
-            onClick={() => navigate("/cart")}
-          >
-            <ShoppingCartIcon />
-            <Typography variant="caption">Cart</Typography>
-          </IconButton>
+          </Box>
+          <Box sx={{ display: "flex", alignItems: "flex-end", gap: 3 }}>
+            <IconButton
+              color="inherit"
+              sx={{ flexDirection: "column" }}
+              onClick={() => navigate("/auth")}
+            >
+              <PersonIcon />
+              <Typography variant="caption">Log in/Sign Up</Typography>
+            </IconButton>
+            <IconButton
+              color="inherit"
+              sx={{ flexDirection: "column" }}
+              onClick={() => navigate("/favorite")}
+            >
+              <FavoriteBorderIcon />
+              <Typography variant="caption">Favorites</Typography>
+            </IconButton>
+            <IconButton
+              color="inherit"
+              sx={{ flexDirection: "column" }}
+              onClick={() => navigate("/cart")}
+            >
+              <ShoppingCartIcon />
+              <Typography variant="caption">Cart</Typography>
+            </IconButton>
+          </Box>
         </Box>
       </Box>
     </>
