@@ -3,16 +3,11 @@ import {
   Button,
   ButtonGroup,
   Card,
-  Drawer,
-  FormControl,
   IconButton,
   InputAdornment,
-  InputLabel,
-  MenuItem,
-  Select,
-  Slider,
   TextField,
   Typography,
+  Grid,
 } from "@mui/material";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -21,63 +16,21 @@ import FilterListIcon from "@mui/icons-material/FilterList";
 import SearchIcon from "@mui/icons-material/Search";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
+import FilterDrawer from "./FilterDrawer";
 
 export default function Products() {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
-  //   const [value, setValue] = useState("1");
+  const [products, setProducts] = useState([]);
   const toggleDrawer = (newOpen) => () => {
     setOpen(newOpen);
   };
-  const items = (
-    <Box
-      sx={{
-        display: "flex",
-        justifyContent: "flex-start",
-        gap: 1,
-        flexDirection: "column",
-        padding: 3,
-      }}
-      role="presentation"
-      onClick={toggleDrawer(false)}
-    >
-      <FormControl fullWidth>
-        <InputLabel id="demo-simple-select-label">Product Type</InputLabel>
-        <Select
-          labelId="demo-simple-select-label"
-          id="demo-simple-select"
-          label="Product Type"
-        >
-          <MenuItem value="1">Woolen</MenuItem>
-          <MenuItem value="2">Cotton</MenuItem>
-          <MenuItem value="3">Velvet</MenuItem>
-        </Select>
-        {/* <InputLabel id="demo-simple-select-label">Category</InputLabel>
-        <Select
-          labelId="demo-simple-select-label"
-          id="demo-simple-select"
-          label="Product Type"
-        >
-          <MenuItem value="4">Women</MenuItem>
-          <MenuItem value="5">Men</MenuItem>
-          <MenuItem value="6">Kids</MenuItem>
-        </Select> */}
-        <p>
-          <strong>Price</strong>
-        </p>
-        <Slider defaultValue={30} sx={{ width: 200, color: "success.main" }} />
-      </FormControl>
-    </Box>
-  );
   return (
     <>
       <Card
         sx={{
           width: "100%",
-          maxWidth: 1000,
-          mx: "auto",
-          mt: 5,
-          p: 3,
           display: "flex",
           flexDirection: "row",
           justifyContent: "space-between",
@@ -118,14 +71,7 @@ export default function Products() {
             </Button>
           </ButtonGroup>
         </Box>
-        <Drawer
-          sx={{ "& .MuiPaper-root": { width: 250 } }}
-          anchor={"right"}
-          open={open}
-          onClose={toggleDrawer(false)}
-        >
-          {items}
-        </Drawer>
+        <FilterDrawer open={open} toggleDrawer={toggleDrawer} />
         <Box
           sx={{ display: "flex", alignItems: "flex-end", flexDirection: "row" }}
         >
@@ -147,6 +93,42 @@ export default function Products() {
           </IconButton>
         </Box>
       </Card>
+      <Grid container spacing={2} sx={{ marginTop: 2 }}>
+        {products.length > 0 ? (
+          products.map((product) => (
+            <Grid item xs={12} sm={6} md={4} lg={2.4} key={product.id}>
+              <Card sx={{ padding: 2, textAlign: "center" }}>
+                <p>
+                  <strong>Hi</strong>
+                </p>
+                <Box
+                  sx={{
+                    display: "flex",
+                    gap: 1,
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    paddingTop: 2,
+                  }}
+                >
+                  <Button
+                    size="small"
+                    variant="outlined"
+                    startIcon={<AddShoppingCartIcon />}
+                    onClick={() =>
+                      console.log("clicked the add to cart button")
+                    }
+                  />
+                </Box>
+              </Card>
+            </Grid>
+          ))
+        ) : (
+          <p className="para">
+            <strong>"NO Products To Display"</strong>
+          </p>
+        )}
+      </Grid>
     </>
   );
 }

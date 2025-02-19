@@ -9,7 +9,6 @@ import {
 } from "@mui/material";
 import React, { useState } from "react";
 import CloseIcon from "@mui/icons-material/Close";
-import IosShareIcon from "@mui/icons-material/IosShare";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import ArrowCircleRightIcon from "@mui/icons-material/ArrowCircleRight";
 import { useNavigate } from "react-router-dom";
@@ -40,10 +39,6 @@ export default function Cart() {
         </Button>
         <h1>Cart</h1>
         <Box sx={{ display: "flex", flexDirection: "row", gap: 1 }}>
-          <IconButton color="inherit" sx={{ flexDirection: "column" }}>
-            <IosShareIcon />
-            <Typography variant="caption">Share</Typography>
-          </IconButton>
           <IconButton
             color="inherit"
             sx={{ flexDirection: "column" }}
@@ -53,22 +48,9 @@ export default function Cart() {
             <Typography variant="caption">Favorites</Typography>
           </IconButton>
         </Box>
-        <Box
-          sx={{
-            display: "flex",
-            position: "absolute",
-            bottom: "0",
-            width: "100%",
-            justifyContent: "flex-end",
-            paddingBlockEnd: 2,
-          }}
-        >
-          <Button
-            variant="contained"
-            sx={{ marginRight: "20px" }}
-            onClick={() => navigate("/oconfo")}
-          >
-            Checkout
+        <Box sx={{ display: "flex", justifyContent: "flex-end", p: 2 }}>
+          <Button variant="contained" onClick={() => navigate("/oconfo")}>
+            CHECKOUT
           </Button>
         </Box>
       </Card>
@@ -87,7 +69,7 @@ export default function Cart() {
             <ul>Hi</ul>
           </List>
         </Box>
-        <Box sx={{ flexDirection: "column" }}>
+        <Box sx={{ flexDirection: "column", alignContent: "center" }}>
           <Box>
             <IconButton color="inherit" sx={{ flexDirection: "row" }}>
               <ArrowCircleRightIcon />

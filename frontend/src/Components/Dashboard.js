@@ -1,12 +1,11 @@
-import React from 'react'
-import Header from './Header.js'
-import Footer from './Footer.js'
+import React from "react";
+import ProductDetails from "./ProductDetails";
 
 export default function Dashboard() {
   return (
-   <>
-   <Header />
-   <Footer />
-   </>
-  )
+    <>
+      <p>Dashboard</p>
+      <ProductDetails />
+    </>
+  );
 }
