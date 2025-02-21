@@ -8,6 +8,7 @@ import {
   InputAdornment,
   IconButton,
   Typography,
+  Badge,
 } from "@mui/material";
 import Tab from "@mui/material/Tab";
 import React, { useState } from "react";
@@ -98,11 +99,11 @@ export default function Header() {
               aria-label="Dashboard Tabs"
             >
               <MenuIcon fontSize="large" onClick={toggleDrawer(true)} />
-
-              <Tab label="Home" value="1" />
+              <Tab label="All" value="1" onClick={() => navigate("/")} />
+              <Tab label="Home" value="2" onClick={() => navigate("/home")} />
               <Tab
                 label="Products"
-                value="2"
+                value="3"
                 onClick={() => navigate("/products")}
               />
             </Tabs>
@@ -142,7 +143,9 @@ export default function Header() {
               sx={{ flexDirection: "column" }}
               onClick={() => navigate("/cart")}
             >
-              <ShoppingCartIcon />
+              <Badge badgeContent={1} color="primary">
+                <ShoppingCartIcon color="action" />
+              </Badge>
               <Typography variant="caption">Cart</Typography>
             </IconButton>
           </Box>

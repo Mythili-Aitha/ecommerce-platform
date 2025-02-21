@@ -6,6 +6,7 @@ import {
   Box,
   Avatar,
   List,
+  Badge,
 } from "@mui/material";
 import React from "react";
 import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
@@ -39,7 +40,9 @@ export default function Favorites() {
             sx={{ flexDirection: "column" }}
             onClick={() => navigate("/cart")}
           >
-            <ShoppingCartIcon />
+            <Badge badgeContent={1} color="primary">
+              <ShoppingCartIcon color="action" />
+            </Badge>
             <Typography variant="caption">Cart</Typography>
           </IconButton>
         </Box>

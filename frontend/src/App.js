@@ -8,6 +8,7 @@ import Favorites from "./Components/Favorites.js";
 import OrderConfo from "./Components/OrderConfo.js";
 import Products from "./Components/Products.js";
 import Layout from "./Components/Layout.js";
+import Home from "./Components/Home.js";
 
 function App() {
   const location = useLocation();
@@ -25,6 +26,7 @@ function App() {
           <div ref={nodeRef}>
             <Routes location={location}>
               <Route path="/" element={<Dashboard />} />
+              <Route path="/home" element={<Home />} />
               <Route path="/auth" element={<Login />} />
               <Route path="/cart" element={<Cart />} />
               <Route path="/products" element={<Products />} />

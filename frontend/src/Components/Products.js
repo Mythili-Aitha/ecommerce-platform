@@ -18,6 +18,7 @@ import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
 import FilterDrawer from "./FilterDrawer";
+import ScrollTopButton from "./ScrollTopButton";
 
 export default function Products() {
   const navigate = useNavigate();
@@ -129,6 +130,7 @@ export default function Products() {
           </p>
         )}
       </Grid>
+      <ScrollTopButton />
     </>
   );
 }
