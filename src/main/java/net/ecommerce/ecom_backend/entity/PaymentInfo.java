@@ -1,0 +1,32 @@
+package net.ecommerce.ecom_backend.entity;
+
+
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import net.ecommerce.ecom_backend.enums.CardType;
+
+@Getter
+@Setter
+@Entity
+@NoArgsConstructor
+@AllArgsConstructor
+@Table(name = "payment_info")
+public class PaymentInfo {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long paymentId;
+    private String cardNumber;
+    private String cardHolderName;
+    private String expiryDate;
+    private String cvv;
+
+    @Enumerated(EnumType.STRING)
+    private CardType cardType;
+
+    @ManyToOne
+    @JoinColumn(name = "userId", nullable = false)
+    private User user;
+}
