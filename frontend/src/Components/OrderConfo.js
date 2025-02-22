@@ -8,13 +8,50 @@ import {
   FormControlLabel,
   Radio,
 } from "@mui/material";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import { useNavigate } from "react-router-dom";
+import { getUserAddresses, getUserPaymentInfo } from "../Components/Api.js";
 
 export default function OrderConfo() {
   const navigate = useNavigate();
+  const [address, setAddresses] = useState([]);
+  const [selectedAddress, setSelectedAddress] = useState(null);
+  const [paymentMethods, setPaymentMethods] = useState([]);
+  const [selectedPayment, setSelectedPayment] = useState(
+    paymentMethods.length > 0 ? paymentMethods[0].cardType.toLowerCase() : ""
+  );
+  const storedUser = JSON.parse(localStorage.getItem("user"));
+  const userId = storedUser?.userId;
+
+  useEffect(() => {
+    if (userId) {
+      fetchUserDetails();
+    } else {
+      console.error("No user ID found. Redirecting to login.");
+      navigate("/login");
+    }
+    console.log("Logged-in User ID:", userId);
+  }, [userId]);
+
+  const fetchUserDetails = async () => {
+    try {
+      const addressResponse = await getUserAddresses(userId);
+      setAddresses(addressResponse.data);
+      if (addressResponse.data.length > 0) {
+        setSelectedAddress(addressResponse.data[0]);
+      }
+
+      const paymentResponse = await getUserPaymentInfo(userId);
+      setPaymentMethods(paymentResponse.data);
+      if (paymentResponse.data.length > 0) {
+        setSelectedPayment(paymentResponse.data[0]);
+      }
+    } catch (error) {
+      console.error("Error fetching user details", error);
+    }
+  };
   return (
     <>
       <Card sx={{ width: "100%", maxWidth: 400, mx: "auto", mt: 5, p: 3 }}>
@@ -38,15 +75,25 @@ export default function OrderConfo() {
           }}
         >
           <Box sx={{ display: "flex", flexDirection: "column" }}>
-            <p>
-              <strong>Name:</strong>
-            </p>
-            <p>
-              <strong>Address:</strong>
-            </p>
+            {selectedAddress ? (
+              <>
+                <p>
+                  <strong>Name:</strong> {selectedAddress.name}
+                </p>
+                <p>
+                  <strong>Address:</strong> {selectedAddress.street},{" "}
+                  {selectedAddress.city}, {selectedAddress.state} -{" "}
+                  {selectedAddress.zipCode}
+                </p>
+              </>
+            ) : (
+              <p>
+                <strong>No Address Found. Please enter an address.</strong>
+              </p>
+            )}
           </Box>
           <Box>
-            <ArrowForwardIosIcon onClick={() => console.log("Clicked edit")} />
+            <ArrowForwardIosIcon onClick={() => navigate("/address")} />
           </Box>
         </Box>
         <Box
@@ -93,8 +140,9 @@ export default function OrderConfo() {
             </FormLabel>
             <RadioGroup
               aria-labelledby="demo-radio-buttons-group-label"
-              defaultValue="apple pay"
-              name="radio-buttons-group"
+              name="payment-method"
+              value={selectedPayment}
+              onChange={(e) => setSelectedPayment(e.target.value)}
             >
               <FormControlLabel
                 value="pay pal"
@@ -106,10 +154,25 @@ export default function OrderConfo() {
                 control={<Radio />}
                 label="Apple Pay"
               />
+              {paymentMethods.length > 0
+                ? paymentMethods.map((payment) => (
+                    <FormControlLabel
+                      key={payment.id}
+                      value={payment.cardType.toLowerCase()}
+                      control={<Radio />}
+                      label={`Card Ending in **** ${payment.cardNumber.slice(
+                        -4
+                      )}`}
+                      checked={selectedPayment?.id === payment.id}
+                      onChange={() => setSelectedPayment(payment)}
+                    />
+                  ))
+                : null}
               <FormControlLabel
-                value="credit card/ debit card"
+                value="credit card"
                 control={<Radio />}
-                label="Credit card/ Debit card"
+                label="Credit Card/Debit Card"
+                onClick={() => navigate("/payments")}
               />
               <FormControlLabel
                 value="venmo"
@@ -136,7 +199,15 @@ export default function OrderConfo() {
             fullWidth
             variant="contained"
             sx={{ marginRight: "20px" }}
-            onClick={() => console.log("complete payment")}
+            onClick={() => {
+              if (!selectedAddress) {
+                alert("Please select an address.");
+              } else if (!selectedPayment) {
+                alert("Please select a payment method.");
+              } else {
+                navigate("/place-order"); // Redirect to final order placement
+              }
+            }}
           >
             Continue
           </Button>
