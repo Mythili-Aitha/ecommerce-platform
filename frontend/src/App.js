@@ -9,6 +9,8 @@ import OrderConfo from "./Components/OrderConfo.js";
 import Products from "./Components/Products.js";
 import Layout from "./Components/Layout.js";
 import Home from "./Components/Home.js";
+import AddressForm from "./Components/AddressForm.js";
+import PaymentForm from "./Components/PaymentForm.js";
 
 function App() {
   const location = useLocation();
@@ -32,6 +34,8 @@ function App() {
               <Route path="/products" element={<Products />} />
               <Route path="/favorite" element={<Favorites />} />
               <Route path="/oconfo" element={<OrderConfo />} />
+              <Route path="/address" element={<AddressForm />} />
+              <Route path="/payments" element={<PaymentForm />} />
             </Routes>
           </div>
         </CSSTransition>
