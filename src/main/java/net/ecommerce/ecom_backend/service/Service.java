@@ -15,11 +15,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
-import javax.swing.text.html.Option;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @org.springframework.stereotype.Service
@@ -71,7 +69,7 @@ public class Service {
     }
 
     public List<AddressDto> getUserAddresses(Long userId) {
-        return addressRepo.findByUserId(userId).stream().map(Mapper::toAddressDto).collect(Collectors.toList());
+        return addressRepo.findByUserUserId(userId).stream().map(Mapper::toAddressDto).collect(Collectors.toList());
     }
 
     public AddressDto updateAddress(Long id,AddressDto addressDto) {
@@ -106,7 +104,7 @@ public class Service {
     }
 
     public List<PaymentInfoDto> getUserPaymentInfos(Long userId) {
-        return paymentInfoRepo.findByUserId(userId).stream().map(Mapper::toPaymentInfoDto).collect(Collectors.toList());
+        return paymentInfoRepo.findByUserUserId(userId).stream().map(Mapper::toPaymentInfoDto).collect(Collectors.toList());
     }
 
     public PaymentInfoDto updatePaymentInfo(Long paymentId, PaymentInfoDto paymentInfoDto) {

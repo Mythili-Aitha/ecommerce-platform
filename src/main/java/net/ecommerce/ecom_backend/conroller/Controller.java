@@ -4,8 +4,6 @@ import net.ecommerce.ecom_backend.dto.AddressDto;
 import net.ecommerce.ecom_backend.dto.LoginDto;
 import net.ecommerce.ecom_backend.dto.PaymentInfoDto;
 import net.ecommerce.ecom_backend.dto.UserDto;
-import net.ecommerce.ecom_backend.entity.User;
-import net.ecommerce.ecom_backend.mapper.Mapper;
 import net.ecommerce.ecom_backend.repository.UserRepo;
 import net.ecommerce.ecom_backend.service.Service;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,8 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.UUID;
-@CrossOrigin(origins = "http://localhost:3000")
+
 @RestController
 @RequestMapping("/api")
 public class Controller {
@@ -30,7 +27,7 @@ public class Controller {
         return ResponseEntity.ok(service.createUser(userDto));
     }
 
-    @GetMapping("/users/{id}")
+    @GetMapping("/users/{userId}")
     public ResponseEntity<UserDto> getUserById(@PathVariable Long userId) {
         return ResponseEntity.ok(service.getUserById(userId));
     }

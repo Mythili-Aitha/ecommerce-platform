@@ -13,7 +13,7 @@ import net.ecommerce.ecom_backend.enums.CardType;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "payment_info")
+@Table(name = "payments")
 public class PaymentInfo {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,6 +27,6 @@ public class PaymentInfo {
     private CardType cardType;
 
     @ManyToOne
-    @JoinColumn(name = "userId", nullable = false)
+    @JoinColumn(name = "user_Id", nullable = false)
     private User user;
 }

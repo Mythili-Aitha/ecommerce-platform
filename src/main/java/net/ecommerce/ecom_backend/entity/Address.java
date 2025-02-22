@@ -28,6 +28,6 @@ public class Address {
     private AddressType addressType;
 
     @ManyToOne
-    @JoinColumn(name = "userId", nullable = false)
+    @JoinColumn(name = "user_Id", nullable = false)
     private User user;
 }
