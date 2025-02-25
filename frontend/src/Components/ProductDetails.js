@@ -16,13 +16,15 @@ import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
 import SearchIcon from "@mui/icons-material/Search";
 import IosShareIcon from "@mui/icons-material/IosShare";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import ColorSelector from "./ColorSelector";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import SizeSelector from "./SizeSelector";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 
 export default function ProductDetails() {
+  const location = useLocation();
+  const product = location.state?.product;
   const navigate = useNavigate();
   const colors = ["#99ddcc", "#2625ce", "#df133d", "#ebe93b", "#0a0a09"];
   const [selectedColor, setSelectedColor] = useState(colors[0]);
@@ -36,6 +38,8 @@ export default function ProductDetails() {
   const handleClose = () => {
     setAnchorEl(null);
   };
+  if (!product) return <p>Product not found.</p>;
+
   return (
     <Card
       sx={{
@@ -118,9 +122,24 @@ export default function ProductDetails() {
           </IconButton>
         </Box>
       </Box>
-      <Box>
-        <Skeleton variant="rounded" width={600} height={300} />
+      <Box sx={{ textAlign: "center", marginTop: 2 }}>
+        <img
+          src={product.images[0]}
+          alt={product.title}
+          style={{ width: "300px", height: "auto", borderRadius: "8px" }}
+        />
       </Box>
+      <Typography variant="h4" sx={{ marginTop: 2 }}>
+        {product.title}
+      </Typography>
+      <Typography variant="body1" sx={{ marginBottom: 2 }}>
+        {product.description}
+      </Typography>
+      <Typography variant="h6">Price: ${product.price}</Typography>
+      <Typography variant="h6">Stock: {product.stock}</Typography>
+      <Typography variant="body2" color="gray">
+        {product.availabilityStatus}
+      </Typography>
       <div>
         <p>
           Color: <strong>{selectedColor}</strong>
@@ -144,14 +163,36 @@ export default function ProductDetails() {
         }}
       >
         <p>
-          <strong>Rating:</strong>
+          <strong>Rating: {product.rating}</strong>
         </p>
-        <p>
-          <strong>Reviews:</strong>
-        </p>
-        <p>
-          <strong>Leave a Review</strong>
-        </p>
+        <Box>
+          <p>
+            <strong>Reviews</strong>
+          </p>
+
+          {product.reviews && product.reviews.length > 0 ? (
+            product.reviews.map((review, index) => (
+              <Box
+                key={index}
+                sx={{
+                  marginTop: 1,
+                  padding: 1,
+                  borderBottom: "1px solid #ddd",
+                }}
+              >
+                <Typography variant="body1">
+                  <strong>{review.reviewerName}</strong>
+                </Typography>
+                <Typography variant="body2" color="gray">
+                  Rating: {review.rating} ⭐
+                </Typography>
+                <Typography variant="body2">{review.comment}</Typography>
+              </Box>
+            ))
+          ) : (
+            <Typography variant="body2">No reviews available.</Typography>
+          )}
+        </Box>
         <TextField
           onChange={(e) => console.log(e.target.value)}
           placeholder="Write your review..."
