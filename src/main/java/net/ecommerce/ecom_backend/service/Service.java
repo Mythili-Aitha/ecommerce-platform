@@ -1,16 +1,9 @@
 package net.ecommerce.ecom_backend.service;
 
-import net.ecommerce.ecom_backend.dto.AddressDto;
-import net.ecommerce.ecom_backend.dto.LoginDto;
-import net.ecommerce.ecom_backend.dto.PaymentInfoDto;
-import net.ecommerce.ecom_backend.dto.UserDto;
-import net.ecommerce.ecom_backend.entity.Address;
-import net.ecommerce.ecom_backend.entity.PaymentInfo;
-import net.ecommerce.ecom_backend.entity.User;
+import net.ecommerce.ecom_backend.dto.*;
+import net.ecommerce.ecom_backend.entity.*;
 import net.ecommerce.ecom_backend.mapper.Mapper;
-import net.ecommerce.ecom_backend.repository.AddressRepo;
-import net.ecommerce.ecom_backend.repository.PaymentInfoRepo;
-import net.ecommerce.ecom_backend.repository.UserRepo;
+import net.ecommerce.ecom_backend.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
@@ -28,6 +21,10 @@ public class Service {
     private AddressRepo addressRepo;
     @Autowired
     private PaymentInfoRepo paymentInfoRepo;
+    @Autowired
+    private ProductRepo productRepo;
+    @Autowired
+    private ProductDimRepo productDimRepo;
 
     //User Methods
     public UserDto createUser(UserDto userDto) {
@@ -127,6 +124,37 @@ public class Service {
         paymentInfoRepo.deleteById(id);
     }
 
+    //Product Methods
+    public ProductDto createProduct(ProductDto productDto) {
+        Products products = Mapper.toProducts(productDto);
+        Products savedProducts = productRepo.save(products);
+        return Mapper.toProductDto(savedProducts);
+    }
+    public ProductDto getProductById(Long id) {
+        Products products = productRepo.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found"));
+        return Mapper.toProductDto(products);
+    }
+    public List<ProductDto> getAllProducts() {
+        return productRepo.findAll().stream().map(Mapper::toProductDto).collect(Collectors.toList());
+    }
+    public ProductDto updateProduct(Long id,ProductDto productDto) {
+        Products products = productRepo.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found"));
+        products.setName(productDto.getName());
+        products.setPrice(productDto.getPrice());
+        products.setDescription(productDto.getDescription());
 
+        Products savedProducts = productRepo.save(products);
+        return Mapper.toProductDto(savedProducts);
+    }
+    public void deleteProduct(Long id) {
+        Products products = productRepo.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found"));
+        productRepo.delete(products);
+    }
+
+    //Product Dimensions Methods
+    public ProductDimensionsDto getDimensionsByProductId(Long id) {
+        ProductDimensions dimensions = productDimRepo.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Dimension not found"));
+        return Mapper.toProductDimensionsDto(dimensions);
+    }
 
 }
