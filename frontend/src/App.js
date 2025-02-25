@@ -11,6 +11,7 @@ import Layout from "./Components/Layout.js";
 import Home from "./Components/Home.js";
 import AddressForm from "./Components/AddressForm.js";
 import PaymentForm from "./Components/PaymentForm.js";
+import ProductDetails from "./Components/ProductDetails.js";
 
 function App() {
   const location = useLocation();
@@ -32,6 +33,7 @@ function App() {
               <Route path="/auth" element={<Login />} />
               <Route path="/cart" element={<Cart />} />
               <Route path="/products" element={<Products />} />
+              <Route path="/products/:id" element={<ProductDetails />} />
               <Route path="/favorite" element={<Favorites />} />
               <Route path="/oconfo" element={<OrderConfo />} />
               <Route path="/address" element={<AddressForm />} />

@@ -9,7 +9,8 @@ import {
   Paper,
   Avatar,
 } from "@mui/material";
-import Carousel from "react-material-ui-carousel";
+import { Swiper, SwiperSlide } from "swiper/react";
+import "swiper/css";
 
 const categories = [
   "Traditional",
@@ -25,16 +26,30 @@ const categories = [
 ];
 
 const products = [
-  { id: 1, name: "Product 1", image: "https://via.placeholder.com/150" },
-  { id: 2, name: "Product 2", image: "https://via.placeholder.com/150" },
-  { id: 3, name: "Product 3", image: "https://via.placeholder.com/150" },
-  { id: 4, name: "Product 4", image: "https://via.placeholder.com/150" },
+  {
+    id: 1,
+    name: "Product 1",
+    image:
+      "https://cdn.dummyjson.com/products/images/beauty/Essence%20Mascara%20Lash%20Princess/thumbnail.png",
+  },
+  {
+    id: 2,
+    name: "Product 2",
+    image:
+      "https://cdn.dummyjson.com/products/images/beauty/Eyeshadow%20Palette%20with%20Mirror/thumbnail.png",
+  },
+  {
+    id: 3,
+    name: "Product 3",
+    image:
+      "https://cdn.dummyjson.com/products/images/beauty/Powder%20Canister/thumbnail.png",
+  },
 ];
 
 const banners = [
-  "https://images.app.goo.gl/zJ2DEQMYYkEzbxmX8",
-  "https://via.placeholder.com/900x200?text=Promotional+Offer+2",
-  "https://via.placeholder.com/900x200?text=Promotional+Offer+3",
+  "https://www.vecteezy.com/vector-art/11320988-big-sale-banner-design-with-podium-gradient-background-social-media-post-product-advertisement-design-special-discount-design",
+  "https://www.vecteezy.com/vector-art/2038675-flash-sale-discount-banner-promotion-background",
+  "https://www.vecteezy.com/vector-art/3692287-big-sale-discount-promotion-banner-template-with-blank-product-podium-scene-vector-graphic",
 ];
 
 const Home = () => {
@@ -47,21 +62,24 @@ const Home = () => {
           display: "flex",
           flexDirection: "column",
           gap: 1,
+          maxWidth: "800px",
         }}
       >
         {/* Promotional Banner */}
-
-        <Carousel>
+        <Swiper
+          style={{ maxWidth: "100vw", overflow: "hidden" }}
+          slidesPerView={1}
+          centeredSlides={true}
+          loop={true}
+          autoplay={{ delay: 3000 }}
+        >
           {banners.map((image, index) => (
-            <img
-              key={index}
-              src={image}
-              alt={`Banner ${index + 1}`}
-              width="100%"
-              style={{ borderRadius: "8px" }}
-            />
+            <SwiperSlide key={index}>
+              <img src={image} alt={`Banner ${index + 1}`} width="100%" />
+            </SwiperSlide>
           ))}
-        </Carousel>
+        </Swiper>
+
         <AppBar position="static" sx={{ background: "#fff", padding: 1 }}>
           <Toolbar sx={{ justifyContent: "center", gap: 2 }}>
             <Button variant="outlined">Women</Button>
