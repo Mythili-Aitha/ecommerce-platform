@@ -1,9 +1,6 @@
-package net.ecommerce.ecom_backend.conroller;
+package net.ecommerce.ecom_backend.controller;
 
-import net.ecommerce.ecom_backend.dto.AddressDto;
-import net.ecommerce.ecom_backend.dto.LoginDto;
-import net.ecommerce.ecom_backend.dto.PaymentInfoDto;
-import net.ecommerce.ecom_backend.dto.UserDto;
+import net.ecommerce.ecom_backend.dto.*;
 import net.ecommerce.ecom_backend.repository.UserRepo;
 import net.ecommerce.ecom_backend.service.Service;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -79,6 +76,54 @@ public class Controller {
     public ResponseEntity<Void> deletePaymentInfo(@PathVariable Long id) {
         service.deletePaymentInfo(id);
         return ResponseEntity.noContent().build();
+    }
+
+    //PRODUCTS API CALLS
+    @GetMapping("/products")
+    public ResponseEntity<List<ProductDto>> getAllProducts() {
+        return ResponseEntity.ok(service.getAllProducts());
+    }
+    @GetMapping("/products/{id}")
+    public ResponseEntity<ProductDto> getProductById(@PathVariable Long id) {
+        return ResponseEntity.ok(service.getProductById(id));
+    }
+    @PostMapping("/products")
+    public ResponseEntity<List<ProductDto>> createProducts(@RequestBody List<ProductDto> productDtos) {
+        try {
+            List<ProductDto> savedProducts = service.createProduct(productDtos);
+            return ResponseEntity.ok(savedProducts);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+    @PostMapping("/products/bulk-upload")
+    public ResponseEntity<List<ProductDto>> uploadProducts(@RequestBody List<ProductDto> productDtos) {
+        System.out.println("Received JSON: " + productDtos);
+        List<ProductDto> savedProducts = service.saveAllProducts(productDtos);
+        return ResponseEntity.ok(savedProducts);
+    }
+    @PutMapping("/products/{id}")
+    public ResponseEntity<ProductDto> updateProduct(@PathVariable Long id, @RequestBody ProductDto productDto) {
+        productDto.setId(id);
+        ProductDto savedProduct = service.updateProduct(id, productDto);
+        return ResponseEntity.ok(savedProduct);
+    }
+    @DeleteMapping("/process/{id}")
+    public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
+        service.deleteProduct(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    //REVIEWS API CALLS
+    @GetMapping("/products_reviews")
+    public ResponseEntity<List<ProductReviewDto>> getAllProductReviews() {
+        return ResponseEntity.ok(service.getAllProductReviews());
+    }
+    @PostMapping("/products_reviews")
+    public ResponseEntity<ProductReviewDto> createProductReview(@RequestBody ProductReviewDto productReviewDto) {
+        ProductReviewDto savedProductReview = service.createProductReview(productReviewDto);
+        return ResponseEntity.ok(savedProductReview);
     }
 
 }

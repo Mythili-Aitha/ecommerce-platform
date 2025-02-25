@@ -14,19 +14,19 @@ import java.util.List;
 @AllArgsConstructor
 public class ProductDto {
     private Long id;
-    private String name;
+    private String title;
     private String description;
     private BigDecimal price;
-    private Integer stockQuantity;
+    private Integer stock;
     private String brand;
     private String sku;
     private Double rating;
     private List<String> tags;
     private List<String> images;
     private String thumbnail;
-    private CategoryDto category;
+    private String category;
     private ProductMetaDto meta;
-    private ProductDimensionsDto dimensions;
+    private ProductDimensionsDto dimensions = new ProductDimensionsDto(0.0, 0.0, 0.0);
     private List<ProductReviewDto> reviews;
 
 }

@@ -1,17 +1,21 @@
 package net.ecommerce.ecom_backend.service;
 
+import jakarta.persistence.EntityNotFoundException;
 import net.ecommerce.ecom_backend.dto.*;
 import net.ecommerce.ecom_backend.entity.*;
 import net.ecommerce.ecom_backend.mapper.Mapper;
 import net.ecommerce.ecom_backend.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @org.springframework.stereotype.Service
 public class Service {
@@ -25,6 +29,8 @@ public class Service {
     private ProductRepo productRepo;
     @Autowired
     private ProductDimRepo productDimRepo;
+    @Autowired
+    private ProductReviewRepo productReviewRepo;
 
     //User Methods
     public UserDto createUser(UserDto userDto) {
@@ -125,11 +131,34 @@ public class Service {
     }
 
     //Product Methods
-    public ProductDto createProduct(ProductDto productDto) {
-        Products products = Mapper.toProducts(productDto);
-        Products savedProducts = productRepo.save(products);
-        return Mapper.toProductDto(savedProducts);
+    @Transactional
+    public List<ProductDto> createProduct(List<ProductDto> productDtos) {
+        List<ProductDto> savedProducts = new ArrayList<>();
+        for (ProductDto dto : productDtos) {
+            Products product;
+            if (dto.getId() != null && productRepo.existsById(dto.getId())) {
+                product = productRepo.findById(dto.getId()).orElseThrow(() ->
+                        new EntityNotFoundException("Product not found"));
+            } else {
+                product = new Products();
+            }
+
+            // Set fields
+            product.setTitle(dto.getTitle());
+            product.setDescription(dto.getDescription());
+            product.setPrice(dto.getPrice());
+            product.setBrand(dto.getBrand());
+            product.setSku(dto.getSku());
+            product.setRating(dto.getRating());
+            product.setStock(dto.getStock());
+            product.setCategory(dto.getCategory());
+
+            Products savedProduct = productRepo.save(product);
+            savedProducts.add(Mapper.toProductDto(savedProduct));
+        }
+        return savedProducts;
     }
+
     public ProductDto getProductById(Long id) {
         Products products = productRepo.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found"));
         return Mapper.toProductDto(products);
@@ -137,18 +166,75 @@ public class Service {
     public List<ProductDto> getAllProducts() {
         return productRepo.findAll().stream().map(Mapper::toProductDto).collect(Collectors.toList());
     }
-    public ProductDto updateProduct(Long id,ProductDto productDto) {
-        Products products = productRepo.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found"));
-        products.setName(productDto.getName());
-        products.setPrice(productDto.getPrice());
-        products.setDescription(productDto.getDescription());
+    @Transactional
+    public ProductDto updateProduct(Long id, ProductDto productDto) {
+        Products product = productRepo.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found"));
 
-        Products savedProducts = productRepo.save(products);
-        return Mapper.toProductDto(savedProducts);
+        product.setTitle(productDto.getTitle());
+        product.setPrice(productDto.getPrice());
+        product.setDescription(productDto.getDescription());
+
+        Products updatedProduct = productRepo.save(product);
+        return Mapper.toProductDto(updatedProduct);
     }
+    @Transactional
+    public List<ProductDto> saveAllProducts(List<ProductDto> productDtos) {
+        List<Products> newProducts = new ArrayList<>();
+        List<Products> existingProducts = new ArrayList<>();
+
+        for (ProductDto dto : productDtos) {
+            if (dto.getId() != null && productRepo.existsById(dto.getId())) {
+                Products existingProduct = productRepo.findById(dto.getId()).orElseThrow();
+                existingProduct.setTitle(dto.getTitle());
+                existingProduct.setPrice(dto.getPrice());
+                existingProduct.setDescription(dto.getDescription());
+                existingProducts.add(existingProduct);
+            } else {
+                newProducts.add(Mapper.toProducts(dto));
+            }
+        }
+
+        productRepo.saveAll(newProducts);
+        productRepo.saveAll(existingProducts);
+
+        List<ProductDto> savedDtos = Stream.concat(
+                newProducts.stream().map(Mapper::toProductDto),
+                existingProducts.stream().map(Mapper::toProductDto)
+        ).collect(Collectors.toList());
+
+        return savedDtos;
+    }
+    @Transactional
     public void deleteProduct(Long id) {
-        Products products = productRepo.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found"));
-        productRepo.delete(products);
+        if (!productRepo.existsById(id)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found");
+        }
+        productRepo.deleteById(id);
+    }
+
+    //Review Methods
+    public ProductReviewDto createProductReview(ProductReviewDto productReviewDto) {
+        ProductReview productReview = Mapper.toProductReview(productReviewDto);
+        ProductReview saveReview = productReviewRepo.save(productReview);
+        return Mapper.toProductReviewDto(saveReview);
+    }
+    public ProductReviewDto getProductReviewById(Long id) {
+        ProductReview productReview = productReviewRepo.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Product review not found"));
+        return Mapper.toProductReviewDto(productReview);
+    }
+    public List<ProductReviewDto> getAllProductReviews() {
+        return productReviewRepo.findAll().stream().map(Mapper::toProductReviewDto).collect(Collectors.toList());
+    }
+    public ProductReviewDto updateProductReview(ProductReviewDto productReviewDto) {
+        ProductReview productReview = Mapper.toProductReview(productReviewDto);
+        ProductReview savedProductReview = productReviewRepo.save(productReview);
+        return Mapper.toProductReviewDto(savedProductReview);
+    }
+    public void deleteProductReview(Long id) {
+        ProductReview productReview = productReviewRepo.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Product review not found"));
+        productReviewRepo.delete(productReview);
+
     }
 
     //Product Dimensions Methods

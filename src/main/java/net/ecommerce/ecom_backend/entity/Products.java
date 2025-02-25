@@ -21,18 +21,19 @@ public class Products {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Version // Optimistic Locking
+    private int version;
     @Column(nullable = false)
-    private String name;
+    private String title;
     @Column(nullable = false, length = 1000)
     private String description;
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal price;
 
-    @ManyToOne
-    @JoinColumn(name = "category_id", nullable = false)
-    private Category category;
+    @Column
+    private String category;
     @Column(nullable = false)
-    private Integer stockQuantity;
+    private Integer stock;
     @Column(nullable = false)
     private String brand;
     @Column(nullable = false, unique = true)

@@ -106,19 +106,17 @@ public class Mapper {
         }
         ProductDto productDto = new ProductDto();
         productDto.setId(products.getId());
-        productDto.setName(products.getName());
+        productDto.setTitle(products.getTitle());
         productDto.setDescription(products.getDescription());
         productDto.setPrice(products.getPrice());
         productDto.setBrand(products.getBrand());
         productDto.setSku(products.getSku());
         productDto.setRating(products.getRating());
         productDto.setImages(products.getImages());
-        productDto.setStockQuantity(products.getStockQuantity());
+        productDto.setStock(products.getStock());
         productDto.setTags(products.getTags());
         productDto.setThumbnail(products.getThumbnail());
-        if (products.getCategory() != null) {
-            productDto.setCategory(toCategoryDto(products.getCategory()));
-        }
+        productDto.setCategory(products.getCategory());
         if (products.getDimensions() != null) {
             productDto.setDimensions(toProductDimensionsDto(products.getDimensions()));
         }
@@ -139,29 +137,31 @@ public class Mapper {
             return null;
         }
         Products products = new Products();
-        products.setId(productDto.getId());
-        products.setName(productDto.getName());
+        if (productDto.getId() != null) {
+            products.setId(productDto.getId());
+        }
+        products.setTitle(productDto.getTitle());
         products.setDescription(productDto.getDescription());
         products.setPrice(productDto.getPrice());
         products.setBrand(productDto.getBrand());
         products.setSku(productDto.getSku());
         products.setRating(productDto.getRating());
         products.setImages(productDto.getImages());
-        products.setStockQuantity(productDto.getStockQuantity());
+        products.setStock(productDto.getStock());
         products.setTags(productDto.getTags());
         products.setThumbnail(productDto.getThumbnail());
-        products.setCategory(toCategory(productDto.getCategory()));
+        products.setCategory(productDto.getCategory());
         products.setMeta(toProductMeta(productDto.getMeta()));
         ProductDimensions dimensions = toProductDimensions(productDto.getDimensions());
         if (dimensions != null) {
-            dimensions.setProducts(products); // Set reference back to Product
+            dimensions.setProducts(products);
             products.setDimensions(dimensions);
         }
         if (productDto.getReviews() != null) {
             List<ProductReview> reviews = productDto.getReviews().stream()
                     .map(reviewDto -> {
                         ProductReview review = toProductReview(reviewDto);
-                        review.setProducts(products); // Set reference back to Product
+                        review.setProducts(products);
                         return review;
                     })
                     .collect(Collectors.toList());
@@ -170,33 +170,16 @@ public class Mapper {
 
         return products;
     }
-    public static CategoryDto toCategoryDto(Category category) {
-        if (category == null) {
-            return null;
-        }
-        CategoryDto categoryDto = new CategoryDto();
-        categoryDto.setId(category.getId());
-        categoryDto.setName(category.getName());
-        categoryDto.setDescription(category.getDescription());
-        return categoryDto;
-    }
-    public static Category toCategory(CategoryDto categoryDto) {
-        if (categoryDto == null) {
-            return null;
-        }
-        Category category = new Category();
-        category.setId(categoryDto.getId());
-        category.setName(categoryDto.getName());
-        category.setDescription(categoryDto.getDescription());
-        return category;
-    }
     public static ProductDimensionsDto toProductDimensionsDto(ProductDimensions dimensions) {
+        if (dimensions == null) {
+            return new ProductDimensionsDto(0.0, 0.0, 0.0); // Set default values instead of null
+        }
         return new ProductDimensionsDto(dimensions.getHeight(), dimensions.getWidth(), dimensions.getDepth());
     }
 
     public static ProductDimensions toProductDimensions(ProductDimensionsDto dimensionsDto) {
         if (dimensionsDto == null) {
-            return null;
+            return null; // Keep null if no dimensions provided
         }
         ProductDimensions productDimensions = new ProductDimensions();
         productDimensions.setHeight(dimensionsDto.getHeight());
