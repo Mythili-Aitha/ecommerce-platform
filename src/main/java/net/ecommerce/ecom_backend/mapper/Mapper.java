@@ -2,10 +2,12 @@ package net.ecommerce.ecom_backend.mapper;
 
 import net.ecommerce.ecom_backend.dto.*;
 import net.ecommerce.ecom_backend.entity.*;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Component
 public class Mapper {
     public static UserDto toUserDto(User user) {
         if (user == null) {
@@ -99,134 +101,146 @@ public class Mapper {
         paymentInfo.setCardType(paymentInfoDto.getCardType());
         return paymentInfo;
     }
-
-    public static ProductDto toProductDto(Products products) {
-        if (products == null) {
+    public static ProductDto toProductDto(Product product) {
+        if (product == null) {
             return null;
         }
-        ProductDto productDto = new ProductDto();
-        productDto.setId(products.getId());
-        productDto.setTitle(products.getTitle());
-        productDto.setDescription(products.getDescription());
-        productDto.setPrice(products.getPrice());
-        productDto.setBrand(products.getBrand());
-        productDto.setSku(products.getSku());
-        productDto.setRating(products.getRating());
-        productDto.setImages(products.getImages());
-        productDto.setStock(products.getStock());
-        productDto.setTags(products.getTags());
-        productDto.setThumbnail(products.getThumbnail());
-        productDto.setCategory(products.getCategory());
-        if (products.getDimensions() != null) {
-            productDto.setDimensions(toProductDimensionsDto(products.getDimensions()));
-        }
-        if (products.getMeta() != null) {
-            productDto.setMeta(toProductMetaDto(products.getMeta()));
-        }
-        if (products.getReviews() != null) {
-            productDto.setReviews(products.getReviews().stream()
-                    .map(Mapper::toProductReviewDto)
-                    .collect(Collectors.toList()));
-        }
-
-        return productDto;
+        return new ProductDto(
+                product.getId(),
+                product.getTitle(),
+                product.getDescription(),
+                product.getCategory(),
+                product.getPrice(),
+                product.getRating(),
+                product.getStock(),
+                product.getBrand(),
+                product.getSku(),
+                product.getTags(),
+                product.getDimensions() != null ? new DimensionsDto(
+                        product.getDimensions().getWidth(),
+                        product.getDimensions().getHeight(),
+                        product.getDimensions().getDepth()
+                ) : null,
+                product.getReviews() != null ? product.getReviews().stream()
+                        .map(review -> new ReviewDto(
+                                review.getRating(),
+                                review.getComment(),
+                                review.getDate(),
+                                review.getReviewerName(),
+                                review.getReviewerEmail()
+                        )).collect(Collectors.toList()) : null,
+                product.getMeta() != null ? new MetaDto(
+                        product.getMeta().getCreatedAt(),
+                        product.getMeta().getUpdatedAt(),
+                        product.getMeta().getBarcode(),
+                        product.getMeta().getQrCode()
+                ) : null,
+                product.getImages(),
+                product.getThumbnail()
+        );
     }
 
-    public static Products toProducts(ProductDto productDto) {
+    public Product toEntity(ProductDto productDto) {
         if (productDto == null) {
             return null;
         }
-        Products products = new Products();
-        if (productDto.getId() != null) {
-            products.setId(productDto.getId());
+        Product product = new Product();
+        product.setId(productDto.getId());
+        product.setTitle(productDto.getTitle());
+        product.setDescription(productDto.getDescription());
+        product.setCategory(productDto.getCategory());
+        product.setPrice(productDto.getPrice());
+        product.setRating(productDto.getRating());
+        product.setStock(productDto.getStock());
+        product.setBrand(productDto.getBrand());
+        product.setSku(productDto.getSku());
+        product.setTags(productDto.getTags());
+
+        if (productDto.getDimensions() != null) {
+            product.setDimensions(new Dimensions(
+                    productDto.getDimensions().getWidth(),
+                    productDto.getDimensions().getHeight(),
+                    productDto.getDimensions().getDepth()
+            ));
         }
-        products.setTitle(productDto.getTitle());
-        products.setDescription(productDto.getDescription());
-        products.setPrice(productDto.getPrice());
-        products.setBrand(productDto.getBrand());
-        products.setSku(productDto.getSku());
-        products.setRating(productDto.getRating());
-        products.setImages(productDto.getImages());
-        products.setStock(productDto.getStock());
-        products.setTags(productDto.getTags());
-        products.setThumbnail(productDto.getThumbnail());
-        products.setCategory(productDto.getCategory());
-        products.setMeta(toProductMeta(productDto.getMeta()));
-        ProductDimensions dimensions = toProductDimensions(productDto.getDimensions());
-        if (dimensions != null) {
-            dimensions.setProducts(products);
-            products.setDimensions(dimensions);
-        }
+
         if (productDto.getReviews() != null) {
-            List<ProductReview> reviews = productDto.getReviews().stream()
-                    .map(reviewDto -> {
-                        ProductReview review = toProductReview(reviewDto);
-                        review.setProducts(products);
-                        return review;
-                    })
-                    .collect(Collectors.toList());
-            products.setReviews(reviews);
+            List<Review> reviews = productDto.getReviews().stream()
+                    .map(reviewDto -> new Review(
+                            null,
+                            reviewDto.getRating(),
+                            reviewDto.getComment(),
+                            reviewDto.getDate(),
+                            reviewDto.getReviewerName(),
+                            reviewDto.getReviewerEmail(),
+                            product
+                    )).collect(Collectors.toList());
+            product.setReviews(reviews);
         }
 
-        return products;
-    }
-    public static ProductDimensionsDto toProductDimensionsDto(ProductDimensions dimensions) {
-        if (dimensions == null) {
-            return new ProductDimensionsDto(0.0, 0.0, 0.0); // Set default values instead of null
+        if (productDto.getMeta() != null) {
+            product.setMeta(new Meta(
+                    productDto.getMeta().getCreatedAt(),
+                    productDto.getMeta().getUpdatedAt(),
+                    productDto.getMeta().getBarcode(),
+                    productDto.getMeta().getQrCode()
+            ));
         }
-        return new ProductDimensionsDto(dimensions.getHeight(), dimensions.getWidth(), dimensions.getDepth());
+
+        product.setImages(productDto.getImages());
+        product.setThumbnail(productDto.getThumbnail());
+
+        return product;
     }
 
-    public static ProductDimensions toProductDimensions(ProductDimensionsDto dimensionsDto) {
-        if (dimensionsDto == null) {
-            return null; // Keep null if no dimensions provided
+    public FavoriteDto toFavoriteDto(Favorite favorite) {
+        if (favorite == null) {
+            return null;
         }
-        ProductDimensions productDimensions = new ProductDimensions();
-        productDimensions.setHeight(dimensionsDto.getHeight());
-        productDimensions.setWidth(dimensionsDto.getWidth());
-        productDimensions.setDepth(dimensionsDto.getDepth());
-        return productDimensions;
+        return new FavoriteDto(
+                favorite.getId(),
+                favorite.getUser().getUserId(),
+                favorite.getProduct().getId(),
+                favorite.getProduct().getTitle(),   // Assuming Product has a name field
+                favorite.getProduct().getImages().isEmpty() ? null : favorite.getProduct().getImages().get(0) // Assuming Product has an image field
+        );
     }
-    public static ProductMetaDto toProductMetaDto(ProductMeta meta) {
-        ProductMetaDto dto = new ProductMetaDto();
-        dto.setBarcode(meta.getBarcode());
-        dto.setQrCode(meta.getQrCode());
-        dto.setCreatedAt(meta.getCreatedAt());
-        dto.setUpdatedAt(meta.getUpdatedAt());
-        return dto;
-    }
-    public static ProductMeta toProductMeta(ProductMetaDto dto) {
+    public Favorite toFavorite(FavoriteDto dto, User user, Product product) {
         if (dto == null) {
             return null;
         }
-        ProductMeta meta = new ProductMeta();
-        meta.setBarcode(dto.getBarcode());
-        meta.setQrCode(dto.getQrCode());
-        meta.setCreatedAt(dto.getCreatedAt());
-        meta.setUpdatedAt(dto.getUpdatedAt());
-        return meta;
+        Favorite favorite = new Favorite();
+        favorite.setUser(user);
+        favorite.setProduct(product);
+        return favorite;
+
     }
 
-    public static ProductReviewDto toProductReviewDto(ProductReview review) {
-       ProductReviewDto dto = new ProductReviewDto();
-       dto.setRating(review.getRating());
-       dto.setComment(review.getComment());
-       dto.setDate(review.getDate());
-       dto.setReviewerName(review.getReviewerName());
-       dto.setReviewerEmail(review.getReviewerEmail());
-       return dto;
-    }
-
-    public static ProductReview toProductReview(ProductReviewDto dto) {
-        if (dto == null) {
+    public CartDto toCartDto(Cart cart) {
+        if (cart == null) {
             return null;
         }
-        ProductReview review = new ProductReview();
-        review.setRating(dto.getRating());
-        review.setComment(dto.getComment());
-        review.setDate(dto.getDate());
-        review.setReviewerName(dto.getReviewerName());
-        review.setReviewerEmail(dto.getReviewerEmail());
-        return review;
+        return new CartDto(
+                cart.getId(),
+                cart.getUser().getUserId(),
+                cart.getProduct().getId(),
+                cart.getProduct().getTitle(),
+                cart.getProduct().getImages().isEmpty() ? null : cart.getProduct().getImages().get(0),
+                cart.getProduct().getPrice(),
+                cart.getQuantity()
+        );
     }
+
+    public Cart toCart(CartDto cartDto, User user, Product product) {
+        if (cartDto == null) {
+            return null;
+        }
+        Cart cart = new Cart();
+        cart.setUser(user);
+        cart.setProduct(product);
+        cart.setQuantity(cartDto.getQuantity());
+        return cart;
+
+    }
+
 }

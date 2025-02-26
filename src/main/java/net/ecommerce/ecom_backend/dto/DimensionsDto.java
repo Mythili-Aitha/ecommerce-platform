@@ -9,7 +9,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ProductDimensionsDto {
+public class DimensionsDto {
     private Double width;
     private Double height;
     private Double depth;

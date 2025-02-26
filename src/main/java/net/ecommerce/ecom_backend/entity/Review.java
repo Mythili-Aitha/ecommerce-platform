@@ -11,17 +11,17 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "product_dimensions")
-public class ProductDimensions {
+public class Review {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    private Integer rating;
+    private String comment;
+    private String date;
+    private String reviewerName;
+    private String reviewerEmail;
 
-    private Double width;
-    private Double height;
-    private Double depth;
-
-    @OneToOne
-    @JoinColumn(name = "products_id", nullable = false)
-    private Products products;
+    @ManyToOne
+    @JoinColumn(name = "product_id", nullable = false)
+    private Product product;
 }

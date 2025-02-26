@@ -1,6 +1,5 @@
 package net.ecommerce.ecom_backend.service;
 
-import jakarta.persistence.EntityNotFoundException;
 import net.ecommerce.ecom_backend.dto.*;
 import net.ecommerce.ecom_backend.entity.*;
 import net.ecommerce.ecom_backend.mapper.Mapper;
@@ -11,14 +10,14 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @org.springframework.stereotype.Service
-public class Service {
+public class EService {
+    @Autowired
+    private Mapper mapper;
     @Autowired
     private UserRepo userRepo;
     @Autowired
@@ -28,9 +27,10 @@ public class Service {
     @Autowired
     private ProductRepo productRepo;
     @Autowired
-    private ProductDimRepo productDimRepo;
+    private FavoriteRepo favoriteRepo;
     @Autowired
-    private ProductReviewRepo productReviewRepo;
+    private CartRepo cartRepo;
+
 
     //User Methods
     public UserDto createUser(UserDto userDto) {
@@ -131,116 +131,108 @@ public class Service {
     }
 
     //Product Methods
-    @Transactional
-    public List<ProductDto> createProduct(List<ProductDto> productDtos) {
-        List<ProductDto> savedProducts = new ArrayList<>();
-        for (ProductDto dto : productDtos) {
-            Products product;
-            if (dto.getId() != null && productRepo.existsById(dto.getId())) {
-                product = productRepo.findById(dto.getId()).orElseThrow(() ->
-                        new EntityNotFoundException("Product not found"));
-            } else {
-                product = new Products();
-            }
-
-            // Set fields
-            product.setTitle(dto.getTitle());
-            product.setDescription(dto.getDescription());
-            product.setPrice(dto.getPrice());
-            product.setBrand(dto.getBrand());
-            product.setSku(dto.getSku());
-            product.setRating(dto.getRating());
-            product.setStock(dto.getStock());
-            product.setCategory(dto.getCategory());
-
-            Products savedProduct = productRepo.save(product);
-            savedProducts.add(Mapper.toProductDto(savedProduct));
-        }
-        return savedProducts;
+    public List<ProductDto> getAllProducts() {
+        List<Product> products = productRepo.findAll();
+        return products.stream().map(Mapper::toProductDto).collect(Collectors.toList());
     }
 
     public ProductDto getProductById(Long id) {
-        Products products = productRepo.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found"));
-        return Mapper.toProductDto(products);
+        return productRepo.findById(id).map(Mapper::toProductDto).orElse(null);
     }
-    public List<ProductDto> getAllProducts() {
-        return productRepo.findAll().stream().map(Mapper::toProductDto).collect(Collectors.toList());
+
+    public List<ProductDto> saveProducts(List<ProductDto> productDtos) {
+        List<Product> products = productDtos.stream()
+                .map(mapper::toEntity)
+                .collect(Collectors.toList());
+
+        List<Product> savedProducts = productRepo.saveAll(products);
+
+        return savedProducts.stream()
+                .map(Mapper::toProductDto)
+                .collect(Collectors.toList());
     }
-    @Transactional
-    public ProductDto updateProduct(Long id, ProductDto productDto) {
-        Products product = productRepo.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found"));
 
-        product.setTitle(productDto.getTitle());
-        product.setPrice(productDto.getPrice());
-        product.setDescription(productDto.getDescription());
 
-        Products updatedProduct = productRepo.save(product);
-        return Mapper.toProductDto(updatedProduct);
-    }
-    @Transactional
-    public List<ProductDto> saveAllProducts(List<ProductDto> productDtos) {
-        List<Products> newProducts = new ArrayList<>();
-        List<Products> existingProducts = new ArrayList<>();
-
-        for (ProductDto dto : productDtos) {
-            if (dto.getId() != null && productRepo.existsById(dto.getId())) {
-                Products existingProduct = productRepo.findById(dto.getId()).orElseThrow();
-                existingProduct.setTitle(dto.getTitle());
-                existingProduct.setPrice(dto.getPrice());
-                existingProduct.setDescription(dto.getDescription());
-                existingProducts.add(existingProduct);
-            } else {
-                newProducts.add(Mapper.toProducts(dto));
-            }
-        }
-
-        productRepo.saveAll(newProducts);
-        productRepo.saveAll(existingProducts);
-
-        List<ProductDto> savedDtos = Stream.concat(
-                newProducts.stream().map(Mapper::toProductDto),
-                existingProducts.stream().map(Mapper::toProductDto)
-        ).collect(Collectors.toList());
-
-        return savedDtos;
-    }
-    @Transactional
     public void deleteProduct(Long id) {
-        if (!productRepo.existsById(id)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found");
-        }
         productRepo.deleteById(id);
     }
 
-    //Review Methods
-    public ProductReviewDto createProductReview(ProductReviewDto productReviewDto) {
-        ProductReview productReview = Mapper.toProductReview(productReviewDto);
-        ProductReview saveReview = productReviewRepo.save(productReview);
-        return Mapper.toProductReviewDto(saveReview);
-    }
-    public ProductReviewDto getProductReviewById(Long id) {
-        ProductReview productReview = productReviewRepo.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Product review not found"));
-        return Mapper.toProductReviewDto(productReview);
-    }
-    public List<ProductReviewDto> getAllProductReviews() {
-        return productReviewRepo.findAll().stream().map(Mapper::toProductReviewDto).collect(Collectors.toList());
-    }
-    public ProductReviewDto updateProductReview(ProductReviewDto productReviewDto) {
-        ProductReview productReview = Mapper.toProductReview(productReviewDto);
-        ProductReview savedProductReview = productReviewRepo.save(productReview);
-        return Mapper.toProductReviewDto(savedProductReview);
-    }
-    public void deleteProductReview(Long id) {
-        ProductReview productReview = productReviewRepo.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Product review not found"));
-        productReviewRepo.delete(productReview);
+    //Favorite Methods
+    @Transactional
+    public FavoriteDto addToFavorites(Long userId, Long productId) {
+        if (favoriteRepo.existsByUserUserIdAndProductId(userId, productId)) {
+            throw new RuntimeException("Product is already in favorites");
+        }
 
+        User user = userRepo.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        Product product = productRepo.findById(productId)
+                .orElseThrow(() -> new RuntimeException("Product not found"));
+
+        Favorite favorite = new Favorite(user, product);
+        favorite = favoriteRepo.save(favorite);
+
+        return mapper.toFavoriteDto(favorite);
     }
 
-    //Product Dimensions Methods
-    public ProductDimensionsDto getDimensionsByProductId(Long id) {
-        ProductDimensions dimensions = productDimRepo.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Dimension not found"));
-        return Mapper.toProductDimensionsDto(dimensions);
+    @Transactional
+    public void removeFromFavorites(Long userId, Long productId) {
+        if (!favoriteRepo.existsByUserUserIdAndProductId(userId, productId)) {
+            throw new RuntimeException("Product is not in favorites");
+        }
+
+        favoriteRepo.deleteByUserUserIdAndProductId(userId, productId);
+    }
+
+    public List<FavoriteDto> getUserFavorites(Long userId) {
+        List<Favorite> favorites = favoriteRepo.findByUserUserId(userId);
+        return favorites.stream().map(mapper::toFavoriteDto).collect(Collectors.toList());
+    }
+
+    //Cart Methods
+    @Transactional
+    public CartDto addToCart(Long userId, Long productId, int quantity) {
+        User user = userRepo.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        Product product = productRepo.findById(productId)
+                .orElseThrow(() -> new RuntimeException("Product not found"));
+
+        Cart cartItem = cartRepo.findByUserUserIdAndProductId(userId, productId)
+                .orElse(null);
+
+        if (cartItem == null) {
+            cartItem = new Cart(user, product, quantity);
+        } else {
+            cartItem.setQuantity(cartItem.getQuantity() + quantity);
+        }
+
+        cartItem = cartRepo.save(cartItem);
+        return mapper.toCartDto(cartItem);
+    }
+
+    @Transactional
+    public CartDto updateCartQuantity(Long userId, Long productId, int quantity) {
+        Cart cartItem = cartRepo.findByUserUserIdAndProductId(userId, productId)
+                .orElseThrow(() -> new RuntimeException("Cart item not found"));
+
+        cartItem.setQuantity(quantity);
+        cartRepo.save(cartItem);
+
+        return mapper.toCartDto(cartItem);
+    }
+
+    @Transactional
+    public void removeFromCart(Long userId, Long productId) {
+        if (!cartRepo.existsByUserUserIdAndProductId(userId, productId)) {
+            throw new RuntimeException("Product is not in cart");
+        }
+
+        cartRepo.deleteByUserUserIdAndProductId(userId, productId);
+    }
+
+    public List<CartDto> getUserCart(Long userId) {
+        List<Cart> cartItems = cartRepo.findByUserUserId(userId);
+        return cartItems.stream().map(mapper::toCartDto).collect(Collectors.toList());
     }
 
 }
