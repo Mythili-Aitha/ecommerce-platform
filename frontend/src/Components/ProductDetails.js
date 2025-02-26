@@ -5,7 +5,6 @@ import {
   Card,
   IconButton,
   InputAdornment,
-  Skeleton,
   TextField,
   Typography,
   Menu,
@@ -21,6 +20,7 @@ import ColorSelector from "./ColorSelector";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import SizeSelector from "./SizeSelector";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
+import { Actions } from "./Actions.js";
 
 export default function ProductDetails() {
   const location = useLocation();
@@ -31,6 +31,7 @@ export default function ProductDetails() {
   const sizes = ["XS", "S", "M", "L", "XL", "XXL"];
   const [selectedSize, setSelectedSize] = useState(sizes[0]);
   const [anchorEl, setAnchorEl] = useState(null);
+  const { handleAddToFavorites, handleAddToCart } = Actions();
   const open = anchorEl;
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -208,7 +209,13 @@ export default function ProductDetails() {
           padding: 2,
         }}
       >
-        <FavoriteBorderIcon fontSize="large" />
+        <FavoriteBorderIcon
+          fontSize="large"
+          onClick={() => {
+            handleAddToFavorites(product.id);
+            console.log("pid", product.id);
+          }}
+        />
         <Button
           fullWidth
           variant="contained"
@@ -217,6 +224,7 @@ export default function ProductDetails() {
             color: "white",
             "&:hover": { backgroundColor: "#f0f0f0" },
           }}
+          onClick={() => handleAddToCart(product.id)}
         >
           Add to Cart
         </Button>
