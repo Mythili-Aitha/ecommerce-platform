@@ -8,10 +8,11 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ProductReviewDto {
+public class ReviewDto {
     private Integer rating;
     private String comment;
-    private LocalDateTime date;
+    private String date;
     private String reviewerName;
     private String reviewerEmail;
+
 }

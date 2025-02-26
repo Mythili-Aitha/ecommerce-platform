@@ -2,7 +2,7 @@ package net.ecommerce.ecom_backend.controller;
 
 import net.ecommerce.ecom_backend.dto.*;
 import net.ecommerce.ecom_backend.repository.UserRepo;
-import net.ecommerce.ecom_backend.service.Service;
+import net.ecommerce.ecom_backend.service.EService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,9 +14,8 @@ import java.util.List;
 @RequestMapping("/api")
 public class Controller {
     @Autowired
-    private Service service;
-    @Autowired
-    private UserRepo userRepo;
+    private EService service;
+
 
     //USER API CALLS
     @PostMapping("/users/register")
@@ -78,52 +77,78 @@ public class Controller {
         return ResponseEntity.noContent().build();
     }
 
-    //PRODUCTS API CALLS
+    //PRODUCT API CALLS
     @GetMapping("/products")
-    public ResponseEntity<List<ProductDto>> getAllProducts() {
-        return ResponseEntity.ok(service.getAllProducts());
-    }
-    @GetMapping("/products/{id}")
-    public ResponseEntity<ProductDto> getProductById(@PathVariable Long id) {
-        return ResponseEntity.ok(service.getProductById(id));
-    }
-    @PostMapping("/products")
-    public ResponseEntity<List<ProductDto>> createProducts(@RequestBody List<ProductDto> productDtos) {
-        try {
-            List<ProductDto> savedProducts = service.createProduct(productDtos);
-            return ResponseEntity.ok(savedProducts);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-        }
-    }
-    @PostMapping("/products/bulk-upload")
-    public ResponseEntity<List<ProductDto>> uploadProducts(@RequestBody List<ProductDto> productDtos) {
-        System.out.println("Received JSON: " + productDtos);
-        List<ProductDto> savedProducts = service.saveAllProducts(productDtos);
-        return ResponseEntity.ok(savedProducts);
-    }
-    @PutMapping("/products/{id}")
-    public ResponseEntity<ProductDto> updateProduct(@PathVariable Long id, @RequestBody ProductDto productDto) {
-        productDto.setId(id);
-        ProductDto savedProduct = service.updateProduct(id, productDto);
-        return ResponseEntity.ok(savedProduct);
-    }
-    @DeleteMapping("/process/{id}")
-    public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
-        service.deleteProduct(id);
-        return ResponseEntity.noContent().build();
+    public List<ProductDto> getAllProducts() {
+        return service.getAllProducts();
     }
 
-    //REVIEWS API CALLS
-    @GetMapping("/products_reviews")
-    public ResponseEntity<List<ProductReviewDto>> getAllProductReviews() {
-        return ResponseEntity.ok(service.getAllProductReviews());
+    @GetMapping("/products/{id}")
+    public ProductDto getProductById(@PathVariable Long id) {
+        return service.getProductById(id);
     }
-    @PostMapping("/products_reviews")
-    public ResponseEntity<ProductReviewDto> createProductReview(@RequestBody ProductReviewDto productReviewDto) {
-        ProductReviewDto savedProductReview = service.createProductReview(productReviewDto);
-        return ResponseEntity.ok(savedProductReview);
+
+//    @PostMapping("/products")
+//    public ProductDto addProduct(@RequestBody ProductDto productDto) {
+//        return service.saveProduct(productDto);
+//    }
+    @PostMapping("/products/bulk")
+    public List<ProductDto> addProducts(@RequestBody List<ProductDto> productDtos) {
+        return service.saveProducts(productDtos);
+    }
+
+
+    @DeleteMapping("/products/{id}")
+    public void deleteProduct(@PathVariable Long id) {
+        service.deleteProduct(id);
+    }
+
+    //FAVORITE API CALLS
+    @PostMapping("/favorites/add")
+    public ResponseEntity<FavoriteDto> addToFavorites(@RequestParam Long userId, @RequestParam Long productId) {
+        FavoriteDto favorite = service.addToFavorites(userId, productId);
+        return ResponseEntity.ok(favorite);
+    }
+
+    @DeleteMapping("/favorites/remove")
+    public ResponseEntity<String> removeFromFavorites(@RequestParam Long userId, @RequestParam Long productId) {
+        service.removeFromFavorites(userId, productId);
+        return ResponseEntity.ok("Product removed from favorites");
+    }
+
+    @GetMapping("/favorite/users /{userId}")
+    public ResponseEntity<List<FavoriteDto>> getUserFavorites(@PathVariable Long userId) {
+        List<FavoriteDto> favorites = service.getUserFavorites(userId);
+        return ResponseEntity.ok(favorites);
+    }
+
+    //CART API CALLS
+    @PostMapping("/cart/add")
+    public ResponseEntity<CartDto> addToCart(@RequestParam Long userId,
+                                             @RequestParam Long productId,
+                                             @RequestParam int quantity) {
+        CartDto cartItem = service.addToCart(userId, productId, quantity);
+        return ResponseEntity.ok(cartItem);
+    }
+
+    @PutMapping("/cart/update")
+    public ResponseEntity<CartDto> updateCartQuantity(@RequestParam Long userId,
+                                                      @RequestParam Long productId,
+                                                      @RequestParam int quantity) {
+        CartDto updatedCart = service.updateCartQuantity(userId, productId, quantity);
+        return ResponseEntity.ok(updatedCart);
+    }
+
+    @DeleteMapping("/cart/remove")
+    public ResponseEntity<String> removeFromCart(@RequestParam Long userId, @RequestParam Long productId) {
+        service.removeFromCart(userId, productId);
+        return ResponseEntity.ok("Product removed from cart");
+    }
+
+    @GetMapping("/cart/users/{userId}")
+    public ResponseEntity<List<CartDto>> getUserCart(@PathVariable Long userId) {
+        List<CartDto> cartItems = service.getUserCart(userId);
+        return ResponseEntity.ok(cartItems);
     }
 
 }
