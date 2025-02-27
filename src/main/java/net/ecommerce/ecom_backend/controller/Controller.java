@@ -40,7 +40,7 @@ public class Controller {
         return ResponseEntity.ok(service.addAddress(addressDto));
     }
 
-    @GetMapping("/address/user/{userId}")
+    @GetMapping("/address/users/{userId}")
     public ResponseEntity<List<AddressDto>> getUserAddresses(@PathVariable Long userId) {
         return ResponseEntity.ok(service.getUserAddresses(userId));
     }
@@ -61,7 +61,7 @@ public class Controller {
         return ResponseEntity.ok(service.addPaymentInfo(paymentInfoDto));
     }
 
-    @GetMapping("/payments/user/{userId}")
+    @GetMapping("/payments/users/{userId}")
     public ResponseEntity<List<PaymentInfoDto>> getUserPaymentInfos(@PathVariable Long userId) {
         return ResponseEntity.ok(service.getUserPaymentInfos(userId));
     }
@@ -105,9 +105,9 @@ public class Controller {
 
     //FAVORITE API CALLS
     @PostMapping("/favorites/add")
-    public ResponseEntity<FavoriteDto> addToFavorites(@RequestParam Long userId, @RequestParam Long productId) {
-        FavoriteDto favorite = service.addToFavorites(userId, productId);
-        return ResponseEntity.ok(favorite);
+    public ResponseEntity<String> addToFavorites(@RequestParam Long userId, @RequestParam Long productId) {
+        String response = service.addToFavorites(userId, productId);
+        return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/favorites/remove")
@@ -116,7 +116,7 @@ public class Controller {
         return ResponseEntity.ok("Product removed from favorites");
     }
 
-    @GetMapping("/favorite/users /{userId}")
+    @GetMapping("/favorites/users/{userId}")
     public ResponseEntity<List<FavoriteDto>> getUserFavorites(@PathVariable Long userId) {
         List<FavoriteDto> favorites = service.getUserFavorites(userId);
         return ResponseEntity.ok(favorites);
@@ -124,11 +124,13 @@ public class Controller {
 
     //CART API CALLS
     @PostMapping("/cart/add")
-    public ResponseEntity<CartDto> addToCart(@RequestParam Long userId,
-                                             @RequestParam Long productId,
-                                             @RequestParam int quantity) {
-        CartDto cartItem = service.addToCart(userId, productId, quantity);
-        return ResponseEntity.ok(cartItem);
+    public ResponseEntity<String> addToCart(
+            @RequestParam Long userId,
+            @RequestParam Long productId,
+            @RequestParam int quantity) {
+
+        String response = service.addToCart(userId, productId, quantity);
+        return ResponseEntity.ok(response);
     }
 
     @PutMapping("/cart/update")
