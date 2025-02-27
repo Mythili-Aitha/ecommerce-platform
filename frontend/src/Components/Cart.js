@@ -5,6 +5,7 @@ import {
   Card,
   IconButton,
   Typography,
+  Checkbox,
 } from "@mui/material";
 import React from "react";
 import CloseIcon from "@mui/icons-material/Close";
@@ -16,7 +17,17 @@ import { Actions } from "./Actions";
 
 export default function Cart() {
   const navigate = useNavigate();
-  const { cart, handleUpdateCartQuantity, handleRemoveFromCart } = Actions();
+  const {
+    cart,
+    totalPrice,
+    handleUpdateCartQuantity,
+    handleRemoveFromCart,
+    toggleSelectItem,
+  } = Actions();
+  if (!Array.isArray(cart)) {
+    console.error("Cart data is not an array:", cart);
+    return <p>Loading cart...</p>;
+  }
   return (
     <>
       <Card
@@ -68,7 +79,11 @@ export default function Cart() {
               justifyContent: "space-between",
             }}
           >
-            <Avatar src={item.productImage} />
+            <Checkbox
+              checked={item.selected || false}
+              onChange={() => toggleSelectItem(item.productId)}
+            />
+            <Avatar sx={{ width: 60, height: 60 }} src={item.productImage} />
             <Box>
               <Typography>{item.productName}</Typography>
               <Typography>${item.productPrice}</Typography>
@@ -85,6 +100,7 @@ export default function Cart() {
                   onClick={() =>
                     handleUpdateCartQuantity(item.productId, item.quantity - 1)
                   }
+                  disabled={item.quantity <= 1}
                 >
                   <Remove />
                 </IconButton>
@@ -104,6 +120,7 @@ export default function Cart() {
           </Card>
         ))
       )}
+      <h3>Total Price: ${totalPrice.toFixed(2)}</h3>
     </>
   );
 }

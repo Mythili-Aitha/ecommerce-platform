@@ -11,7 +11,7 @@ import {
   Badge,
 } from "@mui/material";
 import Tab from "@mui/material/Tab";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import MenuIcon from "@mui/icons-material/Menu";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import SearchIcon from "@mui/icons-material/Search";
@@ -20,30 +20,20 @@ import LoginIcon from "@mui/icons-material/Login";
 import PersonIcon from "@mui/icons-material/Person";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
+import { Actions } from "./Actions";
 import { useNavigate } from "react-router-dom";
 
 export default function Header() {
-  const [value, setValue] = useState("1");
-  const [open, setOpen] = useState(false);
-  const [user, setUser] = useState(null);
   const navigate = useNavigate();
-  const handleChange = (e, newValue) => {
-    setValue(newValue);
-  };
-  const toggleDrawer = (newOpen) => () => {
-    setOpen(newOpen);
-  };
-  useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
-  }, []);
-  const handleSignOut = () => {
-    localStorage.removeItem("user");
-    setUser(null);
-    navigate("/auth");
-  };
+  const {
+    value,
+    open,
+    user,
+    totalQuantity,
+    handleSignOut,
+    handleChange,
+    toggleDrawer,
+  } = Actions();
   const items = (
     <Box
       sx={{
@@ -172,7 +162,7 @@ export default function Header() {
               sx={{ flexDirection: "column" }}
               onClick={() => navigate("/cart")}
             >
-              <Badge badgeContent={1} color="primary">
+              <Badge badgeContent={totalQuantity} color="primary">
                 <ShoppingCartIcon color="action" />
               </Badge>
               <Typography variant="caption">Cart</Typography>

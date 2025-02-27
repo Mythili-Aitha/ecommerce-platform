@@ -13,18 +13,27 @@ import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import { useNavigate } from "react-router-dom";
 import { getUserAddresses, getUserPaymentInfo } from "../Components/Api.js";
+import { Actions } from "./Actions.js";
 
 export default function OrderConfo() {
   const navigate = useNavigate();
+  const { totalPrice, cart } = Actions();
+  const selectedItems = cart.filter((item) => item.selected);
   const [address, setAddresses] = useState([]);
   const [selectedAddress, setSelectedAddress] = useState(null);
   const [paymentMethods, setPaymentMethods] = useState([]);
   const [selectedPayment, setSelectedPayment] = useState(
     paymentMethods.length > 0 ? paymentMethods[0].cardType.toLowerCase() : ""
   );
+  // const subtotal = selectedItems.reduce(
+  //   (acc, item) => acc + item.price * item.quantity,
+  //   0
+  // );
+  const tax = totalPrice * 0.1;
+  const total = totalPrice + tax;
+
   const storedUser = JSON.parse(localStorage.getItem("user"));
   const userId = storedUser?.userId;
-
   useEffect(() => {
     if (userId) {
       fetchUserDetails();
@@ -32,8 +41,7 @@ export default function OrderConfo() {
       console.error("No user ID found. Redirecting to login.");
       navigate("/login");
     }
-    console.log("Logged-in User ID:", userId);
-  }, [userId]);
+  }, []);
 
   const fetchUserDetails = async () => {
     try {
@@ -190,9 +198,27 @@ export default function OrderConfo() {
             padding: 1,
           }}
         >
-          <p>
+          <h3>
             <strong>Summary:</strong>
-          </p>
+          </h3>
+          <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+            <span>Subtotal:</span>
+            <span>${totalPrice.toFixed(2)}</span>
+          </Box>
+          <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+            <span>Tax (10%):</span>
+            <span>${tax.toFixed(2)}</span>
+          </Box>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              fontWeight: "bold",
+            }}
+          >
+            <span>Total:</span>
+            <span>${total.toFixed(2)}</span>
+          </Box>
         </Box>
         <Box>
           <Button
@@ -205,7 +231,14 @@ export default function OrderConfo() {
               } else if (!selectedPayment) {
                 alert("Please select a payment method.");
               } else {
-                navigate("/place-order"); // Redirect to final order placement
+                navigate("/place-order", {
+                  state: {
+                    selectedItems,
+                    totalPrice,
+                    selectedAddress,
+                    selectedPayment,
+                  },
+                });
               }
             }}
           >

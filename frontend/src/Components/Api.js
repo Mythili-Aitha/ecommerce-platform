@@ -2,7 +2,7 @@ import axios from "axios";
 
 const API_BASE_URL = "http://localhost:8080/api";
 
-const getUserId = () => {
+export const getUserId = () => {
   const storedUser = localStorage.getItem("user");
   return storedUser ? JSON.parse(storedUser).userId : null;
 };
@@ -16,7 +16,7 @@ export const getUserAddresses = async () => {
   try {
     const userId = getUserId();
     if (!userId) throw new Error("User ID is required");
-    return await axios.get(`${API_BASE_URL}/address/user/${userId}`);
+    return await axios.get(`${API_BASE_URL}/address/users/${userId}`);
   } catch (error) {
     console.error("Error fetching addresses:", error);
     throw error;
@@ -38,7 +38,7 @@ export const addPaymentInfo = async (paymentData) => {
 
 export const getUserPaymentInfo = async () => {
   const userId = getUserId();
-  return await axios.get(`${API_BASE_URL}/payments/user/${userId}`);
+  return await axios.get(`${API_BASE_URL}/payments/users/${userId}`);
 };
 
 export const updatePaymentInfo = async (id, paymentData) => {
@@ -76,6 +76,7 @@ export const addToFavorites = async (productId) => {
 
 export const removeFromFavorites = async (productId) => {
   const userId = getUserId();
+  console.log("remove from favorites", userId, productId);
   return await axios.delete(`${API_BASE_URL}/favorites/remove`, {
     params: { userId, productId },
   });
@@ -86,7 +87,7 @@ export const getUserFavorites = async () => {
     const userId = getUserId();
     if (!userId) throw new Error("User ID is required");
     const response = await axios.get(
-      `${API_BASE_URL}/favorites/user/${userId}`
+      `${API_BASE_URL}/favorites/users/${userId}`
     );
     return response.data;
   } catch (error) {
@@ -111,21 +112,32 @@ export const addToCart = async (productId, quantity = 1) => {
 };
 
 export const updateCartQuantity = async (productId, quantity) => {
-  const userId = getUserId();
-  return await axios.put(`${API_BASE_URL}/cart/update`, null, {
-    params: { userId, productId, quantity },
-  });
+  try {
+    const userId = getUserId();
+    const response = await axios.put(`${API_BASE_URL}/cart/update`, null, {
+      params: { userId, productId, quantity },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error updating cart quantity:", error);
+    throw error;
+  }
 };
 
 export const removeFromCart = async (productId) => {
   const userId = getUserId();
-  console.log("pid", productId);
   return await axios.delete(`${API_BASE_URL}/cart/remove`, {
     params: { userId, productId },
   });
 };
 
 export const getUserCart = async () => {
-  const userId = getUserId();
-  return await axios.get(`${API_BASE_URL}/cart/user/${userId}`);
+  try {
+    const userId = getUserId();
+    const response = await axios.get(`${API_BASE_URL}/cart/users/${userId}`);
+    return response.data || [];
+  } catch (error) {
+    console.error("Error fetching cart:", error);
+    return [];
+  }
 };
