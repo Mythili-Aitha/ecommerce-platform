@@ -159,9 +159,9 @@ public class EService {
 
     //Favorite Methods
     @Transactional
-    public FavoriteDto addToFavorites(Long userId, Long productId) {
+    public String addToFavorites(Long userId, Long productId) {
         if (favoriteRepo.existsByUserUserIdAndProductId(userId, productId)) {
-            throw new RuntimeException("Product is already in favorites");
+            return "Product is already in favorites";
         }
 
         User user = userRepo.findById(userId)
@@ -170,18 +170,20 @@ public class EService {
                 .orElseThrow(() -> new RuntimeException("Product not found"));
 
         Favorite favorite = new Favorite(user, product);
-        favorite = favoriteRepo.save(favorite);
+        favoriteRepo.save(favorite);
 
-        return mapper.toFavoriteDto(favorite);
+        return "Added to favorites successfully!";
     }
 
     @Transactional
     public void removeFromFavorites(Long userId, Long productId) {
-        if (!favoriteRepo.existsByUserUserIdAndProductId(userId, productId)) {
-            throw new RuntimeException("Product is not in favorites");
+        Optional<Favorite> favorite = favoriteRepo.findByUserUserIdAndProductId(userId, productId);
+        if (favorite.isPresent()) {
+            favoriteRepo.delete(favorite.get());
+            System.out.println("Product successfully removed from favorites!");
+        } else {
+            System.out.println("Product not found in favorites!");
         }
-
-        favoriteRepo.deleteByUserUserIdAndProductId(userId, productId);
     }
 
     public List<FavoriteDto> getUserFavorites(Long userId) {
@@ -191,7 +193,7 @@ public class EService {
 
     //Cart Methods
     @Transactional
-    public CartDto addToCart(Long userId, Long productId, int quantity) {
+    public String addToCart(Long userId, Long productId, int quantity) {
         User user = userRepo.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
         Product product = productRepo.findById(productId)
@@ -202,12 +204,13 @@ public class EService {
 
         if (cartItem == null) {
             cartItem = new Cart(user, product, quantity);
+            cartRepo.save(cartItem);
+            return "Added to cart successfully!";
         } else {
             cartItem.setQuantity(cartItem.getQuantity() + quantity);
+            cartRepo.save(cartItem);
+            return "Quantity updated in cart";
         }
-
-        cartItem = cartRepo.save(cartItem);
-        return mapper.toCartDto(cartItem);
     }
 
     @Transactional
@@ -216,18 +219,20 @@ public class EService {
                 .orElseThrow(() -> new RuntimeException("Cart item not found"));
 
         cartItem.setQuantity(quantity);
-        cartRepo.save(cartItem);
+        cartItem = cartRepo.save(cartItem);
 
         return mapper.toCartDto(cartItem);
     }
 
     @Transactional
     public void removeFromCart(Long userId, Long productId) {
-        if (!cartRepo.existsByUserUserIdAndProductId(userId, productId)) {
-            throw new RuntimeException("Product is not in cart");
+        Optional<Cart> cartItem = cartRepo.findByUserUserIdAndProductId(userId, productId);
+        if (cartItem.isPresent()) {
+            cartRepo.delete(cartItem.get());
+            System.out.println("Product successfully removed from cart!");
+        } else {
+            System.out.println("Product not found in cart!");
         }
-
-        cartRepo.deleteByUserUserIdAndProductId(userId, productId);
     }
 
     public List<CartDto> getUserCart(Long userId) {
