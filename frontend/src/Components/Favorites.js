@@ -16,7 +16,12 @@ import { Actions } from "./Actions";
 
 export default function Favorites() {
   const navigate = useNavigate();
-  const { favorites, handleAddToCart, handleRemoveFromFavorites } = Actions();
+  const {
+    favorites,
+    totalQuantity,
+    handleRemoveFromFavorites,
+    handleMoveToCart,
+  } = Actions();
   return (
     <>
       <Card
@@ -41,7 +46,7 @@ export default function Favorites() {
             sx={{ flexDirection: "column" }}
             onClick={() => navigate("/cart")}
           >
-            <Badge badgeContent={1} color="primary">
+            <Badge badgeContent={totalQuantity} color="primary">
               <ShoppingCartIcon color="action" />
             </Badge>
             <Typography variant="caption">Cart</Typography>
@@ -63,12 +68,12 @@ export default function Favorites() {
               justifyContent: "space-between",
             }}
           >
-            <Avatar src={item.productImage} />
+            <Avatar sx={{ width: 60, height: 60 }} src={item.productImage} />
             <Box>
               <Typography>{item.productName}</Typography>
             </Box>
             <Box>
-              <IconButton onClick={() => handleAddToCart(item.productId)}>
+              <IconButton onClick={() => handleMoveToCart(item.productId)}>
                 <ShoppingCartCheckoutIcon />
               </IconButton>
               <Button onClick={() => handleRemoveFromFavorites(item.productId)}>
