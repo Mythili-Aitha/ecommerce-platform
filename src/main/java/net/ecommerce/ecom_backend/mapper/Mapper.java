@@ -4,6 +4,7 @@ import net.ecommerce.ecom_backend.dto.*;
 import net.ecommerce.ecom_backend.entity.*;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -241,6 +242,29 @@ public class Mapper {
         cart.setQuantity(cartDto.getQuantity());
         return cart;
 
+    }
+
+    public static OrderResponseDto toOrderResponseDto(Order order) {
+        if (order == null) {
+            return null;
+        }
+        OrderResponseDto dto = new OrderResponseDto();
+        dto.setOrderId(order.getOrderId());
+        dto.setTotalPrice(order.getTotalPrice());
+        dto.setOrderStatus(order.getOrderStatus());
+        dto.setOrderDate(order.getOrderDate());
+
+        List<OrderItemResponseDto> items = order.getOrderDetails().stream().map(Mapper::toOrderItemResponseDto).collect(Collectors.toList());
+        dto.setItems(items);
+        return dto;
+    }
+
+    private static OrderItemResponseDto toOrderItemResponseDto(OrderDetails orderDetails) {
+        OrderItemResponseDto dto = new OrderItemResponseDto();
+        dto.setProductName(orderDetails.getProduct().getTitle());
+        dto.setQuantity(orderDetails.getQuantity());
+        dto.setPrice(orderDetails.getPrice());
+        return dto;
     }
 
 }

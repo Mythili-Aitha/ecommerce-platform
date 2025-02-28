@@ -30,6 +30,10 @@ public class EService {
     private FavoriteRepo favoriteRepo;
     @Autowired
     private CartRepo cartRepo;
+    @Autowired
+    private OrderRepo orderRepo;
+    @Autowired
+    private OrderDetailsRepo orderDetailsRepo;
 
 
     //User Methods
@@ -240,4 +244,50 @@ public class EService {
         return cartItems.stream().map(mapper::toCartDto).collect(Collectors.toList());
     }
 
+    //Order Methods
+    @Transactional
+    public OrderResponseDto placeOrder(OrderRequestDto orderRequestDto) {
+        User user = userRepo.findById(orderRequestDto.getUserId())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        Order order = new Order();
+        order.setUser(user);
+        order.setTotalPrice(orderRequestDto.getTotalPrice());
+        order.setOrderDate(LocalDateTime.now());
+        order.setOrderStatus("Placed");
+        final Order savedOrder = orderRepo.save(order);
+
+        List<OrderDetails> orderDetailsList = orderRequestDto.getItems().stream().map(itemDTO -> {
+            Product product = productRepo.findById(itemDTO.getProductId())
+                    .orElseThrow(() -> new RuntimeException("Product not found"));
+
+            if (product.getStock() < itemDTO.getQuantity()) {
+                throw new RuntimeException("Insufficient stock for product: " + product.getTitle());
+            }
+            product.setStock(product.getStock() - itemDTO.getQuantity());
+            productRepo.save(product);
+
+            OrderDetails orderDetails = new OrderDetails();
+            orderDetails.setOrder(savedOrder);
+            orderDetails.setProduct(product);
+            orderDetails.setQuantity(itemDTO.getQuantity());
+            orderDetails.setPrice(itemDTO.getPrice());
+
+            return orderDetails;
+        }).collect(Collectors.toList());
+
+        order.setOrderDetails(orderDetailsList);
+        orderRepo.save(order);
+        return Mapper.toOrderResponseDto(order);
+    }
+    public OrderResponseDto getOrderById(Long orderId) {
+        Order order = orderRepo.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("Order not found"));
+        return Mapper.toOrderResponseDto(order);
+    }
+
+    public List<OrderResponseDto> getOrdersByUser(Long userId) {
+        List<Order> orders = orderRepo.findByUserUserId(userId);
+        return orders.stream().map(Mapper::toOrderResponseDto).collect(Collectors.toList());
+    }
 }

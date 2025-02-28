@@ -153,4 +153,23 @@ public class Controller {
         return ResponseEntity.ok(cartItems);
     }
 
+    //ORDER API CALLS
+    @PostMapping("/orders/place")
+    public ResponseEntity<OrderResponseDto> placeOrder(@RequestBody OrderRequestDto orderRequestDTO) {
+        OrderResponseDto orderResponse = service.placeOrder(orderRequestDTO);
+        return ResponseEntity.ok(orderResponse);
+    }
+
+    @GetMapping("/orders/{orderId}")
+    public ResponseEntity<OrderResponseDto> getOrderDetails(@PathVariable Long orderId) {
+        OrderResponseDto orderResponse = service.getOrderById(orderId);
+        return ResponseEntity.ok(orderResponse);
+    }
+
+    @GetMapping("/orders/users/{userId}")
+    public ResponseEntity<List<OrderResponseDto>> getUserOrders(@PathVariable Long userId) {
+        List<OrderResponseDto> userOrders = service.getOrdersByUser(userId);
+        return ResponseEntity.ok(userOrders);
+    }
+
 }
