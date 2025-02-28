@@ -13,7 +13,7 @@ const AddressForm = () => {
     street: "",
     city: "",
     state: "",
-    zipCode: "",
+    zip: "",
     country: "",
     addressType: "HOME",
   });
@@ -86,9 +86,7 @@ const AddressForm = () => {
           <TextField
             type="text"
             placeholder="Zip Code"
-            onChange={(e) =>
-              setFormData({ ...formData, zipCode: e.target.value })
-            }
+            onChange={(e) => setFormData({ ...formData, zip: e.target.value })}
             required
           />
           <TextField
@@ -109,8 +107,8 @@ const AddressForm = () => {
       <ul>
         {addresses.map((address) => (
           <li key={address.id}>
-            {address.street}, {address.city}, {address.state} -{" "}
-            {address.zipCode} ({address.addressType})
+            {address.street}, {address.city}, {address.state} - {address.zip} (
+            {address.addressType})
             <Button onClick={() => handleDelete(address.id)}>Delete</Button>
           </li>
         ))}

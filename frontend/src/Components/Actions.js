@@ -8,6 +8,9 @@ import {
   addToCart,
   updateCartQuantity,
   removeFromCart,
+  placeOrder,
+  getUserOrders,
+  getOrderDetails,
 } from "../Components/Api.js";
 import { useNavigate } from "react-router-dom";
 
@@ -20,6 +23,7 @@ export const Actions = () => {
   const navigate = useNavigate();
   const [value, setValue] = useState("1");
   const [open, setOpen] = useState(false);
+  const [orders, setOrders] = useState([]);
   const handleChange = (e, newValue) => {
     setValue(newValue);
   };
@@ -49,16 +53,23 @@ export const Actions = () => {
   useEffect(() => {
     getUserCart()
       .then((data) => {
-        setCart((prevCart) =>
-          data.map((item) => {
-            const existingItem = prevCart.find(
-              (cartItem) => cartItem.productId === item.productId
-            );
-            return { ...item, selected: existingItem?.selected || false };
-          })
-        );
+        const storedSelectedItems =
+          JSON.parse(localStorage.getItem("selectedItems")) || [];
+        const updatedCart = data.map((item) => ({
+          ...item,
+          selected: storedSelectedItems.some(
+            (selected) => selected.productId === item.productId
+          ),
+        }));
+        setCart(updatedCart);
       })
       .catch((error) => console.error("Error fetching cart:", error));
+  }, []);
+
+  useEffect(() => {
+    getUserOrders()
+      .then((data) => setOrders(data))
+      .catch((error) => console.error("Error fetching orders:", error));
   }, []);
 
   // ✅ Add to cart
@@ -97,17 +108,22 @@ export const Actions = () => {
   };
 
   const toggleSelectItem = (productId) => {
-    setCart((prevCart) =>
-      prevCart.map((item) =>
+    setCart((prevCart) => {
+      const updatedCart = prevCart.map((item) =>
         item.productId === productId
           ? { ...item, selected: !item.selected }
           : item
-      )
-    );
+      );
+      const selectedItems = updatedCart.filter((item) => item.selected);
+      localStorage.setItem("selectedItems", JSON.stringify(selectedItems));
+      return updatedCart;
+    });
   };
-  const totalPrice = cart.reduce((total, item) => {
-    return item.selected ? total + item.productPrice * item.quantity : total;
-  }, 0);
+  const selectedItems = cart.filter((item) => item.selected);
+  const totalPrice = selectedItems.reduce(
+    (total, item) => total + item.productPrice * item.quantity,
+    0
+  );
 
   const totalQuantity = cart.reduce((total, item) => total + item.quantity, 0);
 
@@ -175,6 +191,40 @@ export const Actions = () => {
     }
   };
 
+  const handlePlaceOrder = async (
+    selectedItems,
+    totalPrice,
+    selectedAddress,
+    selectedPayment
+  ) => {
+    try {
+      const userId = getUserId();
+      if (!userId) {
+        alert("User not logged in!");
+        return;
+      }
+
+      const orderData = {
+        userId,
+        totalPrice,
+        items: selectedItems.map((item) => ({
+          productId: item.productId,
+          quantity: item.quantity,
+          price: item.productPrice,
+        })),
+      };
+
+      const response = await placeOrder(orderData);
+      console.log("Order Placed:", response.data);
+      navigate("/orderconfo", {
+        state: { orderId: response.data.orderId },
+      });
+    } catch (error) {
+      console.error("Error placing order:", error);
+      alert("Failed to place order!");
+    }
+  };
+
   return {
     user,
     open,
@@ -183,6 +233,8 @@ export const Actions = () => {
     favorites,
     totalQuantity,
     totalPrice,
+    selectedItems,
+    orders,
     handleChange,
     toggleDrawer,
     toggleSelectItem,
@@ -193,5 +245,6 @@ export const Actions = () => {
     handleAddToFavorites,
     handleRemoveFromFavorites,
     handleMoveToCart,
+    handlePlaceOrder,
   };
 };

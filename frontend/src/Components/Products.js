@@ -9,6 +9,7 @@ import {
   Typography,
   Grid,
   CardMedia,
+  Badge,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -21,6 +22,7 @@ import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import FilterDrawer from "./FilterDrawer";
 import ScrollTopButton from "./ScrollTopButton";
 import { getProducts } from "../Components/Api.js";
+import { Actions } from "./Actions.js";
 
 export default function Products() {
   const navigate = useNavigate();
@@ -28,6 +30,7 @@ export default function Products() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const { totalQuantity } = Actions();
 
   useEffect(() => {
     async function fetchProducts() {
@@ -109,7 +112,9 @@ export default function Products() {
             sx={{ flexDirection: "column" }}
             onClick={() => navigate("/cart")}
           >
-            <ShoppingCartIcon />
+            <Badge badgeContent={totalQuantity} color="primary">
+              <ShoppingCartIcon color="action" />
+            </Badge>
             <Typography variant="caption">Cart</Typography>
           </IconButton>
         </Box>

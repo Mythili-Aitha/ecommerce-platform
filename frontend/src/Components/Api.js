@@ -141,3 +141,33 @@ export const getUserCart = async () => {
     return [];
   }
 };
+
+// ✅ Order APIs
+export const placeOrder = async (orderData) => {
+  try {
+    return await axios.post(`${API_BASE_URL}/orders/place`, orderData);
+  } catch (error) {
+    console.error("Error placing order:", error);
+    throw error;
+  }
+};
+
+export const getUserOrders = async () => {
+  try {
+    const userId = getUserId();
+    if (!userId) throw new Error("User ID is required");
+    return await axios.get(`${API_BASE_URL}/orders/users/${userId}`);
+  } catch (error) {
+    console.error("Error fetching user orders:", error);
+    throw error;
+  }
+};
+
+export const getOrderDetails = async (orderId) => {
+  try {
+    return await axios.get(`${API_BASE_URL}/orders/${orderId}`);
+  } catch (error) {
+    console.error("Error fetching order details:", error);
+    throw error;
+  }
+};

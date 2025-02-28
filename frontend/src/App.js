@@ -12,6 +12,9 @@ import Home from "./Components/Home.js";
 import AddressForm from "./Components/AddressForm.js";
 import PaymentForm from "./Components/PaymentForm.js";
 import ProductDetails from "./Components/ProductDetails.js";
+import OrderConfirmation from "./Components/OrderConfirmation.js";
+import Orders from "./Components/Orders.js";
+import OrderDetails from "./Components/OrderDetails.js";
 
 function App() {
   const location = useLocation();
@@ -38,6 +41,9 @@ function App() {
               <Route path="/oconfo" element={<OrderConfo />} />
               <Route path="/address" element={<AddressForm />} />
               <Route path="/payments" element={<PaymentForm />} />
+              <Route path="/orderconfo" element={<OrderConfirmation />} />
+              <Route path="/orders" element={<Orders />} />
+              <Route path="/orders/:orderId" element={<OrderDetails />} />
             </Routes>
           </div>
         </CSSTransition>
