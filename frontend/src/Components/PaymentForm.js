@@ -9,8 +9,10 @@ import { Box, Button, TextField } from "@mui/material";
 const PaymentForm = () => {
   const [paymentMethods, setPaymentMethods] = useState([]);
   const [formData, setFormData] = useState({
+    cardHolderName: "",
     cardNumber: "",
     expiryDate: "",
+    cvv: "",
     cardType: "CREDIT",
   });
   const storedUser = JSON.parse(localStorage.getItem("user"));
@@ -51,12 +53,20 @@ const PaymentForm = () => {
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", padding: 3, gap: 2 }}>
-      <h2>Manage Payment Methods</h2>
+      <h2>Manage Payment Methods </h2>
 
       <form onSubmit={handleSubmit}>
         <Box
           sx={{ display: "flex", flexDirection: "column", padding: 1, gap: 3 }}
         >
+          <TextField
+            type="text"
+            placeholder="CardHolder Name"
+            onChange={(e) =>
+              setFormData({ ...formData, cardHolderName: e.target.value })
+            }
+            required
+          />
           <TextField
             type="text"
             placeholder="Card Number"
@@ -73,6 +83,13 @@ const PaymentForm = () => {
             }
             required
           />
+          <TextField
+            type="text"
+            placeholder="Cvv"
+            onChange={(e) => setFormData({ ...formData, cvv: e.target.value })}
+            required
+          />
+
           <Button variant="contained" type="submit">
             Add Payment
           </Button>

@@ -17,21 +17,16 @@ import { Actions } from "./Actions.js";
 
 export default function OrderConfo() {
   const navigate = useNavigate();
-  const { totalPrice, cart } = Actions();
-  const selectedItems = cart.filter((item) => item.selected);
+  const { selectedItems, totalPrice, handlePlaceOrder } = Actions();
+  const tax = totalPrice * 0.1;
+  const total = totalPrice + tax;
+
   const [address, setAddresses] = useState([]);
   const [selectedAddress, setSelectedAddress] = useState(null);
   const [paymentMethods, setPaymentMethods] = useState([]);
   const [selectedPayment, setSelectedPayment] = useState(
     paymentMethods.length > 0 ? paymentMethods[0].cardType.toLowerCase() : ""
   );
-  // const subtotal = selectedItems.reduce(
-  //   (acc, item) => acc + item.price * item.quantity,
-  //   0
-  // );
-  const tax = totalPrice * 0.1;
-  const total = totalPrice + tax;
-
   const storedUser = JSON.parse(localStorage.getItem("user"));
   const userId = storedUser?.userId;
   useEffect(() => {
@@ -86,12 +81,12 @@ export default function OrderConfo() {
             {selectedAddress ? (
               <>
                 <p>
-                  <strong>Name:</strong> {selectedAddress.name}
+                  <strong>Name:</strong> {storedUser.name}
                 </p>
                 <p>
                   <strong>Address:</strong> {selectedAddress.street},{" "}
                   {selectedAddress.city}, {selectedAddress.state} -{" "}
-                  {selectedAddress.zipCode}
+                  {selectedAddress.zip}
                 </p>
               </>
             ) : (
@@ -143,9 +138,22 @@ export default function OrderConfo() {
           }}
         >
           <FormControl>
-            <FormLabel id="demo-radio-buttons-group-label">
-              Payment Method
-            </FormLabel>
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "row",
+                justifyContent: "space-between",
+              }}
+            >
+              <FormLabel id="demo-radio-buttons-group-label">
+                Payment Method{" "}
+              </FormLabel>
+              <ArrowForwardIosIcon
+                fontSize="small"
+                onClick={() => navigate("/payments")}
+              />
+            </Box>
+
             <RadioGroup
               aria-labelledby="demo-radio-buttons-group-label"
               name="payment-method"
@@ -201,24 +209,30 @@ export default function OrderConfo() {
           <h3>
             <strong>Summary:</strong>
           </h3>
-          <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-            <span>Subtotal:</span>
-            <span>${totalPrice.toFixed(2)}</span>
-          </Box>
-          <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-            <span>Tax (10%):</span>
-            <span>${tax.toFixed(2)}</span>
-          </Box>
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "space-between",
-              fontWeight: "bold",
-            }}
-          >
-            <span>Total:</span>
-            <span>${total.toFixed(2)}</span>
-          </Box>
+          {selectedItems.length > 0 ? (
+            <>
+              <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+                <span>Subtotal:</span>
+                <span>${totalPrice.toFixed(2)}</span>
+              </Box>
+              <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+                <span>Tax (10%):</span>
+                <span>${tax.toFixed(2)}</span>
+              </Box>
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  fontWeight: "bold",
+                }}
+              >
+                <span>Total:</span>
+                <span>${total.toFixed(2)}</span>
+              </Box>
+            </>
+          ) : (
+            <p>No items selected.</p>
+          )}
         </Box>
         <Box>
           <Button
@@ -228,17 +242,12 @@ export default function OrderConfo() {
             onClick={() => {
               if (!selectedAddress) {
                 alert("Please select an address.");
+              } else if (selectedItems.length === 0) {
+                alert("Please select items to checkout");
               } else if (!selectedPayment) {
                 alert("Please select a payment method.");
               } else {
-                navigate("/place-order", {
-                  state: {
-                    selectedItems,
-                    totalPrice,
-                    selectedAddress,
-                    selectedPayment,
-                  },
-                });
+                handlePlaceOrder(selectedItems, totalPrice);
               }
             }}
           >

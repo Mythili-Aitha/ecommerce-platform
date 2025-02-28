@@ -31,7 +31,7 @@ export default function ProductDetails() {
   const sizes = ["XS", "S", "M", "L", "XL", "XXL"];
   const [selectedSize, setSelectedSize] = useState(sizes[0]);
   const [anchorEl, setAnchorEl] = useState(null);
-  const { handleAddToFavorites, handleAddToCart } = Actions();
+  const { totalQuantity, handleAddToFavorites, handleAddToCart } = Actions();
   const open = anchorEl;
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -84,7 +84,7 @@ export default function ProductDetails() {
             sx={{ flexDirection: "column" }}
             onClick={() => navigate("/cart")}
           >
-            <Badge badgeContent={1} color="primary">
+            <Badge badgeContent={totalQuantity} color="primary">
               <ShoppingCartIcon color="action" />
             </Badge>
             <Typography variant="caption">Cart</Typography>

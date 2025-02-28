@@ -50,7 +50,7 @@ export default function Header() {
       <Button onClick={() => navigate("/products")}>Products</Button>
       <Button>Catergories</Button>
       <Divider />
-      <Button>Orders</Button>
+      <Button onClick={() => navigate("/orders")}>Orders</Button>
       <Button>History</Button>
       <Button>Settings</Button>
       <Box
