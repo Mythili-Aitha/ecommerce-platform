@@ -1,6 +1,7 @@
 package net.ecommerce.ecom_backend.controller;
 
 import net.ecommerce.ecom_backend.dto.*;
+import net.ecommerce.ecom_backend.entity.User;
 import net.ecommerce.ecom_backend.repository.UserRepo;
 import net.ecommerce.ecom_backend.service.EService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,7 +9,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api")
@@ -32,6 +35,20 @@ public class Controller {
     public ResponseEntity<UserDto> loginUser(@RequestBody LoginDto loginDto) {
         UserDto userDto = service.LoginUser(loginDto);
         return userDto != null ? ResponseEntity.ok(userDto) : ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
+    @PutMapping("/users/{userId}/profile")
+    public ResponseEntity<User> updateProfile(
+            @PathVariable Long userId,
+            @RequestBody UserUpdateDto userUpdateDto) {
+        User updatedUser = service.updateUserProfile(userId, userUpdateDto);
+        return ResponseEntity.ok(updatedUser);
+    }
+    @PutMapping("/users/{userId}/password")
+    public ResponseEntity<String> updatePassword(
+            @PathVariable Long userId,
+            @RequestBody PasswordUpdateDto passwordUpdateDto) {
+        String message = service.updateUserPassword(userId, passwordUpdateDto);
+        return ResponseEntity.ok(message);
     }
 
     //ADDRESS API CALLS
