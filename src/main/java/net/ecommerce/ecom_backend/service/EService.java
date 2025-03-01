@@ -1,11 +1,13 @@
 package net.ecommerce.ecom_backend.service;
 
+import lombok.RequiredArgsConstructor;
 import net.ecommerce.ecom_backend.dto.*;
 import net.ecommerce.ecom_backend.entity.*;
 import net.ecommerce.ecom_backend.mapper.Mapper;
 import net.ecommerce.ecom_backend.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -15,6 +17,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @org.springframework.stereotype.Service
+@RequiredArgsConstructor(onConstructor_ = {@Autowired })
 public class EService {
     @Autowired
     private Mapper mapper;
@@ -34,6 +37,7 @@ public class EService {
     private OrderRepo orderRepo;
     @Autowired
     private OrderDetailsRepo orderDetailsRepo;
+    private final PasswordEncoder passwordEncoder;
 
 
     //User Methods
@@ -63,6 +67,35 @@ public class EService {
 
         return null;
     }
+
+    @Transactional
+    public User updateUserProfile(Long userId, UserUpdateDto userUpdateDto) {
+        User user = userRepo.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        user.setName(userUpdateDto.getName());
+        user.setEmail(userUpdateDto.getEmail());
+        user.setPhoneNumber(userUpdateDto.getPhoneNumber());
+
+        return userRepo.save(user);
+    }
+    public String updateUserPassword(Long userId, PasswordUpdateDto passwordUpdateDto) {
+        User user = userRepo.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        // Check if old password matches
+        if (!passwordEncoder.matches(passwordUpdateDto.getOldPassword(), user.getPassword())) {
+            throw new RuntimeException("Incorrect old password");
+        }
+
+        // Encode and update new password
+        user.setPassword(passwordEncoder.encode(passwordUpdateDto.getNewPassword()));
+        userRepo.save(user);
+
+        return "Password updated successfully";
+    }
+
+
 
 //    Address Methods
     public AddressDto addAddress(AddressDto addressDto) {
