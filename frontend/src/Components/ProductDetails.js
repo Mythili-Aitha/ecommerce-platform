@@ -137,7 +137,6 @@ export default function ProductDetails() {
         {product.description}
       </Typography>
       <Typography variant="h6">Price: ${product.price}</Typography>
-      <Typography variant="h6">Stock: {product.stock}</Typography>
       <Typography variant="body2" color="gray">
         {product.availabilityStatus}
       </Typography>

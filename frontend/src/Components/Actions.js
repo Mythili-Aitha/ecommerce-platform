@@ -10,9 +10,14 @@ import {
   removeFromCart,
   placeOrder,
   getUserOrders,
-  getOrderDetails,
+  getUserDetails,
+  updateUserProfile,
+  getUserAddresses,
+  getUserPaymentInfo,
+  updateUserPassword,
 } from "../Components/Api.js";
 import { useNavigate } from "react-router-dom";
+import { Snackbar } from "@mui/material";
 
 const userId = getUserId();
 
@@ -24,11 +29,58 @@ export const Actions = () => {
   const [value, setValue] = useState("1");
   const [open, setOpen] = useState(false);
   const [orders, setOrders] = useState([]);
+  const [editable, setEditable] = useState(false);
+  const [updatedData, setUpdatedData] = useState({});
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [address, setAddresses] = useState([]);
+  const [selectedAddress, setSelectedAddress] = useState(null);
+  const [paymentMethods, setPaymentMethods] = useState([]);
+  const [selectedPayment, setSelectedPayment] = useState(
+    paymentMethods.length > 0 ? paymentMethods[0].cardType.toLowerCase() : ""
+  );
   const handleChange = (e, newValue) => {
     setValue(newValue);
   };
   const toggleDrawer = (newOpen) => () => {
     setOpen(newOpen);
+  };
+
+  const fetchUserProfile = async () => {
+    try {
+      const userData = await getUserDetails();
+      setUser(userData);
+      setUpdatedData(userData);
+    } catch (error) {
+      console.error("Failed to fetch user profile:", error);
+    }
+  };
+  const handleUpdateProfile = async (profileData) => {
+    try {
+      const updatedUser = await updateUserProfile(profileData);
+      setUser(updatedUser);
+      localStorage.setItem("user", JSON.stringify(updatedUser));
+      setSnackbarMessage("Profile updated successfully!");
+      setSnackbarOpen(true);
+    } catch (error) {
+      setSnackbarMessage("Failed to update profile.");
+      setSnackbarOpen(true);
+    }
+  };
+
+  const handleProfileChange = (e) => {
+    setUpdatedData({ ...updatedData, [e.target.name]: e.target.value });
+  };
+
+  const handleUpdatePassword = async (oldPassword, newPassword) => {
+    try {
+      await updateUserPassword({ oldPassword, newPassword });
+      setSnackbarMessage("Password updated successfully!");
+      setSnackbarOpen(true);
+    } catch (error) {
+      setSnackbarMessage("Failed to update password.");
+      setSnackbarOpen(true);
+    }
   };
 
   //
@@ -76,11 +128,18 @@ export const Actions = () => {
   const handleAddToCart = async (productId) => {
     try {
       const response = await addToCart(productId, 1);
-      console.log(`Product ${productId} added to cart`);
       if (response.data === "Quantity updated in cart") {
-        alert("Quantity updated in cart!");
+        <Snackbar
+          open={open}
+          autoHideDuration={6000}
+          message="Quantity Updated in Cart"
+        />;
       } else {
-        alert("Added to cart!");
+        <Snackbar
+          open={open}
+          autoHideDuration={6000}
+          message="Added to Cart"
+        />;
       }
     } catch (error) {
       if (error.response && error.response.data) {
@@ -145,9 +204,17 @@ export const Actions = () => {
       const response = await addToFavorites(productId);
       console.log(`Product ${productId} added to favorites`);
       if (response.data === "Product is already in favorites") {
-        alert("Product is already in favorites");
+        <Snackbar
+          open={open}
+          autoHideDuration={6000}
+          message="Product already in Favorites"
+        />;
       } else {
-        alert("Added to favorites!");
+        <Snackbar
+          open={open}
+          autoHideDuration={6000}
+          message="Added to Favorites"
+        />;
       }
     } catch (error) {
       if (error.response && error.response.data) {
@@ -160,14 +227,8 @@ export const Actions = () => {
 
   // ✅ Remove from favorites
   const handleRemoveFromFavorites = async (productId) => {
-    console.log(
-      "Attempting to remove product from favorites:",
-      userId,
-      productId
-    );
     try {
       await removeFromFavorites(userId, productId);
-      console.log("removefrom", userId, productId);
       setFavorites((prevFavorites) =>
         prevFavorites.filter((item) => item.productId !== productId)
       );
@@ -179,10 +240,7 @@ export const Actions = () => {
   const handleMoveToCart = async (productId) => {
     try {
       await addToCart(productId, 1);
-      console.log(`Moved product ${productId} to cart.`);
       await removeFromFavorites(userId, productId);
-      console.log(`Successfully removed product ${productId} from favorites.`);
-      // ✅ Update state after moving item to cart
       setFavorites((prevFavorites) =>
         prevFavorites.filter((item) => item.productId !== productId)
       );
@@ -200,7 +258,11 @@ export const Actions = () => {
     try {
       const userId = getUserId();
       if (!userId) {
-        alert("User not logged in!");
+        <Snackbar
+          open={open}
+          autoHideDuration={6000}
+          message="User Logged in already!!"
+        />;
         return;
       }
 
@@ -215,7 +277,6 @@ export const Actions = () => {
       };
 
       const response = await placeOrder(orderData);
-      console.log("Order Placed:", response.data);
       navigate("/orderconfo", {
         state: { orderId: response.data.orderId },
       });
@@ -223,6 +284,95 @@ export const Actions = () => {
       console.error("Error placing order:", error);
       alert("Failed to place order!");
     }
+  };
+
+  const handleContinue = () => {
+    if (!selectedAddress) {
+      setSnackbarMessage("Please add address");
+      setSnackbarOpen(true);
+    } else if (selectedItems.length === 0) {
+      setSnackbarMessage("Please select items to checkout");
+      setSnackbarOpen(true);
+    } else if (!selectedPayment) {
+      setSnackbarMessage("Please select a payment method");
+      setSnackbarOpen(true);
+    } else {
+      handlePlaceOrder(selectedItems, totalPrice);
+    }
+  };
+
+  useEffect(() => {
+    if (userId) {
+      fetchUserDetails();
+    } else {
+      console.error("No user ID found. Redirecting to login.");
+      navigate("/login");
+    }
+  }, []);
+
+  const fetchUserDetails = async () => {
+    try {
+      const addressResponse = await getUserAddresses(userId);
+      setAddresses(addressResponse.data);
+      if (addressResponse.data.length > 0) {
+        setSelectedAddress(addressResponse.data[0]);
+      }
+
+      const paymentResponse = await getUserPaymentInfo(userId);
+      setPaymentMethods(paymentResponse.data);
+      if (paymentResponse.data.length > 0) {
+        setSelectedPayment(paymentResponse.data[0]);
+      }
+    } catch (error) {
+      console.error("Error fetching user details", error);
+    }
+  };
+
+  const filterProducts = (products, filters) => {
+    let filtered = [...products];
+
+    if (filters.category) {
+      filtered = filtered.filter(
+        (product) => product.category === filters.category
+      );
+    }
+
+    if (filters.brand) {
+      filtered = filtered.filter((product) => product.brand === filters.brand);
+    }
+
+    if (filters.priceRange) {
+      const [minPrice, maxPrice] = filters.priceRange;
+      filtered = filtered.filter(
+        (product) => product.price >= minPrice && product.price <= maxPrice
+      );
+    }
+
+    if (filters.stock) {
+      filtered = filtered.filter((product) => product.stock > 0);
+    }
+
+    if (filters.rating) {
+      filtered = filtered.filter(
+        (product) => product.rating >= parseFloat(filters.rating)
+      );
+    }
+
+    if (filters.sortBy) {
+      if (filters.sortBy === "priceLow") {
+        filtered.sort((a, b) => a.price - b.price);
+      } else if (filters.sortBy === "priceHigh") {
+        filtered.sort((a, b) => b.price - a.price);
+      } else if (filters.sortBy === "ratingHigh") {
+        filtered.sort((a, b) => b.rating - a.rating);
+      } else if (filters.sortBy === "newest") {
+        filtered.sort(
+          (a, b) => new Date(b.meta.createdAt) - new Date(a.meta.createdAt)
+        );
+      }
+    }
+
+    return filtered;
   };
 
   return {
@@ -235,6 +385,19 @@ export const Actions = () => {
     totalPrice,
     selectedItems,
     orders,
+    editable,
+    updatedData,
+    snackbarOpen,
+    snackbarMessage,
+    selectedAddress,
+    selectedPayment,
+    paymentMethods,
+    snackbarOpen,
+    snackbarMessage,
+    filterProducts,
+    setEditable,
+    setSnackbarOpen,
+    setSelectedPayment,
     handleChange,
     toggleDrawer,
     toggleSelectItem,
@@ -246,5 +409,11 @@ export const Actions = () => {
     handleRemoveFromFavorites,
     handleMoveToCart,
     handlePlaceOrder,
+    handleContinue,
+    fetchUserDetails,
+    handleProfileChange,
+    handleUpdateProfile,
+    fetchUserProfile,
+    handleUpdatePassword,
   };
 };

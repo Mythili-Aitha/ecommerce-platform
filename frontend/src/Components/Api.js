@@ -1,22 +1,63 @@
-import axios from "axios";
-
-const API_BASE_URL = "http://localhost:8080/api";
+import apiClient from "./apiClient";
 
 export const getUserId = () => {
   const storedUser = localStorage.getItem("user");
   return storedUser ? JSON.parse(storedUser).userId : null;
 };
 
+export const getUserDetails = async () => {
+  try {
+    const userId = getUserId();
+    if (!userId) throw new Error("User ID not found");
+    const response = await apiClient.get(`/profile/users/${userId}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching user details:", error);
+    throw error;
+  }
+};
+
+export const updateUserProfile = async (profileData) => {
+  try {
+    const userId = getUserId();
+    if (!userId) throw new Error("User ID is required");
+
+    const response = await apiClient.put(
+      `/users/${userId}/profile`,
+      profileData
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error updating profile:", error);
+    throw error;
+  }
+};
+export const updateUserPassword = async (passwordData) => {
+  try {
+    const userId = getUserId();
+    if (!userId) throw new Error("User ID is required");
+
+    const response = await apiClient.put(
+      `/users/${userId}/password`,
+      passwordData
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error updating password:", error);
+    throw error;
+  }
+};
+
 // ✅ Address APIs
 export const addAddress = async (addressData) => {
-  return await axios.post(`${API_BASE_URL}/address`, addressData);
+  return await apiClient.post(`/address`, addressData);
 };
 
 export const getUserAddresses = async () => {
   try {
     const userId = getUserId();
     if (!userId) throw new Error("User ID is required");
-    return await axios.get(`${API_BASE_URL}/address/users/${userId}`);
+    return await apiClient.get(`/address/users/${userId}`);
   } catch (error) {
     console.error("Error fetching addresses:", error);
     throw error;
@@ -24,34 +65,34 @@ export const getUserAddresses = async () => {
 };
 
 export const updateAddress = async (id, addressData) => {
-  return await axios.put(`${API_BASE_URL}/address/${id}`, addressData);
+  return await apiClient.put(`/address/${id}`, addressData);
 };
 
 export const deleteAddress = async (id) => {
-  return await axios.delete(`${API_BASE_URL}/address/${id}`);
+  return await apiClient.delete(`/address/${id}`);
 };
 
 // ✅ Payment APIs
 export const addPaymentInfo = async (paymentData) => {
-  return await axios.post(`${API_BASE_URL}/payments`, paymentData);
+  return await apiClient.post(`/payments`, paymentData);
 };
 
 export const getUserPaymentInfo = async () => {
   const userId = getUserId();
-  return await axios.get(`${API_BASE_URL}/payments/users/${userId}`);
+  return await apiClient.get(`/payments/users/${userId}`);
 };
 
 export const updatePaymentInfo = async (id, paymentData) => {
-  return await axios.put(`${API_BASE_URL}/payments/${id}`, paymentData);
+  return await apiClient.put(`/payments/${id}`, paymentData);
 };
 
 export const deletePaymentInfo = async (id) => {
-  return await axios.delete(`${API_BASE_URL}/payments/${id}`);
+  return await apiClient.delete(`/payments/${id}`);
 };
 
 export const getProducts = async () => {
   try {
-    const response = await axios.get(`${API_BASE_URL}/products`);
+    const response = await apiClient.get(`/products`);
     return response.data;
   } catch (error) {
     console.error("Error fetching products:", error);
@@ -65,7 +106,7 @@ export const addToFavorites = async (productId) => {
     const userId = getUserId();
     if (!userId) throw new Error("User ID is required");
 
-    return await axios.post(`${API_BASE_URL}/favorites/add`, null, {
+    return await apiClient.post(`/favorites/add`, null, {
       params: { userId, productId },
     });
   } catch (error) {
@@ -77,7 +118,7 @@ export const addToFavorites = async (productId) => {
 export const removeFromFavorites = async (productId) => {
   const userId = getUserId();
   console.log("remove from favorites", userId, productId);
-  return await axios.delete(`${API_BASE_URL}/favorites/remove`, {
+  return await apiClient.delete(`/favorites/remove`, {
     params: { userId, productId },
   });
 };
@@ -86,9 +127,7 @@ export const getUserFavorites = async () => {
   try {
     const userId = getUserId();
     if (!userId) throw new Error("User ID is required");
-    const response = await axios.get(
-      `${API_BASE_URL}/favorites/users/${userId}`
-    );
+    const response = await apiClient.get(`/favorites/users/${userId}`);
     return response.data;
   } catch (error) {
     console.error("Error fetching favorites:", error);
@@ -102,7 +141,7 @@ export const addToCart = async (productId, quantity = 1) => {
     const userId = getUserId();
     if (!userId) throw new Error("User ID is required");
 
-    return await axios.post(`${API_BASE_URL}/cart/add`, null, {
+    return await apiClient.post(`/cart/add`, null, {
       params: { userId, productId, quantity },
     });
   } catch (error) {
@@ -114,7 +153,7 @@ export const addToCart = async (productId, quantity = 1) => {
 export const updateCartQuantity = async (productId, quantity) => {
   try {
     const userId = getUserId();
-    const response = await axios.put(`${API_BASE_URL}/cart/update`, null, {
+    const response = await apiClient.put(`/cart/update`, null, {
       params: { userId, productId, quantity },
     });
     return response.data;
@@ -126,7 +165,7 @@ export const updateCartQuantity = async (productId, quantity) => {
 
 export const removeFromCart = async (productId) => {
   const userId = getUserId();
-  return await axios.delete(`${API_BASE_URL}/cart/remove`, {
+  return await apiClient.delete(`/cart/remove`, {
     params: { userId, productId },
   });
 };
@@ -134,7 +173,7 @@ export const removeFromCart = async (productId) => {
 export const getUserCart = async () => {
   try {
     const userId = getUserId();
-    const response = await axios.get(`${API_BASE_URL}/cart/users/${userId}`);
+    const response = await apiClient.get(`/cart/users/${userId}`);
     return response.data || [];
   } catch (error) {
     console.error("Error fetching cart:", error);
@@ -145,7 +184,7 @@ export const getUserCart = async () => {
 // ✅ Order APIs
 export const placeOrder = async (orderData) => {
   try {
-    return await axios.post(`${API_BASE_URL}/orders/place`, orderData);
+    return await apiClient.post(`/orders/place`, orderData);
   } catch (error) {
     console.error("Error placing order:", error);
     throw error;
@@ -156,7 +195,7 @@ export const getUserOrders = async () => {
   try {
     const userId = getUserId();
     if (!userId) throw new Error("User ID is required");
-    return await axios.get(`${API_BASE_URL}/orders/users/${userId}`);
+    return await apiClient.get(`/orders/users/${userId}`);
   } catch (error) {
     console.error("Error fetching user orders:", error);
     throw error;
@@ -165,7 +204,7 @@ export const getUserOrders = async () => {
 
 export const getOrderDetails = async (orderId) => {
   try {
-    return await axios.get(`${API_BASE_URL}/orders/${orderId}`);
+    return await apiClient.get(`/orders/${orderId}`);
   } catch (error) {
     console.error("Error fetching order details:", error);
     throw error;

@@ -8,16 +8,18 @@ import {
   Tab,
   InputAdornment,
   IconButton,
+  Snackbar,
 } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
-import axios from "axios";
+import apiClient from "./apiClient";
 
 export default function Login() {
   const [tabIndex, setTabIndex] = useState(1);
   const navigate = useNavigate();
+  const [user, setUser] = useState(null);
   // ** Login State **
   const [uid, setUid] = useState("");
   const [pid, setPid] = useState("");
@@ -41,19 +43,19 @@ export default function Login() {
     }
     setFormData({ ...formData, [name]: value });
   };
+  const [sOpen, setSOpen] = useState(false);
+  const [sMessage, setSMessage] = useState("");
   const handleSubmit = async (e, type) => {
     e.preventDefault();
 
     if (type === "register" && formData.psid !== formData.rpsid) {
-      setPasswordError("Passwords do not match");
+      setSMessage("Passwords do not match");
+      setSOpen(true);
       return;
     }
 
     try {
-      const url =
-        type === "login"
-          ? "http://localhost:8080/api/users/login"
-          : "http://localhost:8080/api/users/register";
+      const url = type === "login" ? "/users/login" : "/users/register";
 
       const requestData =
         type === "login"
@@ -65,7 +67,7 @@ export default function Login() {
               password: formData.psid,
               phoneNumber: formData.num,
             };
-      const response = await axios.post(url, requestData);
+      const response = await apiClient.post(url, requestData);
 
       console.log(
         `${type === "login" ? "Login" : "Registration"} Success:`,
@@ -74,23 +76,29 @@ export default function Login() {
 
       if (type === "register") {
         setTabIndex(0);
-        alert("Registration successful! Please log in.");
+        setSMessage("Registration successful! Please log in.");
+        setSOpen(true);
         return;
       }
       localStorage.setItem("user", JSON.stringify(response.data));
+      setUser(response.data);
+      navigate("/");
+
+      setUser(response.data);
       navigate("/");
     } catch (error) {
       if (error.response) {
         if (type === "register" && error.response.status === 409) {
-          alert("User already exists. Please log in.");
+          setSMessage("User already exists. Please log in.");
         } else if (type === "login") {
-          alert("Invalid username or password.");
+          setSMessage("Invalid username or password.");
         } else {
-          alert("Error registering user. Try again!");
+          setSMessage("Error registering user. Try again!");
         }
       } else {
-        alert("Network error. Please try again.");
+        setSMessage("Network error. Please try again.");
       }
+      setSOpen(true);
     }
   };
 
@@ -161,7 +169,12 @@ export default function Login() {
           </Box>
         </form>
       )}
-
+      <Snackbar
+        open={sOpen}
+        autoHideDuration={3000}
+        onClose={() => setSOpen(false)}
+        message={sMessage}
+      />
       {/* ✅ Registration Form */}
       {tabIndex === 1 && (
         <form onSubmit={(e) => handleSubmit(e, "register")}>

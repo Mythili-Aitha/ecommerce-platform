@@ -30,6 +30,7 @@ export default function Header() {
     open,
     user,
     totalQuantity,
+    setUser,
     handleSignOut,
     handleChange,
     toggleDrawer,
@@ -84,7 +85,7 @@ export default function Header() {
             <AccountCircleIcon /> {user.name}
           </Button>
         ) : (
-          <Button>
+          <Button onClick={() => navigate("/profile")}>
             <AccountCircleIcon /> Profile
           </Button>
         )}
@@ -141,14 +142,26 @@ export default function Header() {
             />
           </Box>
           <Box sx={{ display: "flex", alignItems: "flex-end", gap: 3 }}>
-            <IconButton
-              color="inherit"
-              sx={{ flexDirection: "column" }}
-              onClick={() => navigate("/auth")}
-            >
-              <PersonIcon />
-              <Typography variant="caption">Log in/Sign Up</Typography>
-            </IconButton>
+            {user ? (
+              <IconButton
+                color="inherit"
+                sx={{ flexDirection: "column" }}
+                onClick={() => navigate("/profile")}
+              >
+                <PersonIcon />
+                <Typography variant="caption">{user.name}</Typography>
+              </IconButton>
+            ) : (
+              <IconButton
+                color="inherit"
+                sx={{ flexDirection: "column" }}
+                onClick={() => navigate("/auth")}
+              >
+                <PersonIcon />
+                <Typography variant="caption">Log in/Sign Up</Typography>
+              </IconButton>
+            )}
+
             <IconButton
               color="inherit"
               sx={{ flexDirection: "column" }}
