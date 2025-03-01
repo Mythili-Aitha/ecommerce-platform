@@ -10,6 +10,7 @@ import {
   Grid,
   CardMedia,
   Badge,
+  Pagination,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -28,15 +29,20 @@ export default function Products() {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [products, setProducts] = useState([]);
+  const [filteredProducts, setFilteredProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const { totalQuantity } = Actions();
+  const [searchTerm, setSearchTerm] = useState("");
+  const { totalQuantity, filterProducts } = Actions();
+  const [curP, setCurrP] = useState(1);
+  const productPerPage = 20;
 
   useEffect(() => {
     async function fetchProducts() {
       try {
         const data = await getProducts();
         setProducts(data);
+        setFilteredProducts(data);
       } catch (error) {
         setError("Failed to load products. Please try again.");
       } finally {
@@ -45,10 +51,32 @@ export default function Products() {
     }
     fetchProducts();
   }, []);
+  const applyFilters = (filters) => {
+    const result = filterProducts(products, filters);
+    setFilteredProducts(result);
+    setCurrP(1);
+  };
 
   const toggleDrawer = (newOpen) => () => {
     setOpen(newOpen);
   };
+  useEffect(() => {
+    let filtered = filterProducts(products, {}); // Apply default filter first
+    if (searchTerm.trim()) {
+      filtered = filtered.filter((product) =>
+        product.title.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+    setFilteredProducts(filtered);
+    setCurrP(1);
+  }, [searchTerm, products]);
+
+  const indexOfLastProduct = curP * productPerPage;
+  const indexOfFirstProduct = indexOfLastProduct - productPerPage;
+  const currentProducts = filteredProducts.slice(
+    indexOfFirstProduct,
+    indexOfLastProduct
+  );
 
   return (
     <>
@@ -71,6 +99,8 @@ export default function Products() {
           </Button>
           <TextField
             placeholder="Search..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
@@ -88,14 +118,18 @@ export default function Products() {
                 cursor: "pointer",
               }}
               size="medium"
-              onClick={toggleDrawer(true)}
+              onClick={() => setOpen(true)}
             >
               <FilterListIcon />
               Filter
             </Button>
           </ButtonGroup>
         </Box>
-        <FilterDrawer open={open} toggleDrawer={toggleDrawer} />
+        <FilterDrawer
+          open={open}
+          toggleDrawer={toggleDrawer}
+          applyFilters={applyFilters}
+        />
         <Box
           sx={{ display: "flex", alignItems: "flex-end", flexDirection: "row" }}
         >
@@ -131,50 +165,67 @@ export default function Products() {
           {error}
         </Typography>
       ) : (
-        <Grid container spacing={2} sx={{ marginTop: 2 }}>
-          {products.length > 0 ? (
-            products.map((product) => (
-              <Grid item xs={12} sm={6} md={4} lg={2.4} key={product.id}>
-                <Card sx={{ padding: 2, textAlign: "center" }}>
-                  <CardMedia
-                    component="img"
-                    height="194"
-                    image={product.images?.[0] || product.thumbnail}
-                    alt={product.description}
-                  />
-                  <Typography variant="subtitle1" sx={{ marginTop: 1 }}>
-                    {product.title}
-                  </Typography>
-                  <Typography variant="body2" sx={{ color: "gray" }}>
-                    ${product.price}
-                  </Typography>
-                  <Box
-                    sx={{
-                      display: "flex",
-                      justifyContent: "end",
-                      marginTop: 1,
-                    }}
-                  >
-                    <Button
-                      size="small"
-                      variant="text"
-                      startIcon={<ArrowForwardIcon />}
-                      onClick={() =>
-                        navigate(`/products/${product.id}`, {
-                          state: { product },
-                        })
-                      }
+        <>
+          <Grid container spacing={2} sx={{ marginTop: 2 }}>
+            {currentProducts.length > 0 ? (
+              currentProducts.map((product) => (
+                <Grid item xs={12} sm={6} md={4} lg={2.4} key={product.id}>
+                  <Card sx={{ padding: 2, textAlign: "center" }}>
+                    <CardMedia
+                      component="img"
+                      height="194"
+                      image={product.images?.[0] || product.thumbnail}
+                      alt={product.description}
                     />
-                  </Box>
-                </Card>
-              </Grid>
-            ))
-          ) : (
-            <Typography variant="h6" sx={{ textAlign: "center", marginTop: 4 }}>
-              No Products Available
-            </Typography>
+                    <Typography variant="subtitle1" sx={{ marginTop: 1 }}>
+                      {product.title}
+                    </Typography>
+                    <Typography variant="body2" sx={{ color: "gray" }}>
+                      ${product.price}
+                    </Typography>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        justifyContent: "end",
+                        marginTop: 1,
+                      }}
+                    >
+                      <Button
+                        size="small"
+                        variant="text"
+                        startIcon={<ArrowForwardIcon />}
+                        onClick={() =>
+                          navigate(`/products/${product.id}`, {
+                            state: { product },
+                          })
+                        }
+                      />
+                    </Box>
+                  </Card>
+                </Grid>
+              ))
+            ) : (
+              <Typography
+                variant="h6"
+                sx={{ textAlign: "center", marginTop: 4 }}
+              >
+                No Products Available
+              </Typography>
+            )}
+          </Grid>
+          {filteredProducts.length > productPerPage && (
+            <Box
+              sx={{ display: "flex", justifyContent: "center", marginTop: 3 }}
+            >
+              <Pagination
+                count={Math.ceil(filteredProducts.length / productPerPage)}
+                page={curP}
+                onChange={(event, value) => setCurrP(value)}
+                color="primary"
+              />
+            </Box>
           )}
-        </Grid>
+        </>
       )}
       <ScrollTopButton />
     </>

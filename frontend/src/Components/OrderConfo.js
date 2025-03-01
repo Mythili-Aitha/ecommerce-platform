@@ -7,54 +7,31 @@ import {
   RadioGroup,
   FormControlLabel,
   Radio,
+  Snackbar,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import { useNavigate } from "react-router-dom";
-import { getUserAddresses, getUserPaymentInfo } from "../Components/Api.js";
 import { Actions } from "./Actions.js";
 
 export default function OrderConfo() {
   const navigate = useNavigate();
-  const { selectedItems, totalPrice, handlePlaceOrder } = Actions();
+  const {
+    selectedAddress,
+    selectedPayment,
+    paymentMethods,
+    snackbarOpen,
+    snackbarMessage,
+    selectedItems,
+    totalPrice,
+    setSnackbarOpen,
+    setSelectedPayment,
+    handleContinue,
+  } = Actions();
   const tax = totalPrice * 0.1;
   const total = totalPrice + tax;
-
-  const [address, setAddresses] = useState([]);
-  const [selectedAddress, setSelectedAddress] = useState(null);
-  const [paymentMethods, setPaymentMethods] = useState([]);
-  const [selectedPayment, setSelectedPayment] = useState(
-    paymentMethods.length > 0 ? paymentMethods[0].cardType.toLowerCase() : ""
-  );
   const storedUser = JSON.parse(localStorage.getItem("user"));
-  const userId = storedUser?.userId;
-  useEffect(() => {
-    if (userId) {
-      fetchUserDetails();
-    } else {
-      console.error("No user ID found. Redirecting to login.");
-      navigate("/login");
-    }
-  }, []);
-
-  const fetchUserDetails = async () => {
-    try {
-      const addressResponse = await getUserAddresses(userId);
-      setAddresses(addressResponse.data);
-      if (addressResponse.data.length > 0) {
-        setSelectedAddress(addressResponse.data[0]);
-      }
-
-      const paymentResponse = await getUserPaymentInfo(userId);
-      setPaymentMethods(paymentResponse.data);
-      if (paymentResponse.data.length > 0) {
-        setSelectedPayment(paymentResponse.data[0]);
-      }
-    } catch (error) {
-      console.error("Error fetching user details", error);
-    }
-  };
   return (
     <>
       <Card sx={{ width: "100%", maxWidth: 400, mx: "auto", mt: 5, p: 3 }}>
@@ -239,20 +216,16 @@ export default function OrderConfo() {
             fullWidth
             variant="contained"
             sx={{ marginRight: "20px" }}
-            onClick={() => {
-              if (!selectedAddress) {
-                alert("Please select an address.");
-              } else if (selectedItems.length === 0) {
-                alert("Please select items to checkout");
-              } else if (!selectedPayment) {
-                alert("Please select a payment method.");
-              } else {
-                handlePlaceOrder(selectedItems, totalPrice);
-              }
-            }}
+            onClick={handleContinue}
           >
             Continue
           </Button>
+          <Snackbar
+            open={snackbarOpen}
+            autoHideDuration={3000}
+            onClose={() => setSnackbarOpen(false)}
+            message={snackbarMessage}
+          />
         </Box>
       </Card>
     </>
