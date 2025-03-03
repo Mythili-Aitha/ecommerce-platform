@@ -34,11 +34,26 @@ export const Actions = () => {
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [address, setAddresses] = useState([]);
-  const [selectedAddress, setSelectedAddress] = useState(null);
+  const storedAddress = JSON.parse(localStorage.getItem("selectedAddress"));
+  const [selectedAddress, setSelectedAddress] = useState(storedAddress || null);
+  const storedPayment = localStorage.getItem("selectedPayment");
   const [paymentMethods, setPaymentMethods] = useState([]);
-  const [selectedPayment, setSelectedPayment] = useState(
-    paymentMethods.length > 0 ? paymentMethods[0].cardType.toLowerCase() : ""
-  );
+  const [selectedPayment, setSelectedPayment] = useState(null);
+  const [history, setHistory] = useState(() => {
+    const storedHistory = localStorage.getItem("history");
+    return storedHistory ? JSON.parse(storedHistory) : [];
+  });
+  useEffect(() => {
+    localStorage.setItem("history", JSON.stringify(history));
+  }, [history]);
+  const addToHistory = (action, details) => {
+    const newEntry = {
+      action,
+      details,
+      date: new Date().toLocaleString(),
+    };
+    setHistory((prevHistory) => [newEntry, ...prevHistory]); // Add new action to history
+  };
   const handleChange = (e, newValue) => {
     setValue(newValue);
   };
@@ -128,6 +143,7 @@ export const Actions = () => {
   const handleAddToCart = async (productId) => {
     try {
       const response = await addToCart(productId, 1);
+      addToHistory("Added to Cart", `Product ID: ${productId}`);
       if (response.data === "Quantity updated in cart") {
         <Snackbar
           open={open}
@@ -202,7 +218,7 @@ export const Actions = () => {
   const handleAddToFavorites = async (productId) => {
     try {
       const response = await addToFavorites(productId);
-      console.log(`Product ${productId} added to favorites`);
+      addToHistory("Added to Cart", `Product ID: ${productId}`);
       if (response.data === "Product is already in favorites") {
         <Snackbar
           open={open}
@@ -249,12 +265,7 @@ export const Actions = () => {
     }
   };
 
-  const handlePlaceOrder = async (
-    selectedItems,
-    totalPrice,
-    selectedAddress,
-    selectedPayment
-  ) => {
+  const handlePlaceOrder = async (selectedItems, totalPrice) => {
     try {
       const userId = getUserId();
       if (!userId) {
@@ -277,6 +288,7 @@ export const Actions = () => {
       };
 
       const response = await placeOrder(orderData);
+      addToHistory("Placed Order", "Order placed successfully");
       navigate("/orderconfo", {
         state: { orderId: response.data.orderId },
       });
@@ -314,12 +326,16 @@ export const Actions = () => {
     try {
       const addressResponse = await getUserAddresses(userId);
       setAddresses(addressResponse.data);
-      if (addressResponse.data.length > 0) {
+      const storedAddress = JSON.parse(localStorage.getItem("selectedAddress"));
+      if (storedAddress) {
+        setSelectedAddress(storedAddress);
+      } else if (addressResponse.data.length > 0) {
         setSelectedAddress(addressResponse.data[0]);
       }
 
       const paymentResponse = await getUserPaymentInfo(userId);
       setPaymentMethods(paymentResponse.data);
+
       if (paymentResponse.data.length > 0) {
         setSelectedPayment(paymentResponse.data[0]);
       }
@@ -394,10 +410,13 @@ export const Actions = () => {
     paymentMethods,
     snackbarOpen,
     snackbarMessage,
+    history,
+    addToHistory,
     filterProducts,
     setEditable,
     setSnackbarOpen,
     setSelectedPayment,
+    setSelectedAddress,
     handleChange,
     toggleDrawer,
     toggleSelectItem,

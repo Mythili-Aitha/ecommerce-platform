@@ -31,7 +31,9 @@ export default function OrderConfo() {
   } = Actions();
   const tax = totalPrice * 0.1;
   const total = totalPrice + tax;
+
   const storedUser = JSON.parse(localStorage.getItem("user"));
+
   return (
     <>
       <Card sx={{ width: "100%", maxWidth: 400, mx: "auto", mt: 5, p: 3 }}>
@@ -134,37 +136,58 @@ export default function OrderConfo() {
             <RadioGroup
               aria-labelledby="demo-radio-buttons-group-label"
               name="payment-method"
-              value={selectedPayment}
-              onChange={(e) => setSelectedPayment(e.target.value)}
+              value={selectedPayment?.paymentId || selectedPayment} // ✅ Ensure correct value
+              onChange={(e) => {
+                const selected = paymentMethods.find(
+                  (p) => p.paymentId == e.target.value
+                );
+                setSelectedPayment(selected || e.target.value);
+                localStorage.setItem(
+                  "selectedPayment",
+                  JSON.stringify(selected || e.target.value)
+                );
+              }}
             >
               <FormControlLabel
                 value="pay pal"
                 control={<Radio />}
-                label="Pay pal"
+                label="PayPal"
               />
               <FormControlLabel
                 value="apple pay"
                 control={<Radio />}
                 label="Apple Pay"
               />
-              {paymentMethods.length > 0
-                ? paymentMethods.map((payment) => (
+
+              {/* Show saved credit/debit cards only if they exist */}
+              {paymentMethods.length > 0 &&
+                paymentMethods.map((payment) => (
+                  <Box
+                    key={payment.paymentId}
+                    sx={{ display: "flex", alignItems: "center" }}
+                  >
                     <FormControlLabel
-                      key={payment.id}
-                      value={payment.cardType.toLowerCase()}
+                      value={payment.paymentId} // ✅ Use correct value
                       control={<Radio />}
                       label={`Card Ending in **** ${payment.cardNumber.slice(
                         -4
                       )}`}
-                      checked={selectedPayment?.id === payment.id}
-                      onChange={() => setSelectedPayment(payment)}
+                      checked={selectedPayment?.paymentId === payment.paymentId}
                     />
-                  ))
-                : null}
+                    <Button
+                      variant="outlined"
+                      size="small"
+                      onClick={() => navigate("/payments")}
+                    >
+                      Edit
+                    </Button>
+                  </Box>
+                ))}
+
               <FormControlLabel
                 value="credit card"
                 control={<Radio />}
-                label="Credit Card/Debit Card"
+                label="Credit/Debit Card"
                 onClick={() => navigate("/payments")}
               />
               <FormControlLabel

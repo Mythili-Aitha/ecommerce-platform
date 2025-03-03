@@ -2,8 +2,10 @@ import { Box, Button, Divider, IconButton, Typography } from "@mui/material";
 import React from "react";
 import InstagramIcon from "@mui/icons-material/Instagram";
 import EmailIcon from "@mui/icons-material/Email";
+import { useNavigate } from "react-router-dom";
 
 export default function Footer() {
+  const navigate = useNavigate();
   return (
     <>
       <Box
@@ -18,9 +20,13 @@ export default function Footer() {
         <Divider />
         <Box sx={{ display: "flex", justifyContent: "space-between" }}>
           <Box sx={{ display: "flex", flexDirection: "row", gap: 1 }}>
-            <Button variant="text">About</Button>{" "}
+            <Button variant="text" onClick={() => navigate("/about")}>
+              About
+            </Button>{" "}
             <Divider orientation="vertical" flexItem />
-            <Button variant="text">FAQ</Button>{" "}
+            <Button variant="text" onClick={() => navigate("/faq")}>
+              FAQ
+            </Button>{" "}
             <Divider orientation="vertical" flexItem />
             <Button variant="text">Contact</Button>{" "}
             <Divider orientation="vertical" flexItem />

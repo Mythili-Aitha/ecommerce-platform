@@ -16,6 +16,9 @@ import OrderConfirmation from "./Components/OrderConfirmation.js";
 import Orders from "./Components/Orders.js";
 import OrderDetails from "./Components/OrderDetails.js";
 import Profile from "./Components/Profile.js";
+import History from "./Components/History.js";
+import About from "./Components/About.js";
+import Faq from "./Components/Faq.js";
 
 function App() {
   const location = useLocation();
@@ -46,6 +49,9 @@ function App() {
               <Route path="/orders" element={<Orders />} />
               <Route path="/orders/:orderId" element={<OrderDetails />} />
               <Route path="/profile" element={<Profile />} />
+              <Route path="/history" element={<History />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/faq" element={<Faq />} />
             </Routes>
           </div>
         </CSSTransition>
