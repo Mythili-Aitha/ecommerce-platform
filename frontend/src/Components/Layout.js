@@ -1,5 +1,5 @@
 import React from "react";
-import { useLocation } from "react-router-dom";
+import { matchPath, useLocation } from "react-router-dom";
 import { Box } from "@mui/material";
 import Header from "./Header";
 import Footer from "./Footer";
@@ -12,8 +12,11 @@ export default function Layout({ children }) {
     "/cart",
     "/favorite",
     "/products",
+    "/products/:id",
   ];
-  const hideHeader = hiddenHeaderPaths.includes(location.pathname);
+  const hideHeader =
+    hiddenHeaderPaths.includes(location.pathname) ||
+    matchPath("/products/:id", location.pathname);
   return (
     <Box sx={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
       {!hideHeader && (

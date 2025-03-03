@@ -20,6 +20,7 @@ import ColorSelector from "./ColorSelector";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import SizeSelector from "./SizeSelector";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
+import FavoriteIcon from "@mui/icons-material/Favorite";
 import { Actions } from "./Actions.js";
 
 export default function ProductDetails() {
@@ -31,6 +32,7 @@ export default function ProductDetails() {
   const sizes = ["XS", "S", "M", "L", "XL", "XXL"];
   const [selectedSize, setSelectedSize] = useState(sizes[0]);
   const [anchorEl, setAnchorEl] = useState(null);
+  const [isFav, setIsFav] = useState(false);
   const { totalQuantity, handleAddToFavorites, handleAddToCart } = Actions();
   const open = anchorEl;
   const handleClick = (event) => {
@@ -40,7 +42,6 @@ export default function ProductDetails() {
     setAnchorEl(null);
   };
   if (!product) return <p>Product not found.</p>;
-
   return (
     <Card
       sx={{
@@ -208,13 +209,19 @@ export default function ProductDetails() {
           padding: 2,
         }}
       >
-        <FavoriteBorderIcon
-          fontSize="large"
+        <IconButton
           onClick={() => {
             handleAddToFavorites(product.id);
-            console.log("pid", product.id);
+            setIsFav(!isFav);
           }}
-        />
+        >
+          {isFav ? (
+            <FavoriteIcon fontSize="large" color="error" />
+          ) : (
+            <FavoriteBorderIcon fontSize="large" />
+          )}
+        </IconButton>
+        ;
         <Button
           fullWidth
           variant="contained"

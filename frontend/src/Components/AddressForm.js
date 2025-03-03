@@ -5,10 +5,22 @@ import {
   updateAddress,
   deleteAddress,
 } from "../Components/Api.js";
-import { Box, Button, TextField } from "@mui/material";
+import {
+  Box,
+  Button,
+  FormControl,
+  FormControlLabel,
+  FormLabel,
+  Radio,
+  RadioGroup,
+  TextField,
+} from "@mui/material";
+import { Actions } from "./Actions.js";
 
 const AddressForm = () => {
   const [addresses, setAddresses] = useState([]);
+  const [selectedValue, setSelectedValue] = useState("");
+  const { setSelectedAddress } = Actions();
   const [formData, setFormData] = useState({
     street: "",
     city: "",
@@ -19,6 +31,12 @@ const AddressForm = () => {
   });
   const storedUser = JSON.parse(localStorage.getItem("user"));
   const userId = storedUser?.userId;
+  const handleChange = (e) => {
+    const selected = addresses.find((address) => address.id == e.target.value);
+    setSelectedValue(e.target.value);
+    setSelectedAddress(selected);
+    localStorage.setItem("selectedAddress", JSON.stringify(selected));
+  };
 
   useEffect(() => {
     fetchAddresses();
@@ -104,15 +122,24 @@ const AddressForm = () => {
         </Box>
       </form>
 
-      <ul>
-        {addresses.map((address) => (
-          <li key={address.id}>
-            {address.street}, {address.city}, {address.state} - {address.zip} (
-            {address.addressType})
-            <Button onClick={() => handleDelete(address.id)}>Delete</Button>
-          </li>
-        ))}
-      </ul>
+      <FormControl>
+        <FormLabel id="demo-controlled-radio-buttons-group">Address</FormLabel>
+        <RadioGroup value={selectedValue} onChange={handleChange}>
+          {addresses.map((address) => (
+            <div
+              key={address.id}
+              style={{ display: "flex", alignItems: "center" }}
+            >
+              <FormControlLabel
+                value={address.id}
+                control={<Radio />}
+                label={`${address.street}, ${address.city}, ${address.state} - ${address.zip} (${address.addressType})`}
+              />
+              <Button onClick={() => handleDelete(address.id)}>Delete</Button>
+            </div>
+          ))}
+        </RadioGroup>
+      </FormControl>
     </Box>
   );
 };

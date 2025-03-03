@@ -52,7 +52,7 @@ export default function Header() {
       <Button>Catergories</Button>
       <Divider />
       <Button onClick={() => navigate("/orders")}>Orders</Button>
-      <Button>History</Button>
+      <Button onClick={() => navigate("/history")}>History</Button>
       <Button>Settings</Button>
       <Box
         sx={{
@@ -65,7 +65,6 @@ export default function Header() {
           bottom: "0",
         }}
       >
-        <Button>Switch Accounts</Button>
         {user ? (
           <Button onClick={handleSignOut}>
             <LogoutIcon />
@@ -92,6 +91,7 @@ export default function Header() {
       </Box>
     </Box>
   );
+
   return (
     <>
       <Box sx={{ width: "100%", gap: 2 }}>

@@ -36,6 +36,7 @@ export default function Products() {
   const { totalQuantity, filterProducts } = Actions();
   const [curP, setCurrP] = useState(1);
   const productPerPage = 20;
+  const { addToHistory } = Actions();
 
   useEffect(() => {
     async function fetchProducts() {
@@ -194,11 +195,12 @@ export default function Products() {
                         size="small"
                         variant="text"
                         startIcon={<ArrowForwardIcon />}
-                        onClick={() =>
+                        onClick={() => {
                           navigate(`/products/${product.id}`, {
                             state: { product },
-                          })
-                        }
+                          });
+                          addToHistory("Viewed Product", product.title);
+                        }}
                       />
                     </Box>
                   </Card>

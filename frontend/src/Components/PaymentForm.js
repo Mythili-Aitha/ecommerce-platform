@@ -4,10 +4,17 @@ import {
   getUserPaymentInfo,
   deletePaymentInfo,
 } from "../Components/Api.js";
-import { Box, Button, TextField } from "@mui/material";
+import {
+  Box,
+  Button,
+  FormControl,
+  FormControlLabel,
+  TextField,
+} from "@mui/material";
+import { Actions } from "./Actions.js";
 
 const PaymentForm = () => {
-  const [paymentMethods, setPaymentMethods] = useState([]);
+  const { paymentMethods, setPaymentMethods, selectedPayment } = Actions();
   const [formData, setFormData] = useState({
     cardHolderName: "",
     cardNumber: "",
@@ -18,9 +25,10 @@ const PaymentForm = () => {
   const storedUser = JSON.parse(localStorage.getItem("user"));
   const userId = storedUser?.userId;
 
-  useEffect(() => {
-    fetchPaymentMethods();
-  }, []);
+  console.log("payment id:", paymentMethods.paymentId);
+  // useEffect(() => {
+  //   fetchPaymentMethods();
+  // }, []);
 
   const fetchPaymentMethods = async () => {
     try {
@@ -42,9 +50,9 @@ const PaymentForm = () => {
     }
   };
 
-  const handleDelete = async (id) => {
+  const handleDelete = async (paymentId) => {
     try {
-      await deletePaymentInfo(id);
+      await deletePaymentInfo(paymentId);
       fetchPaymentMethods();
     } catch (error) {
       console.error("Error deleting payment method", error);
@@ -96,11 +104,29 @@ const PaymentForm = () => {
         </Box>
       </form>
 
+      {/* <FormControl>
+        {paymentMethods.map((payment) => (
+          <div
+            key={payment.paymentId}
+            style={{ display: "flex", alignItems: "center" }}
+          >
+            <FormControlLabel
+              value={payment.paymentId}
+              label={`${payment.cardNumber}, ${payment.cardType}`}
+            />
+            <Button onClick={() => handleDelete(payment.paymentId)}>
+              Delete
+            </Button>
+          </div>
+        ))}
+      </FormControl> */}
       <ul>
         {paymentMethods.map((payment) => (
-          <li key={payment.id}>
+          <li key={payment.paymentId}>
             Card: {payment.cardNumber} ({payment.cardType})
-            <button onClick={() => handleDelete(payment.id)}>Delete</button>
+            <button onClick={() => handleDelete(payment.paymentId)}>
+              Delete
+            </button>
           </li>
         ))}
       </ul>
