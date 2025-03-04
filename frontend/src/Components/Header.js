@@ -119,7 +119,7 @@ export default function Header() {
               aria-label="Dashboard Tabs"
             >
               <MenuIcon fontSize="large" onClick={toggleDrawer(true)} />
-              <Tab label="All" value="1" onClick={() => navigate("/")} />
+              {/* <Tab label="All" value="1" onClick={() => navigate("/")} /> */}
               <Tab label="Home" value="2" onClick={() => navigate("/home")} />
               <Tab
                 label="Products"

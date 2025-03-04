@@ -13,7 +13,7 @@ import {
   Pagination,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import SearchIcon from "@mui/icons-material/Search";
@@ -22,7 +22,7 @@ import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import FilterDrawer from "./FilterDrawer";
 import ScrollTopButton from "./ScrollTopButton";
-import { getProducts } from "../Components/Api.js";
+import { getProducts, getProductsByCategories } from "../Components/Api.js";
 import { Actions } from "./Actions.js";
 
 export default function Products() {
@@ -37,11 +37,18 @@ export default function Products() {
   const [curP, setCurrP] = useState(1);
   const productPerPage = 20;
   const { addToHistory } = Actions();
-
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const category = queryParams.get("category");
   useEffect(() => {
     async function fetchProducts() {
       try {
-        const data = await getProducts();
+        let data;
+        if (category) {
+          data = await getProductsByCategories(category);
+        } else {
+          data = await getProducts();
+        }
         setProducts(data);
         setFilteredProducts(data);
       } catch (error) {
@@ -51,7 +58,7 @@ export default function Products() {
       }
     }
     fetchProducts();
-  }, []);
+  }, [category]);
   const applyFilters = (filters) => {
     const result = filterProducts(products, filters);
     setFilteredProducts(result);

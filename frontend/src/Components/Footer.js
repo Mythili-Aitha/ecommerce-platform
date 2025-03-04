@@ -28,9 +28,13 @@ export default function Footer() {
               FAQ
             </Button>{" "}
             <Divider orientation="vertical" flexItem />
-            <Button variant="text">Contact</Button>{" "}
+            <Button variant="text" onClick={() => navigate("/contact")}>
+              Contact
+            </Button>{" "}
             <Divider orientation="vertical" flexItem />
-            <Button variant="text">Policies</Button>{" "}
+            <Button variant="text" onClick={() => navigate("/policy")}>
+              Policies
+            </Button>{" "}
             <Divider orientation="vertical" flexItem />
           </Box>
           <Box
@@ -42,11 +46,11 @@ export default function Footer() {
             }}
           >
             <IconButton color="inherit" sx={{ flexDirection: "column" }}>
-              <InstagramIcon />
+              <InstagramIcon onClick={() => navigate("/media")} />
               <Typography variant="caption">Instagram</Typography>
             </IconButton>
             <IconButton color="inherit" sx={{ flexDirection: "column" }}>
-              <EmailIcon />
+              <EmailIcon onClick={() => navigate("/media")} />
               <Typography variant="caption">Email</Typography>
             </IconButton>
           </Box>

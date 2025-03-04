@@ -11,6 +11,7 @@ import {
   placeOrder,
   getUserOrders,
   getUserDetails,
+  getCategories,
   updateUserProfile,
   getUserAddresses,
   getUserPaymentInfo,
@@ -46,6 +47,7 @@ export const Actions = () => {
   useEffect(() => {
     localStorage.setItem("history", JSON.stringify(history));
   }, [history]);
+
   const addToHistory = (action, details) => {
     const newEntry = {
       action,

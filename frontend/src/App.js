@@ -19,6 +19,9 @@ import Profile from "./Components/Profile.js";
 import History from "./Components/History.js";
 import About from "./Components/About.js";
 import Faq from "./Components/Faq.js";
+import Contact from "./Components/Contact.js";
+import Policies from "./Components/Policies.js";
+import Media from "./Components/Media.js";
 
 function App() {
   const location = useLocation();
@@ -52,6 +55,9 @@ function App() {
               <Route path="/history" element={<History />} />
               <Route path="/about" element={<About />} />
               <Route path="/faq" element={<Faq />} />
+              <Route path="/contact" element={<Contact />} />
+              <Route path="/policy" element={<Policies />} />
+              <Route path="/media" element={<Media />} />
             </Routes>
           </div>
         </CSSTransition>
