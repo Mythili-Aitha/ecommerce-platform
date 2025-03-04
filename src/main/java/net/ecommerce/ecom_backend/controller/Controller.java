@@ -114,6 +114,17 @@ public class Controller {
         return service.saveProducts(productDtos);
     }
 
+    @GetMapping("/products/category/{category}")
+    public ResponseEntity<List<ProductDto>> getProductsByCategory(@PathVariable String category) {
+       List<ProductDto> products = service.getProductsByCategory(category);
+       return ResponseEntity.ok(products);
+    }
+
+    @GetMapping("/products/category")
+    public ResponseEntity<List<String>> getAllCategories() {
+        List<String> categories = service.getAllCategories();
+        return ResponseEntity.ok(categories);
+    }
 
     @DeleteMapping("/products/{id}")
     public void deleteProduct(@PathVariable Long id) {

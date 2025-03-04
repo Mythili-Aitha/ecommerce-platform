@@ -176,6 +176,13 @@ public class EService {
     public ProductDto getProductById(Long id) {
         return productRepo.findById(id).map(Mapper::toProductDto).orElse(null);
     }
+    public List<ProductDto> getProductsByCategory(String category) {
+        List<Product> products = productRepo.findByCategory(category);
+        return products.stream().map(Mapper::toProductDto).collect(Collectors.toList());
+    }
+    public List<String> getAllCategories() {
+        return productRepo.findAllCategories();
+    }
 
     public List<ProductDto> saveProducts(List<ProductDto> productDtos) {
         List<Product> products = productDtos.stream()
