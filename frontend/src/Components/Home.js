@@ -1,4 +1,3 @@
-import React from "react";
 import {
   AppBar,
   Toolbar,
@@ -9,21 +8,11 @@ import {
   Paper,
   Avatar,
 } from "@mui/material";
+import React, { useEffect, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
-
-const categories = [
-  "Traditional",
-  "Gym",
-  "Western",
-  "Denim",
-  "Dresses",
-  "Handbags",
-  "Hats",
-  "Jeans",
-  "Jackets/Hoodies",
-  "Appliances",
-];
+import { getCategories } from "./Api";
+import { useNavigate } from "react-router-dom";
 
 const products = [
   {
@@ -53,6 +42,22 @@ const banners = [
 ];
 
 const Home = () => {
+  const [categories, setCategories] = useState([]);
+  const navigate = useNavigate();
+  useEffect(() => {
+    async function fetchCategories() {
+      try {
+        const data = await getCategories();
+        setCategories(data);
+      } catch (error) {
+        console.log("No Categories Fetched", error);
+      }
+    }
+    fetchCategories();
+  }, []);
+  const handleCategoryClick = (category) => {
+    navigate(`/products?category=${category}`);
+  };
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
       <Box
@@ -100,30 +105,36 @@ const Home = () => {
           padding: 2,
         }}
       >
-        {categories.map((category, index) => (
-          <Box
-            key={index}
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-            }}
-          >
-            <Avatar
+        {categories.length > 0 ? (
+          categories.map((category, index) => (
+            <Box
+              key={index}
               sx={{
-                width: 45, // Size of circular image
-                height: 45,
-                border: "2px solid #ddd",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                cursor: "pointer",
               }}
-            />
-            <Typography
-              variant="body1"
-              sx={{ mt: 1, fontSize: "14px", fontWeight: 500 }}
+              onClick={() => handleCategoryClick(category)}
             >
-              {category}
-            </Typography>
-          </Box>
-        ))}
+              <Avatar
+                sx={{
+                  width: 45,
+                  height: 45,
+                  border: "2px solid #ddd",
+                }}
+              />
+              <Typography
+                variant="body1"
+                sx={{ mt: 1, fontSize: "14px", fontWeight: 500 }}
+              >
+                {category}
+              </Typography>
+            </Box>
+          ))
+        ) : (
+          <Typography>Loading categories...</Typography>
+        )}
       </Box>
 
       {/* Product Cards Grid */}

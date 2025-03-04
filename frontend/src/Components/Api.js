@@ -100,6 +100,26 @@ export const getProducts = async () => {
   }
 };
 
+export const getCategories = async () => {
+  try {
+    const response = await apiClient.get(`/products/category`);
+    return response.data;
+  } catch (error) {
+    console.log("Error fetching categories", error);
+    throw error;
+  }
+};
+
+export const getProductsByCategories = async (category) => {
+  try {
+    const response = await apiClient.get(`/products/category/${category}`);
+    return response.data;
+  } catch (error) {
+    console.log("Error while fetched Products by Categories", error);
+    throw error;
+  }
+};
+
 export const addToFavorites = async (productId) => {
   try {
     if (!productId) throw new Error("Product ID is required");
