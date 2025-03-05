@@ -29,8 +29,8 @@ This is a full-stack **E-Commerce Platform** built with **Spring Boot (Java Back
 ### Backend (Spring Boot)
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/ecommerce-springboot-react.git
-   cd ecommerce-springboot-react
+   git clone https://github.com/Mythili-Aitha/ecommerce-platform.git
+   cd ecommerce-platform
    ```
 2. Configure **application.properties** or **application.yml** for MySQL connection.
 3. Build and run the project:
