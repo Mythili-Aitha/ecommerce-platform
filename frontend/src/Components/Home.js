@@ -1,100 +1,91 @@
 import {
-  AppBar,
-  Toolbar,
-  Button,
   Box,
   Typography,
   Grid,
-  Paper,
   Avatar,
+  useMediaQuery,
+  Card,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
-import { Swiper, SwiperSlide } from "swiper/react";
-import "swiper/css";
-import { getCategories } from "./Api";
+import { getCategories, getProducts, getProductsByCategories } from "./Api";
 import { useNavigate } from "react-router-dom";
-
-const products = [
-  {
-    id: 1,
-    name: "Product 1",
-    image:
-      "https://cdn.dummyjson.com/products/images/beauty/Essence%20Mascara%20Lash%20Princess/thumbnail.png",
-  },
-  {
-    id: 2,
-    name: "Product 2",
-    image:
-      "https://cdn.dummyjson.com/products/images/beauty/Eyeshadow%20Palette%20with%20Mirror/thumbnail.png",
-  },
-  {
-    id: 3,
-    name: "Product 3",
-    image:
-      "https://cdn.dummyjson.com/products/images/beauty/Powder%20Canister/thumbnail.png",
-  },
-];
-
-const banners = [
-  "https://www.vecteezy.com/vector-art/11320988-big-sale-banner-design-with-podium-gradient-background-social-media-post-product-advertisement-design-special-discount-design",
-  "https://www.vecteezy.com/vector-art/2038675-flash-sale-discount-banner-promotion-background",
-  "https://www.vecteezy.com/vector-art/3692287-big-sale-discount-promotion-banner-template-with-blank-product-podium-scene-vector-graphic",
-];
 
 const Home = () => {
   const [categories, setCategories] = useState([]);
+  const [products, setProducts] = useState([]);
   const navigate = useNavigate();
+
+  const isMobile = useMediaQuery("(max-width:600px)");
+  const isTablet = useMediaQuery("(min-width:601px) and (max-width:1024px)");
+  const isLaptop = useMediaQuery("(min-width:1025px)");
+
   useEffect(() => {
     async function fetchCategories() {
       try {
         const data = await getCategories();
-        setCategories(data);
+        const categoriesWithImages = await Promise.all(
+          data.map(async (category) => {
+            const products = await getProductsByCategories(category); // Fetch category products
+            return {
+              name: category,
+              image:
+                products.length > 0
+                  ? products[0].images[0]
+                  : "https://via.placeholder.com/100",
+            };
+          })
+        );
+        setCategories(categoriesWithImages);
       } catch (error) {
         console.log("No Categories Fetched", error);
       }
     }
     fetchCategories();
   }, []);
-  const handleCategoryClick = (category) => {
-    navigate(`/products?category=${category}`);
-  };
+
+  useEffect(() => {
+    async function fetchProducts() {
+      try {
+        const savedProducts = localStorage.getItem("randomProducts");
+        if (savedProducts) {
+          setProducts(JSON.parse(savedProducts));
+          return;
+        }
+        const allProducts = await getProducts();
+        const shuffledProducts = [...allProducts].sort(
+          () => Math.random() - 0.5
+        );
+        const productCount = isMobile
+          ? 4 + Math.floor(Math.random() * 3)
+          : isTablet
+          ? 6 + Math.floor(Math.random() * 3)
+          : 10;
+        const selectedProducts = shuffledProducts
+          .slice(0, productCount)
+          .map((product) => ({
+            id: product.id,
+            name: product.name,
+            image:
+              product.image ||
+              (Array.isArray(product.images)
+                ? product.images[0]
+                : "https://via.placeholder.com/150"),
+          }));
+
+        setProducts(selectedProducts);
+        localStorage.setItem(
+          "randomProducts",
+          JSON.stringify(selectedProducts)
+        ); // Store in localStorage
+      } catch (error) {
+        console.log("Error fetching products", error);
+      }
+    }
+    fetchProducts();
+  }, []);
+
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
-      <Box
-        sx={{
-          margin: "auto",
-          mt: 2,
-          display: "flex",
-          flexDirection: "column",
-          gap: 1,
-          maxWidth: "800px",
-        }}
-      >
-        {/* Promotional Banner */}
-        <Swiper
-          style={{ maxWidth: "100vw", overflow: "hidden" }}
-          slidesPerView={1}
-          centeredSlides={true}
-          loop={true}
-          autoplay={{ delay: 3000 }}
-        >
-          {banners.map((image, index) => (
-            <SwiperSlide key={index}>
-              <img src={image} alt={`Banner ${index + 1}`} width="100%" />
-            </SwiperSlide>
-          ))}
-        </Swiper>
-
-        <AppBar position="static" sx={{ background: "#fff", padding: 1 }}>
-          <Toolbar sx={{ justifyContent: "center", gap: 2 }}>
-            <Button variant="outlined">Women</Button>
-            <Button variant="outlined">Men</Button>
-            <Button variant="outlined">Kids</Button>
-            <Button variant="outlined">Sale</Button>
-          </Toolbar>
-        </AppBar>
-      </Box>
-
       {/* Categories */}
       <Box
         sx={{
@@ -115,9 +106,10 @@ const Home = () => {
                 alignItems: "center",
                 cursor: "pointer",
               }}
-              onClick={() => handleCategoryClick(category)}
+              onClick={() => navigate(`/products?category=${category.name}`)}
             >
               <Avatar
+                src={category.image}
                 sx={{
                   width: 45,
                   height: 45,
@@ -128,7 +120,7 @@ const Home = () => {
                 variant="body1"
                 sx={{ mt: 1, fontSize: "14px", fontWeight: 500 }}
               >
-                {category}
+                {category.name}
               </Typography>
             </Box>
           ))
@@ -142,7 +134,13 @@ const Home = () => {
         <Grid container spacing={2}>
           {products.map((product) => (
             <Grid item xs={6} sm={4} md={3} key={product.id}>
-              <Paper sx={{ padding: 2, textAlign: "center" }}>
+              <Card
+                sx={{ padding: 2, textAlign: "center" }}
+                onClick={() => {
+                  console.log("Navigating to product:", product.id);
+                  navigate(`/products/${product.id}`);
+                }}
+              >
                 <img
                   src={product.image}
                   alt={product.name}
@@ -150,7 +148,7 @@ const Home = () => {
                   style={{ borderRadius: "8px" }}
                 />
                 <Typography variant="h6">{product.name}</Typography>
-              </Paper>
+              </Card>
             </Grid>
           ))}
         </Grid>

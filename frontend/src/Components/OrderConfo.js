@@ -9,30 +9,62 @@ import {
   Radio,
   Snackbar,
 } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import { useNavigate } from "react-router-dom";
-import { Actions } from "./Actions.js";
+import { Actions } from "./Actions";
 
 export default function OrderConfo() {
   const navigate = useNavigate();
   const {
-    selectedAddress,
-    selectedPayment,
-    paymentMethods,
     snackbarOpen,
     snackbarMessage,
-    selectedItems,
     totalPrice,
     setSnackbarOpen,
-    setSelectedPayment,
-    handleContinue,
+    setSnackbarMessage,
+    handlePlaceOrder,
   } = Actions();
+  const storedAddress = localStorage.getItem("selectedAddress");
+  const selectedAddress = storedAddress ? JSON.parse(storedAddress) : null;
+  const storedPayment = localStorage.getItem("selectedPayment");
+  const selectedPayment = storedPayment ? JSON.parse(storedPayment) : null;
+  const storedPaymentMethods = localStorage.getItem("paymentMethods");
+  const paymentMethods = storedPaymentMethods
+    ? JSON.parse(storedPaymentMethods)
+    : [];
+
+  const storedUser = JSON.parse(localStorage.getItem("user"));
+  const storedItems = localStorage.getItem("selectedItems");
+  const selectedItems = storedItems ? JSON.parse(storedItems) : [];
   const tax = totalPrice * 0.1;
   const total = totalPrice + tax;
 
-  const storedUser = JSON.parse(localStorage.getItem("user"));
+  const handlePaymentSelection = (e) => {
+    const selected = paymentMethods.find((p) => p.paymentId === e.target.value);
+    localStorage.setItem(
+      "selectedPayment",
+      JSON.stringify(selected || e.target.value)
+    );
+    navigate("/oconfo");
+  };
+
+  const handleContinue = () => {
+    if (!selectedAddress) {
+      setSnackbarMessage("Please add an address before continuing.");
+      setSnackbarOpen(true);
+      return;
+    } else if (selectedItems.length === 0) {
+      setSnackbarMessage("Please select items to checkout");
+      setSnackbarOpen(true);
+    } else if (!selectedPayment) {
+      setSnackbarMessage("Please select a payment method.");
+      setSnackbarOpen(true);
+      return;
+    } else {
+      handlePlaceOrder(selectedItems, totalPrice);
+    }
+  };
 
   return (
     <>
@@ -136,17 +168,8 @@ export default function OrderConfo() {
             <RadioGroup
               aria-labelledby="demo-radio-buttons-group-label"
               name="payment-method"
-              value={selectedPayment?.paymentId || selectedPayment} // ✅ Ensure correct value
-              onChange={(e) => {
-                const selected = paymentMethods.find(
-                  (p) => p.paymentId == e.target.value
-                );
-                setSelectedPayment(selected || e.target.value);
-                localStorage.setItem(
-                  "selectedPayment",
-                  JSON.stringify(selected || e.target.value)
-                );
-              }}
+              value={selectedPayment?.paymentId || selectedPayment}
+              onChange={handlePaymentSelection}
             >
               <FormControlLabel
                 value="pay pal"
@@ -167,12 +190,11 @@ export default function OrderConfo() {
                     sx={{ display: "flex", alignItems: "center" }}
                   >
                     <FormControlLabel
-                      value={payment.paymentId} // ✅ Use correct value
+                      value={payment.paymentId}
                       control={<Radio />}
                       label={`Card Ending in **** ${payment.cardNumber.slice(
                         -4
                       )}`}
-                      checked={selectedPayment?.paymentId === payment.paymentId}
                     />
                     <Button
                       variant="outlined"
@@ -183,13 +205,14 @@ export default function OrderConfo() {
                     </Button>
                   </Box>
                 ))}
-
-              <FormControlLabel
-                value="credit card"
-                control={<Radio />}
-                label="Credit/Debit Card"
-                onClick={() => navigate("/payments")}
-              />
+              {paymentMethods.length === 0 && (
+                <FormControlLabel
+                  value="credit card"
+                  control={<Radio />}
+                  label="Credit/Debit Card"
+                  onClick={() => navigate("/payments")}
+                />
+              )}
               <FormControlLabel
                 value="venmo"
                 control={<Radio />}

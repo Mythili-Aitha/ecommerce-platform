@@ -18,23 +18,51 @@ import SearchIcon from "@mui/icons-material/Search";
 import LogoutIcon from "@mui/icons-material/Logout";
 import LoginIcon from "@mui/icons-material/Login";
 import PersonIcon from "@mui/icons-material/Person";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
+import FilterListIcon from "@mui/icons-material/FilterList";
 import { Actions } from "./Actions";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
-export default function Header() {
+export default function Header({ searchTerm, setSearchTerm, toggleFilter }) {
   const navigate = useNavigate();
+  const location = useLocation();
+  const getTabValue = () => {
+    switch (location.pathname) {
+      case "/home":
+        return "2";
+      case "/products":
+        return "3";
+      default:
+        return false;
+    }
+  };
   const {
-    value,
     open,
     user,
     totalQuantity,
-    setUser,
     handleSignOut,
     handleChange,
     toggleDrawer,
   } = Actions();
+
+  const showSearch = ["/home", "/products", "/products/:id"].some((path) =>
+    location.pathname.includes(path)
+  );
+  const showFilter = location.pathname === "/products";
+  const showBackButton = location.pathname !== "/home";
+  const showDrawer = location.pathname === "/home";
+  const pageTitles = {
+    "/favorite": "Favorites",
+    "/cart": "Cart",
+    "/orders": "Orders",
+    "/orders/:orderId": "Orders Details",
+  };
+  const pageTitle =
+    pageTitles[location.pathname] ||
+    (location.pathname.includes("/products/:id") ? "Product Details" : "");
+
   const items = (
     <Box
       sx={{
@@ -104,22 +132,30 @@ export default function Header() {
             justifyContent: "space-between",
           }}
         >
-          <Drawer
-            sx={{ "& .MuiPaper-root": { width: 250 } }}
-            anchor={"left"}
-            open={open}
-            onClose={toggleDrawer(false)}
-          >
-            {items}
-          </Drawer>
+          {showDrawer && (
+            <>
+              <MenuIcon fontSize="large" onClick={toggleDrawer(true)} />
+              <Drawer
+                sx={{ "& .MuiPaper-root": { width: 250 } }}
+                anchor={"left"}
+                open={open}
+                onClose={toggleDrawer(false)}
+              >
+                {items}
+              </Drawer>
+            </>
+          )}
           <Box sx={{ display: "flex", alignItems: "center", width: "auto" }}>
             <Tabs
-              value={value}
+              value={getTabValue()}
               onChange={handleChange}
               aria-label="Dashboard Tabs"
             >
-              <MenuIcon fontSize="large" onClick={toggleDrawer(true)} />
-              {/* <Tab label="All" value="1" onClick={() => navigate("/")} /> */}
+              {showBackButton && (
+                <IconButton onClick={() => navigate(-1)}>
+                  <ArrowBackIcon />
+                </IconButton>
+              )}
               <Tab label="Home" value="2" onClick={() => navigate("/home")} />
               <Tab
                 label="Products"
@@ -128,20 +164,33 @@ export default function Header() {
               />
             </Tabs>
           </Box>
-          <Box sx={{ display: "flex", alignItems: "center", width: "auto" }}>
-            <TextField
-              fullWidth
-              placeholder="Search..."
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <SearchIcon />
-                  </InputAdornment>
-                ),
-              }}
-            />
+
+          <Box sx={{ display: "flex", alignItems: "center" }}>
+            {pageTitle ? (
+              <Typography variant="h6">{pageTitle}</Typography>
+            ) : (
+              showSearch && (
+                <TextField
+                  placeholder="Search..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <SearchIcon />
+                      </InputAdornment>
+                    ),
+                  }}
+                />
+              )
+            )}
           </Box>
           <Box sx={{ display: "flex", alignItems: "flex-end", gap: 3 }}>
+            {showFilter && (
+              <Button onClick={toggleFilter}>
+                <FilterListIcon /> Filter
+              </Button>
+            )}
             {user ? (
               <IconButton
                 color="inherit"

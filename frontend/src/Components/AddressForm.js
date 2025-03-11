@@ -15,12 +15,15 @@ import {
   RadioGroup,
   TextField,
 } from "@mui/material";
-import { Actions } from "./Actions.js";
+import { useNavigate } from "react-router-dom";
 
 const AddressForm = () => {
+  const storedAddress = localStorage.getItem("selectedAddress");
+  const parsedAddress = storedAddress ? JSON.parse(storedAddress) : null;
   const [addresses, setAddresses] = useState([]);
-  const [selectedValue, setSelectedValue] = useState("");
-  const { setSelectedAddress } = Actions();
+  const [selectedAddress, setSelectedAddress] = useState(parsedAddress);
+  const [selectedValue, setSelectedValue] = useState(parsedAddress?.id || "");
+  const [editAddress, setEditAddress] = useState(null);
   const [formData, setFormData] = useState({
     street: "",
     city: "",
@@ -29,14 +32,9 @@ const AddressForm = () => {
     country: "",
     addressType: "HOME",
   });
+  const navigate = useNavigate();
   const storedUser = JSON.parse(localStorage.getItem("user"));
   const userId = storedUser?.userId;
-  const handleChange = (e) => {
-    const selected = addresses.find((address) => address.id == e.target.value);
-    setSelectedValue(e.target.value);
-    setSelectedAddress(selected);
-    localStorage.setItem("selectedAddress", JSON.stringify(selected));
-  };
 
   useEffect(() => {
     fetchAddresses();
@@ -45,20 +43,81 @@ const AddressForm = () => {
   const fetchAddresses = async () => {
     try {
       const response = await getUserAddresses(userId);
-      setAddresses(response.data);
+      console.log("response", response);
+      console.log("Response Data:", response?.data);
+      setAddresses(Array.isArray(response) ? response : []);
+      const storedSelected = localStorage.getItem("selectedAddress");
+      const parsedSelected = storedSelected ? JSON.parse(storedSelected) : null;
+
+      if (parsedSelected) {
+        const isAddressStillValid = response.data.some(
+          (address) => address.id === parsedSelected.id
+        );
+        if (isAddressStillValid) {
+          setSelectedValue(parsedSelected.id);
+          setSelectedAddress(parsedSelected);
+        } else {
+          localStorage.removeItem("selectedAddress");
+          setSelectedAddress(null);
+          setSelectedValue("");
+        }
+      }
     } catch (error) {
       console.error("Error fetching addresses", error);
+      setAddresses([]);
     }
   };
+
+  const handleChange = (e) => {
+    const selectedId = Number(e.target.value);
+    const selected = addresses.find((address) => address.id === selectedId);
+    setSelectedValue(e.target.value);
+    setSelectedAddress(selected);
+    localStorage.setItem("selectedAddress", JSON.stringify(selected));
+    navigate("/oconfo");
+  };
+
+  const handleEdit = (address) => {
+    if (!address) return;
+    console.log("Editing Address:", address);
+    setEditAddress(address);
+  };
+
+  useEffect(() => {
+    if (editAddress) {
+      setFormData({
+        street: editAddress.street || "",
+        city: editAddress.city || "",
+        state: editAddress.state || "",
+        zip: editAddress.zip || "",
+        country: editAddress.country || "",
+        addressType: editAddress.addressType || "HOME",
+      });
+    }
+  }, [editAddress]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await addAddress({ ...formData, userId });
+      if (editAddress) {
+        await updateAddress(editAddress.id, { ...formData, userId });
+        alert("Address updated successfully!");
+        setEditAddress(null);
+      } else {
+        await addAddress({ ...formData, userId });
+        alert("Address added successfully!");
+      }
       fetchAddresses();
-      alert("Address added successfully!");
+      setFormData({
+        street: "",
+        city: "",
+        state: "",
+        zip: "",
+        country: "",
+        addressType: "HOME",
+      });
     } catch (error) {
-      console.error("Error adding address", error);
+      console.error("Error saving address", error);
     }
   };
 
@@ -82,6 +141,7 @@ const AddressForm = () => {
           <TextField
             type="text"
             placeholder="Street"
+            value={formData.street || ""}
             onChange={(e) =>
               setFormData({ ...formData, street: e.target.value })
             }
@@ -90,12 +150,14 @@ const AddressForm = () => {
           <TextField
             type="text"
             placeholder="City"
+            value={formData.city || ""}
             onChange={(e) => setFormData({ ...formData, city: e.target.value })}
             required
           />
           <TextField
             type="text"
             placeholder="State"
+            value={formData.state || ""}
             onChange={(e) =>
               setFormData({ ...formData, state: e.target.value })
             }
@@ -104,12 +166,14 @@ const AddressForm = () => {
           <TextField
             type="text"
             placeholder="Zip Code"
+            value={formData.zip || ""}
             onChange={(e) => setFormData({ ...formData, zip: e.target.value })}
             required
           />
           <TextField
             type="text"
             placeholder="Country"
+            value={formData.country || ""}
             onChange={(e) =>
               setFormData({ ...formData, country: e.target.value })
             }
@@ -117,13 +181,13 @@ const AddressForm = () => {
           />
 
           <Button variant="contained" type="submit">
-            Add Address
+            {editAddress ? "Update Address" : "Add Address"}
           </Button>
         </Box>
       </form>
 
       <FormControl>
-        <FormLabel id="demo-controlled-radio-buttons-group">Address</FormLabel>
+        <FormLabel>Address</FormLabel>
         <RadioGroup value={selectedValue} onChange={handleChange}>
           {addresses.map((address) => (
             <div
@@ -135,6 +199,7 @@ const AddressForm = () => {
                 control={<Radio />}
                 label={`${address.street}, ${address.city}, ${address.state} - ${address.zip} (${address.addressType})`}
               />
+              <Button onClick={() => handleEdit(address)}>Edit</Button>{" "}
               <Button onClick={() => handleDelete(address.id)}>Delete</Button>
             </div>
           ))}

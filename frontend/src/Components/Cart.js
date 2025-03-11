@@ -8,8 +8,6 @@ import {
   Checkbox,
 } from "@mui/material";
 import React from "react";
-import CloseIcon from "@mui/icons-material/Close";
-import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import { useNavigate } from "react-router-dom";
 import Add from "@mui/icons-material/Add";
 import Remove from "@mui/icons-material/Remove";
@@ -30,40 +28,6 @@ export default function Cart() {
   }
   return (
     <>
-      <Card
-        sx={{
-          display: "flex",
-          flexDirection: "row",
-          gap: 2,
-          justifyContent: "space-between",
-          width: "100%",
-        }}
-      >
-        <Button
-          sx={{ display: "flex", alignItems: "flex-start" }}
-          onClick={() => {
-            navigate(-1);
-          }}
-        >
-          <CloseIcon />
-        </Button>
-        <h1>Cart</h1>
-        <Box sx={{ display: "flex", flexDirection: "row", gap: 1 }}>
-          <IconButton
-            color="inherit"
-            sx={{ flexDirection: "column" }}
-            onClick={() => navigate("/favorite")}
-          >
-            <FavoriteBorderIcon />
-            <Typography variant="caption">Favorites</Typography>
-          </IconButton>
-        </Box>
-        <Box sx={{ display: "flex", justifyContent: "flex-end", p: 2 }}>
-          <Button variant="contained" onClick={() => navigate("/oconfo")}>
-            CHECKOUT
-          </Button>
-        </Box>
-      </Card>
       {cart.length === 0 ? (
         <Typography sx={{ textAlign: "center", mt: 3 }}>
           Your cart is empty
@@ -121,6 +85,11 @@ export default function Cart() {
         ))
       )}
       <h3>Total Price: ${totalPrice.toFixed(2)}</h3>
+      <Box sx={{ display: "flex", justifyContent: "flex-end", p: 2 }}>
+        <Button variant="contained" onClick={() => navigate("/oconfo")}>
+          CHECKOUT
+        </Button>
+      </Box>
     </>
   );
 }

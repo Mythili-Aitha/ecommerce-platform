@@ -24,35 +24,6 @@ export default function Favorites() {
   } = Actions();
   return (
     <>
-      <Card
-        sx={{
-          display: "flex",
-          gap: 2,
-          width: "100%",
-        }}
-      >
-        <Button
-          sx={{ display: "flex", alignItems: "flex-start" }}
-          onClick={() => {
-            navigate(-1);
-          }}
-        >
-          <KeyboardArrowLeftIcon fontSize="large" />
-        </Button>
-        <h1>Favorites</h1>
-        <Box sx={{ display: "flex", alignItems: "flex-end" }}>
-          <IconButton
-            color="inherit"
-            sx={{ flexDirection: "column" }}
-            onClick={() => navigate("/cart")}
-          >
-            <Badge badgeContent={totalQuantity} color="primary">
-              <ShoppingCartIcon color="action" />
-            </Badge>
-            <Typography variant="caption">Cart</Typography>
-          </IconButton>
-        </Box>
-      </Card>
       {favorites.length === 0 ? (
         <Typography sx={{ textAlign: "center", mt: 3 }}>
           No favorites added
