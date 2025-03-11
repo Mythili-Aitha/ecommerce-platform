@@ -316,9 +316,12 @@ public class EService {
             return orderDetails;
         }).collect(Collectors.toList());
 
-        order.setOrderDetails(orderDetailsList);
-        orderRepo.save(order);
-        return Mapper.toOrderResponseDto(order);
+        orderDetailsRepo.saveAll(orderDetailsList);
+        cartRepo.deleteByUserIdAndProductIds(user.getUserId(),
+                orderDetailsList.stream().map(d -> d.getProduct().getId()).collect(Collectors.toList()));
+        savedOrder.setOrderDetails(orderDetailsList);
+        orderRepo.save(savedOrder);
+        return Mapper.toOrderResponseDto(savedOrder);
     }
     public OrderResponseDto getOrderById(Long orderId) {
         Order order = orderRepo.findById(orderId)

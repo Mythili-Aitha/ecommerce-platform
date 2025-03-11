@@ -33,6 +33,6 @@ public class Order {
     private List<OrderDetails> orderDetails= new ArrayList<>();
     public void setOrderDetails(List<OrderDetails> orderDetails) {
         this.orderDetails = orderDetails;
-        orderDetails.forEach(details -> details.setOrder(this)); // ✅ Ensures `OrderDetails` has the correct reference
+        orderDetails.forEach(details -> details.setOrder(this));
     }
 }

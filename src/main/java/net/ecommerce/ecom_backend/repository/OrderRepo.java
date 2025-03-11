@@ -9,4 +9,6 @@ import java.util.List;
 @Repository
 public interface OrderRepo extends JpaRepository<Order, Long> {
     List<Order> findByUserUserId(Long userId);
+//    boolean existsByUserUserIdAndProductId(Long userId, Long productId);
+
 }
