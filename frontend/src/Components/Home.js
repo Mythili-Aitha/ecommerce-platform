@@ -9,10 +9,14 @@ import {
 import React, { useEffect, useState } from "react";
 import { getCategories, getProducts, getProductsByCategories } from "./Api";
 import { useNavigate } from "react-router-dom";
+import { useSearchFilter } from "./SearchFilterProvider";
 
 const Home = () => {
+  const { searchTerm } = useSearchFilter();
+  const [filteredProducts, setFilteredProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [products, setProducts] = useState([]);
+  console.log("products", products);
   const navigate = useNavigate();
 
   const isMobile = useMediaQuery("(max-width:600px)");
@@ -83,6 +87,18 @@ const Home = () => {
     }
     fetchProducts();
   }, []);
+
+  useEffect(() => {
+    if (!searchTerm.trim()) {
+      setFilteredProducts(products);
+    } else {
+      setFilteredProducts(
+        products.filter((product) =>
+          product.name.toLowerCase().includes(searchTerm.toLowerCase())
+        )
+      );
+    }
+  }, [searchTerm, products]);
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>

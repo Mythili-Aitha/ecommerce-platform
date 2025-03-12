@@ -24,13 +24,15 @@ import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import { Actions } from "./Actions";
 import { useLocation, useNavigate } from "react-router-dom";
+import { useSearchFilter } from "./SearchFilterProvider";
 
-export default function Header({ searchTerm, setSearchTerm, toggleFilter }) {
+export default function Header() {
+  const { searchTerm, setSearchTerm, toggleFilter } = useSearchFilter();
   const navigate = useNavigate();
   const location = useLocation();
   const getTabValue = () => {
     switch (location.pathname) {
-      case "/home":
+      case "/":
         return "2";
       case "/products":
         return "3";
@@ -47,12 +49,12 @@ export default function Header({ searchTerm, setSearchTerm, toggleFilter }) {
     toggleDrawer,
   } = Actions();
 
-  const showSearch = ["/home", "/products", "/products/:id"].some((path) =>
+  const showSearch = ["/", "/products", "/products/:id"].some((path) =>
     location.pathname.includes(path)
   );
   const showFilter = location.pathname === "/products";
-  const showBackButton = location.pathname !== "/home";
-  const showDrawer = location.pathname === "/home";
+  const showBackButton = location.pathname !== "/";
+  const showDrawer = location.pathname === "/";
   const pageTitles = {
     "/favorite": "Favorites",
     "/cart": "Cart",
@@ -75,7 +77,7 @@ export default function Header({ searchTerm, setSearchTerm, toggleFilter }) {
       role="presentation"
       onClick={toggleDrawer(false)}
     >
-      <Button onClick={() => navigate("/home")}>Home</Button>
+      <Button onClick={() => navigate("/")}>Home</Button>
       <Button onClick={() => navigate("/products")}>Products</Button>
       <Button>Catergories</Button>
       <Divider />
@@ -156,7 +158,7 @@ export default function Header({ searchTerm, setSearchTerm, toggleFilter }) {
                   <ArrowBackIcon />
                 </IconButton>
               )}
-              <Tab label="Home" value="2" onClick={() => navigate("/home")} />
+              <Tab label="Home" value="2" onClick={() => navigate("/")} />
               <Tab
                 label="Products"
                 value="3"

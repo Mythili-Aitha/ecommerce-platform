@@ -23,6 +23,8 @@ import Contact from "./Components/Contact.js";
 import Policies from "./Components/Policies.js";
 import Media from "./Components/Media.js";
 import { CartProvider } from "./Components/CartProvider.js";
+import { SearchFilterProvider } from "./Components/SearchFilterProvider.js";
+import Admin from "./Components/Admin.js";
 
 function App() {
   const location = useLocation();
@@ -30,41 +32,43 @@ function App() {
 
   return (
     <CartProvider>
-      <Layout>
-        <TransitionGroup>
-          <CSSTransition
-            key={location.key}
-            classNames="fade"
-            timeout={300}
-            nodeRef={nodeRef}
-          >
-            <div ref={nodeRef}>
-              <Routes location={location}>
-                <Route path="/" element={<Home />} />
-                <Route path="/home" element={<Home />} />
-                <Route path="/auth" element={<Login />} />
-                <Route path="/cart" element={<Cart />} />
-                <Route path="/products" element={<Products />} />
-                <Route path="/products/:id" element={<ProductDetails />} />
-                <Route path="/favorite" element={<Favorites />} />
-                <Route path="/oconfo" element={<OrderConfo />} />
-                <Route path="/address" element={<AddressForm />} />
-                <Route path="/payments" element={<PaymentForm />} />
-                <Route path="/orderconfo" element={<OrderConfirmation />} />
-                <Route path="/orders" element={<Orders />} />
-                <Route path="/orders/:orderId" element={<OrderDetails />} />
-                <Route path="/profile" element={<Profile />} />
-                <Route path="/history" element={<History />} />
-                <Route path="/about" element={<About />} />
-                <Route path="/faq" element={<Faq />} />
-                <Route path="/contact" element={<Contact />} />
-                <Route path="/policy" element={<Policies />} />
-                <Route path="/media" element={<Media />} />
-              </Routes>
-            </div>
-          </CSSTransition>
-        </TransitionGroup>
-      </Layout>
+      <SearchFilterProvider>
+        <Layout>
+          <TransitionGroup>
+            <CSSTransition
+              key={location.key}
+              classNames="fade"
+              timeout={300}
+              nodeRef={nodeRef}
+            >
+              <div ref={nodeRef}>
+                <Routes location={location}>
+                  <Route path="/" element={<Home />} />
+                  <Route path="/admin" element={<Admin />} />
+                  <Route path="/auth" element={<Login />} />
+                  <Route path="/cart" element={<Cart />} />
+                  <Route path="/products" element={<Products />} />
+                  <Route path="/products/:id" element={<ProductDetails />} />
+                  <Route path="/favorite" element={<Favorites />} />
+                  <Route path="/oconfo" element={<OrderConfo />} />
+                  <Route path="/address" element={<AddressForm />} />
+                  <Route path="/payments" element={<PaymentForm />} />
+                  <Route path="/orderconfo" element={<OrderConfirmation />} />
+                  <Route path="/orders" element={<Orders />} />
+                  <Route path="/orders/:orderId" element={<OrderDetails />} />
+                  <Route path="/profile" element={<Profile />} />
+                  <Route path="/history" element={<History />} />
+                  <Route path="/about" element={<About />} />
+                  <Route path="/faq" element={<Faq />} />
+                  <Route path="/contact" element={<Contact />} />
+                  <Route path="/policy" element={<Policies />} />
+                  <Route path="/media" element={<Media />} />
+                </Routes>
+              </div>
+            </CSSTransition>
+          </TransitionGroup>
+        </Layout>
+      </SearchFilterProvider>
     </CartProvider>
   );
 }

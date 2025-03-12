@@ -1,17 +1,19 @@
-import React, { useState } from "react";
+import React from "react";
 import { matchPath, useLocation } from "react-router-dom";
 import { Box } from "@mui/material";
 import Header from "./Header";
 import Footer from "./Footer";
+import { useSearchFilter } from "./SearchFilterProvider";
 
 export default function Layout({ children }) {
   const location = useLocation();
-  const hiddenHeaderPaths = ["/auth"];
+  console.log("🔥 Layout is rendering at:", location.pathname);
+  const hiddenHeaderPaths = ["/auth", "/admin"];
   const hideHeader =
     hiddenHeaderPaths.includes(location.pathname) ||
     matchPath("/products/:id", location.pathname);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [filterOpen, setFilterOpen] = useState(false);
+  const { searchTerm, setSearchTerm, filterOpen, toggleFilter } =
+    useSearchFilter();
   return (
     <Box sx={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
       {!hideHeader && (
@@ -27,16 +29,18 @@ export default function Layout({ children }) {
           <Header
             searchTerm={searchTerm}
             setSearchTerm={setSearchTerm}
-            toggleFilter={() => setFilterOpen(true)}
+            toggleFilter={toggleFilter}
           />
         </Box>
       )}
       <Box component="main" sx={{ flex: 1, width: "100%", p: 3 }}>
-        {React.cloneElement(children, {
+        {/* {React.cloneElement(children, {
           searchTerm,
+          setSearchTerm,
           filterOpen,
-          setFilterOpen,
-        })}
+          setFilterOpen: (value) => setFilterOpen(value),
+        })} */}
+        {children}
       </Box>
       {!hideHeader && (
         <Box sx={{ mt: "auto", width: "100%" }}>

@@ -1,35 +1,29 @@
 import {
   Box,
   Button,
-  ButtonGroup,
   Card,
-  IconButton,
-  InputAdornment,
-  TextField,
   Typography,
   Grid,
   CardMedia,
-  Badge,
   Pagination,
 } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
-import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import FilterDrawer from "./FilterDrawer";
 import ScrollTopButton from "./ScrollTopButton";
 import { getProducts, getProductsByCategories } from "../Components/Api.js";
 import { Actions } from "./Actions.js";
+import { useSearchFilter } from "./SearchFilterProvider.js";
 
-export default function Products({ searchTerm, filterOpen, setFilterOpen }) {
+export default function Products() {
+  const { searchTerm, filterOpen, setFilterOpen } = useSearchFilter();
   const navigate = useNavigate();
-  const [open, setOpen] = useState(false);
   const [products, setProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const { totalQuantity, addToHistory } = Actions();
+  const { addToHistory } = Actions();
   const [curP, setCurrP] = useState(1);
   const productPerPage = 20;
   const location = useLocation();
@@ -55,20 +49,32 @@ export default function Products({ searchTerm, filterOpen, setFilterOpen }) {
     fetchProducts();
   }, [category]);
   const applyFilters = (filters) => {
-    const result = products.filter((product) =>
-      filters.includes(product.category)
-    );
+    let result = [...products];
+    if (filters.categories?.length) {
+      result = result.filter((product) =>
+        filters.categories.includes(product.category)
+      );
+    }
+    if (filters.minPrice !== undefined && filters.maxPrice !== undefined) {
+      result = result.filter(
+        (product) =>
+          product.price >= filters.minPrice && product.price <= filters.maxPrice
+      );
+    }
+
     setFilteredProducts(result);
     setCurrP(1);
   };
   useEffect(() => {
-    let filtered = [...products];
-    if (searchTerm?.trim()) {
-      filtered = filtered.filter((product) =>
-        product.title.toLowerCase().includes(searchTerm.toLowerCase())
+    if (!searchTerm?.trim()) {
+      setFilteredProducts(products);
+    } else {
+      setFilteredProducts(
+        products.filter((product) =>
+          product.title.toLowerCase().includes(searchTerm.toLowerCase())
+        )
       );
     }
-    setFilteredProducts(filtered);
     setCurrP(1);
   }, [searchTerm, products]);
 
@@ -78,18 +84,15 @@ export default function Products({ searchTerm, filterOpen, setFilterOpen }) {
     indexOfFirstProduct,
     indexOfLastProduct
   );
+  const handleToggleFilter = useCallback(() => {
+    setFilterOpen((prev) => !prev);
+  }, [setFilterOpen]);
 
   return (
     <>
       <FilterDrawer
         open={filterOpen}
-        toggleDrawer={() => {
-          if (typeof setFilterOpen === "function") {
-            setFilterOpen(false);
-          } else {
-            console.error("setFilterOpen is not a function");
-          }
-        }}
+        toggleDrawer={handleToggleFilter}
         applyFilters={applyFilters}
       />
       {loading ? (
