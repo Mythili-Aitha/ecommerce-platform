@@ -1,7 +1,7 @@
 import React, { useRef } from "react";
 import { Route, Routes, useLocation } from "react-router-dom";
 import { CSSTransition, TransitionGroup } from "react-transition-group";
-import Dashboard from "./Components/Dashboard.js";
+// import Dashboard from "./Components/Dashboard.js";
 import Login from "./Components/Login.js";
 import Cart from "./Components/Cart.js";
 import Favorites from "./Components/Favorites.js";
@@ -22,47 +22,50 @@ import Faq from "./Components/Faq.js";
 import Contact from "./Components/Contact.js";
 import Policies from "./Components/Policies.js";
 import Media from "./Components/Media.js";
+import { CartProvider } from "./Components/CartProvider.js";
 
 function App() {
   const location = useLocation();
   const nodeRef = useRef(null);
 
   return (
-    <Layout>
-      <TransitionGroup>
-        <CSSTransition
-          key={location.key}
-          classNames="fade"
-          timeout={300}
-          nodeRef={nodeRef}
-        >
-          <div ref={nodeRef}>
-            <Routes location={location}>
-              <Route path="/" element={<Dashboard />} />
-              <Route path="/home" element={<Home />} />
-              <Route path="/auth" element={<Login />} />
-              <Route path="/cart" element={<Cart />} />
-              <Route path="/products" element={<Products />} />
-              <Route path="/products/:id" element={<ProductDetails />} />
-              <Route path="/favorite" element={<Favorites />} />
-              <Route path="/oconfo" element={<OrderConfo />} />
-              <Route path="/address" element={<AddressForm />} />
-              <Route path="/payments" element={<PaymentForm />} />
-              <Route path="/orderconfo" element={<OrderConfirmation />} />
-              <Route path="/orders" element={<Orders />} />
-              <Route path="/orders/:orderId" element={<OrderDetails />} />
-              <Route path="/profile" element={<Profile />} />
-              <Route path="/history" element={<History />} />
-              <Route path="/about" element={<About />} />
-              <Route path="/faq" element={<Faq />} />
-              <Route path="/contact" element={<Contact />} />
-              <Route path="/policy" element={<Policies />} />
-              <Route path="/media" element={<Media />} />
-            </Routes>
-          </div>
-        </CSSTransition>
-      </TransitionGroup>
-    </Layout>
+    <CartProvider>
+      <Layout>
+        <TransitionGroup>
+          <CSSTransition
+            key={location.key}
+            classNames="fade"
+            timeout={300}
+            nodeRef={nodeRef}
+          >
+            <div ref={nodeRef}>
+              <Routes location={location}>
+                <Route path="/" element={<Home />} />
+                <Route path="/home" element={<Home />} />
+                <Route path="/auth" element={<Login />} />
+                <Route path="/cart" element={<Cart />} />
+                <Route path="/products" element={<Products />} />
+                <Route path="/products/:id" element={<ProductDetails />} />
+                <Route path="/favorite" element={<Favorites />} />
+                <Route path="/oconfo" element={<OrderConfo />} />
+                <Route path="/address" element={<AddressForm />} />
+                <Route path="/payments" element={<PaymentForm />} />
+                <Route path="/orderconfo" element={<OrderConfirmation />} />
+                <Route path="/orders" element={<Orders />} />
+                <Route path="/orders/:orderId" element={<OrderDetails />} />
+                <Route path="/profile" element={<Profile />} />
+                <Route path="/history" element={<History />} />
+                <Route path="/about" element={<About />} />
+                <Route path="/faq" element={<Faq />} />
+                <Route path="/contact" element={<Contact />} />
+                <Route path="/policy" element={<Policies />} />
+                <Route path="/media" element={<Media />} />
+              </Routes>
+            </div>
+          </CSSTransition>
+        </TransitionGroup>
+      </Layout>
+    </CartProvider>
   );
 }
 

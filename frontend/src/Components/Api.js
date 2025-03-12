@@ -57,7 +57,8 @@ export const getUserAddresses = async () => {
   try {
     const userId = getUserId();
     if (!userId) throw new Error("User ID is required");
-    return await apiClient.get(`/address/users/${userId}`);
+    const response = await apiClient.get(`/address/users/${userId}`);
+    return response.data;
   } catch (error) {
     console.error("Error fetching addresses:", error);
     throw error;

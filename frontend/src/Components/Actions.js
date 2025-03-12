@@ -4,26 +4,23 @@ import {
   getUserFavorites,
   addToFavorites,
   removeFromFavorites,
-  getUserCart,
   addToCart,
   updateCartQuantity,
   removeFromCart,
   placeOrder,
   getUserOrders,
   getUserDetails,
-  getCategories,
   updateUserProfile,
-  getUserAddresses,
-  getUserPaymentInfo,
   updateUserPassword,
 } from "../Components/Api.js";
 import { useNavigate } from "react-router-dom";
 import { Snackbar } from "@mui/material";
+import { useCart } from "./CartProvider.js";
 
 const userId = getUserId();
 
 export const Actions = () => {
-  const [cart, setCart] = useState([]);
+  const { cart, setCart } = useCart();
   const [favorites, setFavorites] = useState([]);
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
@@ -34,12 +31,7 @@ export const Actions = () => {
   const [updatedData, setUpdatedData] = useState({});
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
-  const [address, setAddresses] = useState([]);
-  const storedAddress = JSON.parse(localStorage.getItem("selectedAddress"));
-  const [selectedAddress, setSelectedAddress] = useState(storedAddress || null);
-  const storedPayment = localStorage.getItem("selectedPayment");
-  const [paymentMethods, setPaymentMethods] = useState([]);
-  const [selectedPayment, setSelectedPayment] = useState(null);
+
   const [history, setHistory] = useState(() => {
     const storedHistory = localStorage.getItem("history");
     return storedHistory ? JSON.parse(storedHistory) : [];
@@ -118,21 +110,6 @@ export const Actions = () => {
     getUserFavorites()
       .then((data) => setFavorites(data))
       .catch((error) => console.error("Error fetching favorites:", error));
-  }, []);
-  useEffect(() => {
-    getUserCart()
-      .then((data) => {
-        const storedSelectedItems =
-          JSON.parse(localStorage.getItem("selectedItems")) || [];
-        const updatedCart = data.map((item) => ({
-          ...item,
-          selected: storedSelectedItems.some(
-            (selected) => selected.productId === item.productId
-          ),
-        }));
-        setCart(updatedCart);
-      })
-      .catch((error) => console.error("Error fetching cart:", error));
   }, []);
 
   useEffect(() => {
@@ -288,8 +265,11 @@ export const Actions = () => {
           price: item.productPrice,
         })),
       };
-
       const response = await placeOrder(orderData);
+      const updatedCart = cart.filter(
+        (item) => !selectedItems.some((selected) => selected.id === item.id)
+      );
+      setCart(updatedCart);
       addToHistory("Placed Order", "Order placed successfully");
       navigate("/orderconfo", {
         state: { orderId: response.data.orderId },
@@ -297,52 +277,6 @@ export const Actions = () => {
     } catch (error) {
       console.error("Error placing order:", error);
       alert("Failed to place order!");
-    }
-  };
-
-  const handleContinue = () => {
-    if (!selectedAddress) {
-      setSnackbarMessage("Please add address");
-      setSnackbarOpen(true);
-    } else if (selectedItems.length === 0) {
-      setSnackbarMessage("Please select items to checkout");
-      setSnackbarOpen(true);
-    } else if (!selectedPayment) {
-      setSnackbarMessage("Please select a payment method");
-      setSnackbarOpen(true);
-    } else {
-      handlePlaceOrder(selectedItems, totalPrice);
-    }
-  };
-
-  useEffect(() => {
-    if (userId) {
-      fetchUserDetails();
-    } else {
-      console.error("No user ID found. Redirecting to login.");
-      navigate("/login");
-    }
-  }, []);
-
-  const fetchUserDetails = async () => {
-    try {
-      const addressResponse = await getUserAddresses(userId);
-      setAddresses(addressResponse.data);
-      const storedAddress = JSON.parse(localStorage.getItem("selectedAddress"));
-      if (storedAddress) {
-        setSelectedAddress(storedAddress);
-      } else if (addressResponse.data.length > 0) {
-        setSelectedAddress(addressResponse.data[0]);
-      }
-
-      const paymentResponse = await getUserPaymentInfo(userId);
-      setPaymentMethods(paymentResponse.data);
-
-      if (paymentResponse.data.length > 0) {
-        setSelectedPayment(paymentResponse.data[0]);
-      }
-    } catch (error) {
-      console.error("Error fetching user details", error);
     }
   };
 
@@ -407,18 +341,13 @@ export const Actions = () => {
     updatedData,
     snackbarOpen,
     snackbarMessage,
-    selectedAddress,
-    selectedPayment,
-    paymentMethods,
     snackbarOpen,
-    snackbarMessage,
     history,
+    setCart,
     addToHistory,
     filterProducts,
     setEditable,
     setSnackbarOpen,
-    setSelectedPayment,
-    setSelectedAddress,
     handleChange,
     toggleDrawer,
     toggleSelectItem,
@@ -430,8 +359,6 @@ export const Actions = () => {
     handleRemoveFromFavorites,
     handleMoveToCart,
     handlePlaceOrder,
-    handleContinue,
-    fetchUserDetails,
     handleProfileChange,
     handleUpdateProfile,
     fetchUserProfile,

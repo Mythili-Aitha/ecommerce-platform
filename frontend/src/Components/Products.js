@@ -14,9 +14,6 @@ import {
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
-import FilterListIcon from "@mui/icons-material/FilterList";
-import SearchIcon from "@mui/icons-material/Search";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
@@ -25,18 +22,16 @@ import ScrollTopButton from "./ScrollTopButton";
 import { getProducts, getProductsByCategories } from "../Components/Api.js";
 import { Actions } from "./Actions.js";
 
-export default function Products() {
+export default function Products({ searchTerm, filterOpen, setFilterOpen }) {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [products, setProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [searchTerm, setSearchTerm] = useState("");
-  const { totalQuantity, filterProducts } = Actions();
+  const { totalQuantity, addToHistory } = Actions();
   const [curP, setCurrP] = useState(1);
   const productPerPage = 20;
-  const { addToHistory } = Actions();
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const category = queryParams.get("category");
@@ -60,17 +55,15 @@ export default function Products() {
     fetchProducts();
   }, [category]);
   const applyFilters = (filters) => {
-    const result = filterProducts(products, filters);
+    const result = products.filter((product) =>
+      filters.includes(product.category)
+    );
     setFilteredProducts(result);
     setCurrP(1);
   };
-
-  const toggleDrawer = (newOpen) => () => {
-    setOpen(newOpen);
-  };
   useEffect(() => {
-    let filtered = filterProducts(products, {}); // Apply default filter first
-    if (searchTerm.trim()) {
+    let filtered = [...products];
+    if (searchTerm?.trim()) {
       filtered = filtered.filter((product) =>
         product.title.toLowerCase().includes(searchTerm.toLowerCase())
       );
@@ -88,79 +81,17 @@ export default function Products() {
 
   return (
     <>
-      <Card
-        sx={{
-          width: "100%",
-          display: "flex",
-          flexDirection: "row",
-          justifyContent: "space-between",
+      <FilterDrawer
+        open={filterOpen}
+        toggleDrawer={() => {
+          if (typeof setFilterOpen === "function") {
+            setFilterOpen(false);
+          } else {
+            console.error("setFilterOpen is not a function");
+          }
         }}
-      >
-        <Box sx={{ display: "flex", flexDirection: "row" }}>
-          <Button
-            sx={{ display: "flex", alignItems: "flex-start" }}
-            onClick={() => {
-              navigate(-1);
-            }}
-          >
-            <KeyboardArrowLeftIcon />
-          </Button>
-          <TextField
-            placeholder="Search..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchIcon />
-                </InputAdornment>
-              ),
-            }}
-          />
-          {/* Filter Button */}
-          <ButtonGroup variant="text">
-            <Button
-              sx={{
-                display: "flex",
-                justifyContent: "start",
-                cursor: "pointer",
-              }}
-              size="medium"
-              onClick={() => setOpen(true)}
-            >
-              <FilterListIcon />
-              Filter
-            </Button>
-          </ButtonGroup>
-        </Box>
-        <FilterDrawer
-          open={open}
-          toggleDrawer={toggleDrawer}
-          applyFilters={applyFilters}
-        />
-        <Box
-          sx={{ display: "flex", alignItems: "flex-end", flexDirection: "row" }}
-        >
-          <IconButton
-            color="inherit"
-            sx={{ flexDirection: "column" }}
-            onClick={() => navigate("/favorite")}
-          >
-            <FavoriteBorderIcon />
-            <Typography variant="caption">Favorites</Typography>
-          </IconButton>
-          <IconButton
-            color="inherit"
-            sx={{ flexDirection: "column" }}
-            onClick={() => navigate("/cart")}
-          >
-            <Badge badgeContent={totalQuantity} color="primary">
-              <ShoppingCartIcon color="action" />
-            </Badge>
-            <Typography variant="caption">Cart</Typography>
-          </IconButton>
-        </Box>
-      </Card>
+        applyFilters={applyFilters}
+      />
       {loading ? (
         <Typography variant="h6" sx={{ textAlign: "center", marginTop: 4 }}>
           Loading products...
