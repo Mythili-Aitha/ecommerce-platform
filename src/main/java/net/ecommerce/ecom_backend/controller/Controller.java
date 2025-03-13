@@ -1,13 +1,18 @@
 package net.ecommerce.ecom_backend.controller;
 
 import net.ecommerce.ecom_backend.dto.*;
+import net.ecommerce.ecom_backend.entity.Order;
 import net.ecommerce.ecom_backend.entity.User;
+import net.ecommerce.ecom_backend.repository.OrderRepo;
+import net.ecommerce.ecom_backend.repository.ProductRepo;
 import net.ecommerce.ecom_backend.repository.UserRepo;
 import net.ecommerce.ecom_backend.service.EService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.HashMap;
 import java.util.List;
@@ -18,6 +23,12 @@ import java.util.Map;
 public class Controller {
     @Autowired
     private EService service;
+    @Autowired
+    private OrderRepo orderRepo;
+    @Autowired
+    private UserRepo userRepo;
+    @Autowired
+    private ProductRepo productRepo;
 
 
     //USER API CALLS
@@ -105,10 +116,6 @@ public class Controller {
         return service.getProductById(id);
     }
 
-//    @PostMapping("/products")
-//    public ProductDto addProduct(@RequestBody ProductDto productDto) {
-//        return service.saveProduct(productDto);
-//    }
     @PostMapping("/products/bulk")
     public List<ProductDto> addProducts(@RequestBody List<ProductDto> productDtos) {
         return service.saveProducts(productDtos);
@@ -198,6 +205,96 @@ public class Controller {
     public ResponseEntity<List<OrderResponseDto>> getUserOrders(@PathVariable Long userId) {
         List<OrderResponseDto> userOrders = service.getOrdersByUser(userId);
         return ResponseEntity.ok(userOrders);
+    }
+
+
+    //ADMIN API CALLS
+    @GetMapping("/admin/stats")
+    public ResponseEntity<Map<String, Object>> getDashboardStats() {
+        Map<String, Object> stats = new HashMap<>();
+        stats.put("totalOrders", orderRepo.count());
+        stats.put("totalRevenue", orderRepo.getTotalRevenue());
+        stats.put("totalCustomers", userRepo.count());
+        stats.put("lowStockItems", productRepo.countByStockLessThan(5)); // Products with stock < 5
+        return ResponseEntity.ok(stats);
+    }
+
+    @GetMapping("/admin/recent")
+    public ResponseEntity<List<OrderResponseDto>> getRecentOrders() {
+        List<Order> recentOrders = orderRepo.findTop5ByOrderByOrderDateDesc();
+        List<OrderResponseDto> orderDtos = recentOrders.stream()
+                .map(order -> new OrderResponseDto(
+                        order.getOrderId(),
+                        order.getUser().getUsername(),
+                        order.getTotalPrice(),
+                        order.getOrderStatus(),
+                        order.getOrderDate(),
+                        order.getOrderDetails().stream()
+                                .map(details -> new OrderItemResponseDto(
+                                        details.getProduct().getTitle(),
+                                        details.getQuantity(),
+                                        details.getPrice()))
+                                .toList()
+                ))
+                .toList();
+
+        return ResponseEntity.ok(orderDtos);
+    }
+
+    @PutMapping("/admin/orders/{orderId}/status")
+    public ResponseEntity<String> updateOrderStatus(@PathVariable Long orderId, @RequestBody Map<String, String> request) {
+        String newStatus = request.get("status");
+
+        Order order = orderRepo.findById(orderId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Order not found"));
+
+        order.setOrderStatus(newStatus);
+        orderRepo.save(order);
+
+        return ResponseEntity.ok("Order status updated to " + newStatus);
+    }
+
+    @DeleteMapping("/admin/orders/{orderId}")
+    public ResponseEntity<String> deleteOrder(@PathVariable Long orderId) {
+        Order order = orderRepo.findById(orderId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Order not found"));
+
+        orderRepo.delete(order);
+        return ResponseEntity.ok("Order deleted successfully");
+    }
+
+    @PutMapping("/admin/users/{userId}/role")
+    public ResponseEntity<String> updateUserRole(@PathVariable Long userId, @RequestBody Map<String, String> request) {
+        User user = userRepo.findById(userId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+
+        String newRole = request.get("role");
+        user.setRole(newRole);
+        userRepo.save(user);
+
+        return ResponseEntity.ok("User role updated to " + newRole);
+    }
+    @PreAuthorize("hasAuthority('Admin')")
+    @GetMapping("/admin/users")
+    public ResponseEntity<List<UserDto>> getAllUsers() {
+        List<User> users = userRepo.findAll();
+        List<UserDto> userDtos = users.stream()
+                .map(user -> {
+                    UserDto dto = new UserDto();
+                    dto.setUserId(user.getUserId());
+                    dto.setName(user.getName());
+                    dto.setUsername(user.getUsername());
+                    dto.setPassword(user.getPassword());
+                    dto.setEmail(user.getEmail());
+                    dto.setPhoneNumber(user.getPhoneNumber());
+                    dto.setCreatedAt(user.getCreatedAt());
+                    dto.setUpdatedAt(user.getUpdatedAt());
+                    dto.setRole(user.getRole());
+                    return dto;
+                })
+                .toList();
+
+        return ResponseEntity.ok(userDtos);
     }
 
 }

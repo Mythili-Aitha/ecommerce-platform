@@ -31,6 +31,7 @@ public class User {
     private String phoneNumber;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private String role= "User";
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Address> addresses= new ArrayList<>();

@@ -23,6 +23,7 @@ public class Mapper {
         userDto.setPhoneNumber(user.getPhoneNumber());
         userDto.setCreatedAt(user.getCreatedAt());
         userDto.setUpdatedAt(user.getUpdatedAt());
+        userDto.setRole(user.getRole());
         return userDto;
 
     }
@@ -40,6 +41,7 @@ public class Mapper {
         user.setPhoneNumber(userDto.getPhoneNumber());
         user.setCreatedAt(userDto.getCreatedAt());
         user.setUpdatedAt(userDto.getUpdatedAt());
+        user.setRole(userDto.getRole());
         return user;
     }
 

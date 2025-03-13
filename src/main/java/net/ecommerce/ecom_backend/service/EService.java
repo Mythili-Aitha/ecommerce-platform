@@ -50,6 +50,7 @@ public class EService {
         LocalDateTime now = LocalDateTime.now();
         user.setCreatedAt(now);
         user.setUpdatedAt(now);
+        user.setRole("User");
         User savedUser = userRepo.save(user);
         return Mapper.toUserDto(savedUser);
     }
@@ -323,7 +324,19 @@ public class EService {
     public OrderResponseDto getOrderById(Long orderId) {
         Order order = orderRepo.findById(orderId)
                 .orElseThrow(() -> new RuntimeException("Order not found"));
-        return Mapper.toOrderResponseDto(order);
+        return new OrderResponseDto(
+                order.getOrderId(),
+                order.getUser().getUsername(),
+                order.getTotalPrice(),
+                order.getOrderStatus(),
+                order.getOrderDate(),
+                order.getOrderDetails().stream()
+                        .map(details-> new OrderItemResponseDto(
+                                details.getProduct().getTitle(),
+                                details.getQuantity(),
+                                details.getPrice()))
+                        .toList()
+        );
     }
 
     public List<OrderResponseDto> getOrdersByUser(Long userId) {

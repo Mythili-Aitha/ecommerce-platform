@@ -12,4 +12,5 @@ public interface ProductRepo extends JpaRepository<Product, Long> {
     List<Product> findByCategory(String category);
     @Query("select distinct p.category from Product p")
     List<String> findAllCategories();
+    Long countByStockLessThan(int stockThreshold);
 }
