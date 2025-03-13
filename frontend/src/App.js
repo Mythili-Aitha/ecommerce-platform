@@ -25,6 +25,8 @@ import Media from "./Components/Media.js";
 import { CartProvider } from "./Components/CartProvider.js";
 import { SearchFilterProvider } from "./Components/SearchFilterProvider.js";
 import Admin from "./Components/Admin.js";
+import Users from "./Components/Users.js";
+import AdminRoute from "./Components/AdminRoute.js";
 
 function App() {
   const location = useLocation();
@@ -44,8 +46,15 @@ function App() {
               <div ref={nodeRef}>
                 <Routes location={location}>
                   <Route path="/" element={<Home />} />
-                  <Route path="/admin" element={<Admin />} />
                   <Route path="/auth" element={<Login />} />
+                  <Route element={<AdminRoute />}>
+                    <Route path="/admin" element={<Admin />} />
+                    <Route
+                      path="/admin/orders/:orderId"
+                      element={<OrderDetails />}
+                    />
+                    <Route path="/admin/users" element={<Users />} />
+                  </Route>
                   <Route path="/cart" element={<Cart />} />
                   <Route path="/products" element={<Products />} />
                   <Route path="/products/:id" element={<ProductDetails />} />
