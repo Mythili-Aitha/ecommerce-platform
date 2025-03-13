@@ -9,7 +9,7 @@ export const getUserDetails = async () => {
   try {
     const userId = getUserId();
     if (!userId) throw new Error("User ID not found");
-    const response = await apiClient.get(`/profile/users/${userId}`);
+    const response = await apiClient.get(`/users/${userId}`);
     return response.data;
   } catch (error) {
     console.error("Error fetching user details:", error);
@@ -230,4 +230,40 @@ export const getOrderDetails = async (orderId) => {
     console.error("Error fetching order details:", error);
     throw error;
   }
+};
+
+export const getStats = async () => {
+  try {
+    return await apiClient.get(`/admin/stats`);
+  } catch (error) {
+    console.error("Error fetching stats", error);
+    throw error;
+  }
+};
+
+export const getRecentOrders = async () => {
+  try {
+    return await apiClient.get(`/admin/recent`);
+  } catch (error) {
+    console.error("Error fetching Recent Orders", error);
+    throw error;
+  }
+};
+
+export const updateOrderStatus = async (orderId, newStatus) => {
+  return apiClient.put(`/admin/orders/${orderId}/status`, {
+    status: newStatus,
+  });
+};
+
+export const deleteOrder = async (orderId) => {
+  return apiClient.delete(`/admin/orders/${orderId}`);
+};
+
+export const getAllUsers = async () => {
+  return apiClient.get(`/admin/users`);
+};
+
+export const updateUserRole = async (userId, newRole) => {
+  return apiClient.put(`/admin/users/${userId}/role`, { role: newRole });
 };

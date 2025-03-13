@@ -7,13 +7,11 @@ import { useSearchFilter } from "./SearchFilterProvider";
 
 export default function Layout({ children }) {
   const location = useLocation();
-  console.log("🔥 Layout is rendering at:", location.pathname);
   const hiddenHeaderPaths = ["/auth", "/admin"];
   const hideHeader =
     hiddenHeaderPaths.includes(location.pathname) ||
     matchPath("/products/:id", location.pathname);
-  const { searchTerm, setSearchTerm, filterOpen, toggleFilter } =
-    useSearchFilter();
+  const { searchTerm, setSearchTerm, toggleFilter } = useSearchFilter();
   return (
     <Box sx={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
       {!hideHeader && (
@@ -34,12 +32,6 @@ export default function Layout({ children }) {
         </Box>
       )}
       <Box component="main" sx={{ flex: 1, width: "100%", p: 3 }}>
-        {/* {React.cloneElement(children, {
-          searchTerm,
-          setSearchTerm,
-          filterOpen,
-          setFilterOpen: (value) => setFilterOpen(value),
-        })} */}
         {children}
       </Box>
       {!hideHeader && (

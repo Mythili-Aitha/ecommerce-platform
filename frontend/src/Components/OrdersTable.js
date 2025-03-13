@@ -9,13 +9,17 @@ import {
   Button,
   Typography,
 } from "@mui/material";
-
-const recentOrders = [
-  { id: "#1001", customer: "Raj Kumar", amount: "₹1200", status: "Delivered" },
-  { id: "#1002", customer: "Priya Singh", amount: "₹2300", status: "Pending" },
-];
+import { useEffect, useState } from "react";
+import { getRecentOrders } from "./Api";
+import { Link } from "react-router-dom";
 
 const OrdersTable = () => {
+  const [orders, setOrders] = useState([]);
+  useEffect(() => {
+    getRecentOrders()
+      .then((response) => setOrders(response.data))
+      .catch((error) => console.error("Error fetching Recent Orders", error));
+  });
   return (
     <TableContainer component={Paper} sx={{ mt: 4 }}>
       <Typography variant="h6" sx={{ p: 2 }}>
@@ -25,6 +29,7 @@ const OrdersTable = () => {
         <TableHead>
           <TableRow>
             <TableCell>Order ID</TableCell>
+            <TableCell>Date</TableCell>
             <TableCell>Customer</TableCell>
             <TableCell>Amount</TableCell>
             <TableCell>Status</TableCell>
@@ -32,19 +37,35 @@ const OrdersTable = () => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {recentOrders.map((order) => (
-            <TableRow key={order.id}>
-              <TableCell>{order.id}</TableCell>
-              <TableCell>{order.customer}</TableCell>
-              <TableCell>{order.amount}</TableCell>
-              <TableCell>{order.status}</TableCell>
-              <TableCell>
-                <Button variant="contained" size="small">
-                  View
-                </Button>
+          {orders.length > 0 ? (
+            orders.map((order) => (
+              <TableRow key={order.orderId}>
+                <TableCell>{order.orderId}</TableCell>
+                <TableCell>
+                  {new Date(order.orderDate).toLocaleDateString()}
+                </TableCell>
+                <TableCell>{order.customerName}</TableCell>
+                <TableCell>${order.totalPrice}</TableCell>
+                <TableCell>{order.orderStatus}</TableCell>
+                <TableCell>
+                  <Button
+                    variant="contained"
+                    size="small"
+                    component={Link}
+                    to={`/admin/orders/${order.orderId}`}
+                  >
+                    View
+                  </Button>
+                </TableCell>
+              </TableRow>
+            ))
+          ) : (
+            <TableRow>
+              <TableCell colSpan={5} align="center">
+                No Recent Orders
               </TableCell>
             </TableRow>
-          ))}
+          )}
         </TableBody>
       </Table>
     </TableContainer>
