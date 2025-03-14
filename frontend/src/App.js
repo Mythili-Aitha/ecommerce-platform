@@ -1,7 +1,6 @@
 import React, { useRef } from "react";
 import { Route, Routes, useLocation } from "react-router-dom";
 import { CSSTransition, TransitionGroup } from "react-transition-group";
-// import Dashboard from "./Components/Dashboard.js";
 import Login from "./Components/Login.js";
 import Cart from "./Components/Cart.js";
 import Favorites from "./Components/Favorites.js";
@@ -27,6 +26,8 @@ import { SearchFilterProvider } from "./Components/SearchFilterProvider.js";
 import Admin from "./Components/Admin.js";
 import Users from "./Components/Users.js";
 import AdminRoute from "./Components/AdminRoute.js";
+import { AdminProducts } from "./Components/AdminProducts.js";
+import { AdminProductForm } from "./Components/AdminProductForm.js";
 
 function App() {
   const location = useLocation();
@@ -54,6 +55,15 @@ function App() {
                       element={<OrderDetails />}
                     />
                     <Route path="/admin/users" element={<Users />} />
+                    <Route path="/admin/products" element={<AdminProducts />} />
+                    <Route
+                      path="/admin/products/new"
+                      element={<AdminProductForm />}
+                    />
+                    <Route
+                      path="/admin/products/:productId"
+                      element={<AdminProductForm />}
+                    />
                   </Route>
                   <Route path="/cart" element={<Cart />} />
                   <Route path="/products" element={<Products />} />
