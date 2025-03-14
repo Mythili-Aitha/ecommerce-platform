@@ -2,6 +2,7 @@ package net.ecommerce.ecom_backend.controller;
 
 import net.ecommerce.ecom_backend.dto.*;
 import net.ecommerce.ecom_backend.entity.Order;
+import net.ecommerce.ecom_backend.entity.Product;
 import net.ecommerce.ecom_backend.entity.User;
 import net.ecommerce.ecom_backend.repository.OrderRepo;
 import net.ecommerce.ecom_backend.repository.ProductRepo;
@@ -47,6 +48,7 @@ public class Controller {
         UserDto userDto = service.LoginUser(loginDto);
         return userDto != null ? ResponseEntity.ok(userDto) : ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
+
     @PutMapping("/users/{userId}/profile")
     public ResponseEntity<User> updateProfile(
             @PathVariable Long userId,
@@ -54,6 +56,7 @@ public class Controller {
         User updatedUser = service.updateUserProfile(userId, userUpdateDto);
         return ResponseEntity.ok(updatedUser);
     }
+
     @PutMapping("/users/{userId}/password")
     public ResponseEntity<String> updatePassword(
             @PathVariable Long userId,
@@ -83,6 +86,7 @@ public class Controller {
         service.deleteAddress(id);
         return ResponseEntity.noContent().build();
     }
+
     //PAYMENTS API CALLS
     @PostMapping("/payments")
     public ResponseEntity<PaymentInfoDto> addPaymentInfo(@RequestBody PaymentInfoDto paymentInfoDto) {
@@ -123,8 +127,8 @@ public class Controller {
 
     @GetMapping("/products/category/{category}")
     public ResponseEntity<List<ProductDto>> getProductsByCategory(@PathVariable String category) {
-       List<ProductDto> products = service.getProductsByCategory(category);
-       return ResponseEntity.ok(products);
+        List<ProductDto> products = service.getProductsByCategory(category);
+        return ResponseEntity.ok(products);
     }
 
     @GetMapping("/products/category")
@@ -274,6 +278,7 @@ public class Controller {
 
         return ResponseEntity.ok("User role updated to " + newRole);
     }
+
     @PreAuthorize("hasAuthority('Admin')")
     @GetMapping("/admin/users")
     public ResponseEntity<List<UserDto>> getAllUsers() {
@@ -297,4 +302,28 @@ public class Controller {
         return ResponseEntity.ok(userDtos);
     }
 
+    @PreAuthorize("hasAuthority('Admin')")
+    @GetMapping("/admin/products")
+    public List<ProductDto> getAllAdminProducts() {
+        return service.getAllProducts();
+    }
+
+    @PreAuthorize("hasAuthority('Admin')")
+    @GetMapping("/admin/products/{id}")
+    public ProductDto getAdminProductById(@PathVariable Long id) {
+        return service.getProductById(id);
+    }
+
+    @PreAuthorize("hasAuthority('Admin')")
+    @PostMapping("/admin/products")
+    public List<ProductDto> saveProducts(@RequestBody List<ProductDto> productDtos) {
+        return service.saveProducts(productDtos);
+    }
+
+    @PreAuthorize("hasAuthority('Admin')")
+    @DeleteMapping("/admin/products/{id}")
+    public ResponseEntity<Void> deleteAdminProduct(@PathVariable Long id) {
+        service.deleteProduct(id);
+        return ResponseEntity.noContent().build();
+    }
 }
