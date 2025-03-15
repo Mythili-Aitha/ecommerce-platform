@@ -5,21 +5,7 @@ import {
   getOrderDetails,
   updateOrderStatus,
 } from "../../../Utils/Api";
-import {
-  Box,
-  Button,
-  CircularProgress,
-  MenuItem,
-  Paper,
-  Select,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Typography,
-} from "@mui/material";
+import { Box, Button, CircularProgress, Typography } from "@mui/material";
 import { buttonSx } from "../../../Utils/Styles";
 
 const OrderDetails = () => {
@@ -28,6 +14,7 @@ const OrderDetails = () => {
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
   const [status, setStatus] = useState("");
+  const userRole = localStorage.getItem("role");
 
   useEffect(() => {
     getOrderDetails(orderId)
@@ -55,7 +42,7 @@ const OrderDetails = () => {
     if (window.confirm("Are you sure you want to delete this order?")) {
       try {
         await deleteOrder(orderId);
-        navigate("/admin");
+        navigate("/admin/orders");
       } catch (error) {
         console.error("Error deleting order:", error);
       }
@@ -76,52 +63,65 @@ const OrderDetails = () => {
   return (
     <Box sx={{ p: 3 }}>
       <Typography variant="h4">Order Details</Typography>
-      <Typography variant="h6" sx={{ mt: 2 }}>
+      <Typography variant="h6" sx={buttonSx}>
         Order ID: {order.orderId}
       </Typography>
-      <Typography variant="body1" sx={{ mt: 2 }}>
+      <Typography variant="body1" sx={buttonSx}>
         Status: {order.orderStatus}
       </Typography>
-      <Select
-        value={status}
-        onChange={(e) => handleStatusChange(e.target.value)}
-        sx={{ mb: 2, width: "200px" }}
-      >
-        <MenuItem value="Pending">Pending</MenuItem>
-        <MenuItem value="Shipped">Shipped</MenuItem>
-        <MenuItem value="Delivered">Delivered</MenuItem>
-      </Select>{" "}
-      <Typography variant="body1">Total Price: ₹{order.totalPrice}</Typography>
-      <Typography variant="h6" sx={{ mt: 3 }}>
-        Items:
-      </Typography>
-      <TableContainer component={Paper} sx={{ mt: 2 }}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>Product</TableCell>
-              <TableCell>Quantity</TableCell>
-              <TableCell>Price</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {order.items.map((item, index) => (
-              <TableRow key={index}>
-                <TableCell>{item.productName}</TableCell>
-                <TableCell>{item.quantity}</TableCell>
-                <TableCell>₹{item.price}</TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+      {userRole === "Admin" ? (
+        <>
+          {/* Admin Controls */}
+          <Box sx={{ marginTop: 2 }}>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={() => handleStatusChange("Shipped")}
+            >
+              Mark as Shipped
+            </Button>
+            <Button
+              variant="contained"
+              color="secondary"
+              sx={{ marginLeft: 2 }}
+              onClick={handleDelete}
+            >
+              Delete Order
+            </Button>
+          </Box>
+        </>
+      ) : (
+        <>
+          {/* Normal User View */}
+          <Typography variant="h6" sx={{ marginTop: 2 }}>
+            Shipping Address:
+          </Typography>
+          {/* <Typography>
+            {order.address.street}, {order.address.city}, {order.address.state}
+          </Typography> */}
+
+          <Typography variant="h6" sx={{ marginTop: 2 }}>
+            Items Ordered:
+          </Typography>
+          {order.items.map((item) => (
+            <Box key={item.id} sx={{ marginBottom: 1 }}>
+              <Typography>
+                {item.name} - ${item.price} x {item.quantity}
+              </Typography>
+            </Box>
+          ))}
+        </>
+      )}
+
+      {/* Common Back Button for Both */}
       <Button
-        variant="contained"
-        color="error"
-        sx={buttonSx}
-        onClick={handleDelete}
+        variant="outlined"
+        sx={{ marginTop: 3 }}
+        onClick={() =>
+          navigate(userRole === "Admin" ? "/admin/orders" : "/orders")
+        }
       >
-        Delete Order
+        Back to {userRole === "Admin" ? "Admin Orders" : "My Orders"}
       </Button>
     </Box>
   );

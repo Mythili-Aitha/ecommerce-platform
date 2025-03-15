@@ -1,61 +1,51 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Box, Button, TextField, Typography } from "@mui/material";
-import { getAdminProductForm, getAdminProducts } from "../../../../Utils/Api";
+import {
+  addAdminProduct,
+  getAdminProductForm,
+  updateAdminProduct,
+} from "../../../../Utils/Api";
 import { boxSx } from "../../../../Utils/Styles";
 
 export const AdminProductForm = () => {
   const { productId } = useParams();
   const navigate = useNavigate();
   const [product, setProduct] = useState({
-    title: "",
-    description: "",
-    category: "",
-    price: "",
-    stock: "",
-    brand: "",
-    sku: "",
-    tags: "",
+    basicInfo: { title: "", description: "", category: "", brand: "" },
+    pricing: { price: "", stock: "" },
+    identifiers: { sku: "", tags: "" },
     dimensions: { width: "", height: "", depth: "" },
-    reviews: [],
-    meta: { barcode: "", qrCode: "" },
-    images: "",
-    thumbnail: "",
+    metadata: { barcode: "", qrCode: "" },
+    media: { images: "", thumbnail: "" },
   });
   useEffect(() => {
-    if (productId) {
-      getAdminProductForm(productId)
-        .then((response) => setProduct(response.data))
-        .catch((error) => console.error("Error fetching product:", error));
-    }
+    if (productId) fetchProductData();
   }, [productId]);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setProduct({ ...product, [name]: value });
+  const fetchProductData = async () => {
+    try {
+      const response = await getAdminProductForm(productId);
+      setProduct(response.data);
+    } catch (error) {
+      console.error("Error fetching product:", error);
+    }
   };
 
-  const handleDimensionsChange = (e) => {
+  const handleGroupChange = (group) => (e) => {
     const { name, value } = e.target;
-    setProduct({
-      ...product,
-      dimensions: { ...product.dimensions, [name]: value },
-    });
-  };
-
-  const handleMetaChange = (e) => {
-    const { name, value } = e.target;
-    setProduct({ ...product, meta: { ...product.meta, [name]: value } });
+    setProduct((prev) => ({
+      ...prev,
+      [group]: { ...prev[group], [name]: value },
+    }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      if (productId) {
-        getAdminProductForm(product);
-      } else {
-        getAdminProducts(product);
-      }
+      productId
+        ? await updateAdminProduct(productId, product)
+        : await addAdminProduct(product);
       navigate("/admin/products");
     } catch (error) {
       console.error("Error saving product:", error);
@@ -68,154 +58,106 @@ export const AdminProductForm = () => {
         {productId ? "Edit Product" : "Add Product"}
       </Typography>
       <form onSubmit={handleSubmit}>
-        <TextField
-          label="Title"
-          name="title"
-          fullWidth
-          value={product.title}
-          onChange={handleChange}
-          required
-          sx={{ mb: 2 }}
-        />
-        <TextField
-          label="Description"
-          name="description"
-          fullWidth
-          multiline
-          value={product.description}
-          onChange={handleChange}
-          sx={{ mb: 2 }}
-        />
-        <TextField
-          label="Category"
-          name="category"
-          fullWidth
-          value={product.category}
-          onChange={handleChange}
-          required
-          sx={{ mb: 2 }}
-        />
-        <TextField
-          label="Price"
-          name="price"
-          fullWidth
-          type="number"
-          value={product.price}
-          onChange={handleChange}
-          required
-          sx={{ mb: 2 }}
-        />
-        <TextField
-          label="Stock"
-          name="stock"
-          fullWidth
-          type="number"
-          value={product.stock}
-          onChange={handleChange}
-          required
-          sx={{ mb: 2 }}
-        />
-        <TextField
-          label="Brand"
-          name="brand"
-          fullWidth
-          value={product.brand}
-          onChange={handleChange}
-          required
-          sx={{ mb: 2 }}
-        />
-        <TextField
-          label="SKU"
-          name="sku"
-          fullWidth
-          value={product.sku}
-          onChange={handleChange}
-          required
-          sx={{ mb: 2 }}
-        />
-        <TextField
-          label="Tags (comma-separated)"
-          name="tags"
-          fullWidth
-          value={product.tags}
-          onChange={handleChange}
-          sx={{ mb: 2 }}
-        />
+        {/* Basic Info */}
+        <Section title="Basic Info">
+          <GroupedTextField
+            group="basicInfo"
+            product={product}
+            handleChange={handleGroupChange}
+            fields={["title", "description", "category", "brand"]}
+          />
+        </Section>
 
-        <Typography variant="h6">Dimensions</Typography>
-        <TextField
-          label="Width"
-          name="width"
-          fullWidth
-          type="number"
-          value={product.dimensions.width}
-          onChange={handleDimensionsChange}
-          required
-          sx={{ mb: 2 }}
-        />
-        <TextField
-          label="Height"
-          name="height"
-          fullWidth
-          type="number"
-          value={product.dimensions.height}
-          onChange={handleDimensionsChange}
-          required
-          sx={{ mb: 2 }}
-        />
-        <TextField
-          label="Depth"
-          name="depth"
-          fullWidth
-          type="number"
-          value={product.dimensions.depth}
-          onChange={handleDimensionsChange}
-          required
-          sx={{ mb: 2 }}
-        />
+        {/* Pricing */}
+        <Section title="Pricing">
+          <GroupedTextField
+            group="pricing"
+            product={product}
+            handleChange={handleGroupChange}
+            fields={["price", "stock"]}
+            type="number"
+          />
+        </Section>
 
-        <Typography variant="h6">Metadata</Typography>
-        <TextField
-          label="Barcode"
-          name="barcode"
-          fullWidth
-          value={product.meta.barcode}
-          onChange={handleMetaChange}
-          required
-          sx={{ mb: 2 }}
-        />
-        <TextField
-          label="QR Code URL"
-          name="qrCode"
-          fullWidth
-          value={product.meta.qrCode}
-          onChange={handleMetaChange}
-          required
-          sx={{ mb: 2 }}
-        />
+        {/* Identifiers */}
+        <Section title="Identifiers">
+          <GroupedTextField
+            group="identifiers"
+            product={product}
+            handleChange={handleGroupChange}
+            fields={["sku", "tags"]}
+          />
+        </Section>
 
-        <TextField
-          label="Images (comma-separated URLs)"
-          name="images"
-          fullWidth
-          value={product.images}
-          onChange={handleChange}
-          required
-          sx={{ mb: 2 }}
-        />
-        <TextField
-          label="Thumbnail URL"
-          name="thumbnail"
-          fullWidth
-          value={product.thumbnail}
-          onChange={handleChange}
-          required
-          sx={{ mb: 2 }}
-        />
-        <Button type="submit" variant="contained">
+        {/* Dimensions */}
+        <Section title="Dimensions">
+          <GroupedTextField
+            group="dimensions"
+            product={product}
+            handleChange={handleGroupChange}
+            fields={["width", "height", "depth"]}
+            type="number"
+          />
+        </Section>
+
+        {/* Metadata */}
+        <Section title="Metadata">
+          <GroupedTextField
+            group="metadata"
+            product={product}
+            handleChange={handleGroupChange}
+            fields={["barcode", "qrCode"]}
+          />
+        </Section>
+
+        {/* Media */}
+        <Section title="Media">
+          <GroupedTextField
+            group="media"
+            product={product}
+            handleChange={handleGroupChange}
+            fields={["images", "thumbnail"]}
+          />
+        </Section>
+
+        <Button type="submit" variant="contained" sx={{ mt: 2 }}>
           {productId ? "Update Product" : "Add Product"}
         </Button>
       </form>
     </Box>
   );
 };
+
+const Section = ({ title, children }) => (
+  <Box sx={{ mb: 3 }}>
+    <Typography variant="h6">{title}</Typography>
+    {children}
+  </Box>
+);
+
+const GroupedTextField = ({
+  group,
+  product,
+  handleChange,
+  fields,
+  type = "text",
+}) => (
+  <>
+    {fields.map((field) => (
+      <TextField
+        key={field}
+        label={capitalize(field)}
+        name={field}
+        fullWidth
+        type={type}
+        value={product[group][field]}
+        onChange={handleChange(group)}
+        required
+        sx={{ mb: 2 }}
+        multiline={field === "description"}
+      />
+    ))}
+  </>
+);
+
+const capitalize = (string) => string.charAt(0).toUpperCase() + string.slice(1);

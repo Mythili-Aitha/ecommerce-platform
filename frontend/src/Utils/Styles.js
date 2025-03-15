@@ -59,3 +59,18 @@ export const boxHSx = {
   overflowX: "auto",
   padding: 2,
 };
+
+export const boxLSx = {
+  position: "sticky",
+  top: 0,
+  zIndex: 1000,
+  bgcolor: "white",
+  boxShadow: 1,
+};
+
+export const cardFSx = {
+  padding: 2,
+  marginTop: 3,
+  display: "flex",
+  justifyContent: "space-between",
+};

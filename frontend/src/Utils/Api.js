@@ -279,3 +279,11 @@ export const getAdminProductForm = async (id) => {
 export const deleteAdminProduct = async (id) => {
   return apiClient.delete(`/admin/products/${id}`);
 };
+
+export const updateAdminProduct = async (productId, productData) => {
+  return apiClient.put(`/admin/products/${productId}`, productData);
+};
+
+export const addAdminProduct = async (productData) => {
+  return apiClient.post(`/admin/products`, productData);
+};

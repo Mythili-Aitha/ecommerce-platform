@@ -10,7 +10,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import ShoppingCartCheckoutIcon from "@mui/icons-material/ShoppingCartCheckout";
 import { Actions } from "../../../../Utils/Actions";
-import { avatar } from "../../../../Utils/Styles";
+import { avatar, cardFSx } from "../../../../Utils/Styles";
 
 export default function Favorites() {
   const navigate = useNavigate();
@@ -28,15 +28,7 @@ export default function Favorites() {
         </Typography>
       ) : (
         favorites.map((item) => (
-          <Card
-            key={item.productId}
-            sx={{
-              padding: 2,
-              marginTop: 3,
-              display: "flex",
-              justifyContent: "space-between",
-            }}
-          >
+          <Card key={item.productId} sx={cardFSx}>
             <Avatar sx={avatar} src={item.productImage} />
             <Box>
               <Typography>{item.productName}</Typography>

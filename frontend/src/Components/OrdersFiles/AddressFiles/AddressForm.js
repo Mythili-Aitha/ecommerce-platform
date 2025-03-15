@@ -1,14 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  Box,
-  Button,
-  FormControl,
-  FormControlLabel,
-  FormLabel,
-  Radio,
-  RadioGroup,
-  TextField,
-} from "@mui/material";
+import { Box } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import {
   getUserAddresses,
@@ -16,7 +7,9 @@ import {
   updateAddress,
   deleteAddress,
 } from "../../../Utils/Api";
-import { boxApSx, boxPaSx } from "../../../Utils/Styles";
+import { boxPaSx } from "../../../Utils/Styles";
+import AddressFormFields from "./AddressFormFields";
+import AddressSelection from "./AddressSelection";
 
 const AddressForm = () => {
   const storedAddress = localStorage.getItem("selectedAddress");
@@ -84,19 +77,6 @@ const AddressForm = () => {
     setEditAddress(address);
   };
 
-  useEffect(() => {
-    if (editAddress) {
-      setFormData({
-        street: editAddress.street || "",
-        city: editAddress.city || "",
-        state: editAddress.state || "",
-        zip: editAddress.zip || "",
-        country: editAddress.country || "",
-        addressType: editAddress.addressType || "HOME",
-      });
-    }
-  }, [editAddress]);
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -135,75 +115,20 @@ const AddressForm = () => {
     <Box sx={boxPaSx}>
       <h2>Manage Addresses</h2>
 
-      <form onSubmit={handleSubmit}>
-        <Box sx={boxApSx}>
-          <TextField
-            type="text"
-            placeholder="Street"
-            value={formData.street || ""}
-            onChange={(e) =>
-              setFormData({ ...formData, street: e.target.value })
-            }
-            required
-          />
-          <TextField
-            type="text"
-            placeholder="City"
-            value={formData.city || ""}
-            onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-            required
-          />
-          <TextField
-            type="text"
-            placeholder="State"
-            value={formData.state || ""}
-            onChange={(e) =>
-              setFormData({ ...formData, state: e.target.value })
-            }
-            required
-          />
-          <TextField
-            type="text"
-            placeholder="Zip Code"
-            value={formData.zip || ""}
-            onChange={(e) => setFormData({ ...formData, zip: e.target.value })}
-            required
-          />
-          <TextField
-            type="text"
-            placeholder="Country"
-            value={formData.country || ""}
-            onChange={(e) =>
-              setFormData({ ...formData, country: e.target.value })
-            }
-            required
-          />
+      <AddressFormFields
+        formData={formData}
+        setFormData={setFormData}
+        handleSubmit={handleSubmit}
+        isEditing={!!editAddress}
+      />
 
-          <Button variant="contained" type="submit">
-            {editAddress ? "Update Address" : "Add Address"}
-          </Button>
-        </Box>
-      </form>
-
-      <FormControl>
-        <FormLabel>Address</FormLabel>
-        <RadioGroup value={selectedValue} onChange={handleChange}>
-          {addresses.map((address) => (
-            <div
-              key={address.id}
-              style={{ display: "flex", alignItems: "center" }}
-            >
-              <FormControlLabel
-                value={address.id}
-                control={<Radio />}
-                label={`${address.street}, ${address.city}, ${address.state} - ${address.zip} (${address.addressType})`}
-              />
-              <Button onClick={() => handleEdit(address)}>Edit</Button>{" "}
-              <Button onClick={() => handleDelete(address.id)}>Delete</Button>
-            </div>
-          ))}
-        </RadioGroup>
-      </FormControl>
+      <AddressSelection
+        addresses={addresses}
+        selectedValue={selectedValue}
+        handleChange={handleChange}
+        handleEdit={handleEdit}
+        handleDelete={handleDelete}
+      />
     </Box>
   );
 };
