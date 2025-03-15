@@ -81,11 +81,13 @@ export default function Login() {
         return;
       }
       localStorage.setItem("user", JSON.stringify(response.data));
+      localStorage.setItem("role", response.data.role);
       setUser(response.data);
-      navigate("/");
-
-      setUser(response.data);
-      navigate("/");
+      if (response.data.role === "Admin") {
+        navigate("/admin");
+      } else {
+        navigate("/");
+      }
     } catch (error) {
       if (error.response) {
         if (type === "register" && error.response.status === 409) {

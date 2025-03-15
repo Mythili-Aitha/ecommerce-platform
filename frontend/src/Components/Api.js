@@ -267,3 +267,15 @@ export const getAllUsers = async () => {
 export const updateUserRole = async (userId, newRole) => {
   return apiClient.put(`/admin/users/${userId}/role`, { role: newRole });
 };
+
+export const getAdminProducts = async () => {
+  return apiClient.get(`/admin/products`);
+};
+
+export const getAdminProductForm = async (id) => {
+  return apiClient.get(`/admin/products/${id}`);
+};
+
+export const deleteAdminProduct = async (id) => {
+  return apiClient.delete(`/admin/products/${id}`);
+};
