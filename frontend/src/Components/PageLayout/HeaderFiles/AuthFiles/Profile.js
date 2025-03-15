@@ -9,8 +9,9 @@ import {
   InputAdornment,
   IconButton,
 } from "@mui/material";
-import { Actions } from "./Actions.js";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
+import { Actions } from "../../../../Utils/Actions";
+import { cardSx } from "../../../../Utils/Styles";
 
 export default function Profile() {
   const {
@@ -59,7 +60,7 @@ export default function Profile() {
     setIsChangingPassword(false);
   };
   return (
-    <Card sx={{ width: "100%", maxWidth: 500, mx: "auto", mt: 5, p: 3 }}>
+    <Card sx={cardSx}>
       <Typography variant="h5" textAlign="center">
         {user ? `${user.name}'s Profile` : "Loading..."}
       </Typography>

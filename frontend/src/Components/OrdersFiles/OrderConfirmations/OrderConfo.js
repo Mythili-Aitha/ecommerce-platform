@@ -9,11 +9,12 @@ import {
   Radio,
   Snackbar,
 } from "@mui/material";
-import React, { useState, useEffect } from "react";
+import React from "react";
 import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import { useNavigate } from "react-router-dom";
-import { Actions } from "./Actions";
+import { Actions } from "../../../Utils/Actions";
+import { buttonSx, cardSx } from "../../../Utils/Styles";
 
 export default function OrderConfo() {
   const navigate = useNavigate();
@@ -68,10 +69,10 @@ export default function OrderConfo() {
 
   return (
     <>
-      <Card sx={{ width: "100%", maxWidth: 400, mx: "auto", mt: 5, p: 3 }}>
+      <Card sx={cardSx}>
         <Box sx={{ display: "flex", flexDirection: "row" }}>
           <Button
-            sx={{ display: "flex", alignItems: "flex-start" }}
+            sx={buttonSx}
             onClick={() => {
               navigate(-1);
             }}

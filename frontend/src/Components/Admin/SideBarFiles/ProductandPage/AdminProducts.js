@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { deleteAdminProduct, getAdminProducts } from "./Api";
 import {
   Avatar,
   Button,
@@ -13,6 +12,8 @@ import {
   Typography,
 } from "@mui/material";
 import { Link } from "react-router-dom";
+import { deleteAdminProduct, getAdminProducts } from "../../../../Utils/Api";
+import { avatar } from "../../../../Utils/Styles";
 
 export const AdminProducts = () => {
   const [products, setProducts] = useState([]);
@@ -71,7 +72,7 @@ export const AdminProducts = () => {
                   <Avatar
                     src={product.thumbnail}
                     alt={product.title}
-                    sx={{ width: 50, height: 50 }}
+                    sx={avatar}
                   />
                 </TableCell>
                 <TableCell>{product.id}</TableCell>

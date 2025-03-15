@@ -4,7 +4,7 @@ import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import MonetizationOnIcon from "@mui/icons-material/MonetizationOn";
 import PeopleIcon from "@mui/icons-material/People";
 import WarningIcon from "@mui/icons-material/Warning";
-import { getStats } from "./Api";
+import { getStats } from "../../../Utils/Api";
 
 const DashboardContent = () => {
   const [stats, setStats] = useState({

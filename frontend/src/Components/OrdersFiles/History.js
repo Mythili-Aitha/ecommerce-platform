@@ -1,6 +1,6 @@
 import React from "react";
-import { Actions } from "./Actions";
 import { List, ListItem, ListItemText, Typography } from "@mui/material";
+import { Actions } from "../../Utils/Actions";
 
 export default function History() {
   const { history } = Actions();

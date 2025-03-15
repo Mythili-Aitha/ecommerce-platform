@@ -4,7 +4,7 @@ import {
   deleteOrder,
   getOrderDetails,
   updateOrderStatus,
-} from "../Components/Api";
+} from "../../../Utils/Api";
 import {
   Box,
   Button,
@@ -20,6 +20,7 @@ import {
   TableRow,
   Typography,
 } from "@mui/material";
+import { buttonSx } from "../../../Utils/Styles";
 
 const OrderDetails = () => {
   const { orderId } = useParams();
@@ -117,7 +118,7 @@ const OrderDetails = () => {
       <Button
         variant="contained"
         color="error"
-        sx={{ mt: 2 }}
+        sx={buttonSx}
         onClick={handleDelete}
       >
         Delete Order

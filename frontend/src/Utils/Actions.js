@@ -12,10 +12,10 @@ import {
   getUserDetails,
   updateUserProfile,
   updateUserPassword,
-} from "../Components/Api.js";
+} from "./Api.js";
 import { useNavigate } from "react-router-dom";
 import { Snackbar } from "@mui/material";
-import { useCart } from "./CartProvider.js";
+import { useCart } from "../Components/PageLayout/HeaderFiles/CartFiles/CartProvider.js";
 
 const userId = getUserId();
 

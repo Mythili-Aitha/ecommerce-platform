@@ -11,10 +11,11 @@ import {
   Snackbar,
 } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
-import apiClient from "./apiClient";
+import apiClient from "../../../../Utils/apiClient";
+import { boxPaSx, cardSx } from "../../../../Utils/Styles";
 
 export default function Login() {
   const [tabIndex, setTabIndex] = useState(1);
@@ -120,7 +121,7 @@ export default function Login() {
   };
 
   return (
-    <Card sx={{ width: "100%", maxWidth: 400, mx: "auto", mt: 5, p: 3 }}>
+    <Card sx={cardSx}>
       <Button
         sx={{ display: "flex", alignItems: "flex-start" }}
         onClick={() => {
@@ -180,7 +181,7 @@ export default function Login() {
       {/* ✅ Registration Form */}
       {tabIndex === 1 && (
         <form onSubmit={(e) => handleSubmit(e, "register")}>
-          <Box sx={{ display: "flex", flexDirection: "column", gap: 2, mt: 2 }}>
+          <Box sx={boxPaSx}>
             <TextField
               size="small"
               variant="outlined"

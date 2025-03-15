@@ -10,7 +10,7 @@ import {
   Typography,
 } from "@mui/material";
 import { useEffect, useState } from "react";
-import { getRecentOrders } from "./Api";
+import { getRecentOrders } from "../../../Utils/Api";
 import { Link } from "react-router-dom";
 
 const OrdersTable = () => {

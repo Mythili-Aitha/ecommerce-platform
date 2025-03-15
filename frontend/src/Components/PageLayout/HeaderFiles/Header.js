@@ -22,9 +22,9 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import FilterListIcon from "@mui/icons-material/FilterList";
-import { Actions } from "./Actions";
+import { Actions } from "../../../Utils/Actions";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useSearchFilter } from "./SearchFilterProvider";
+import { useSearchFilter } from "./HeaderTabs/SearchFilterProvider";
 
 export default function Header() {
   const { searchTerm, setSearchTerm, toggleFilter } = useSearchFilter();

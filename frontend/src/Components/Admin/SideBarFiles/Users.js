@@ -13,7 +13,7 @@ import {
   MenuItem,
 } from "@mui/material";
 import { Link } from "react-router-dom";
-import { getAllUsers, updateUserRole } from "./Api";
+import { getAllUsers, updateUserRole } from "../../../Utils/Api";
 
 const Users = () => {
   const [users, setUsers] = useState([]);
