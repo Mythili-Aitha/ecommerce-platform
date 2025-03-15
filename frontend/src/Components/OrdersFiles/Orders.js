@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getUserOrders } from "../Components/Api";
 import { Card, Button } from "@mui/material";
+import { getUserOrders } from "../../Utils/Api";
 
 const Orders = () => {
   const navigate = useNavigate();

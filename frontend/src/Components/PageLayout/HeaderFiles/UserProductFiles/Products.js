@@ -12,9 +12,9 @@ import { useLocation, useNavigate } from "react-router-dom";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import FilterDrawer from "./FilterDrawer";
 import ScrollTopButton from "./ScrollTopButton";
-import { getProducts, getProductsByCategories } from "../Components/Api.js";
-import { Actions } from "./Actions.js";
-import { useSearchFilter } from "./SearchFilterProvider.js";
+import { Actions } from "../../../../Utils/Actions.js";
+import { getProducts, getProductsByCategories } from "../../../../Utils/Api.js";
+import { useSearchFilter } from "../HeaderTabs/SearchFilterProvider.js";
 
 export default function Products() {
   const { searchTerm, filterOpen, setFilterOpen } = useSearchFilter();

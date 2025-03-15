@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { getAdminProductForm, getAdminProducts } from "./Api";
 import { Box, Button, TextField, Typography } from "@mui/material";
+import { getAdminProductForm, getAdminProducts } from "../../../../Utils/Api";
+import { boxSx } from "../../../../Utils/Styles";
 
 export const AdminProductForm = () => {
   const { productId } = useParams();
@@ -62,7 +63,7 @@ export const AdminProductForm = () => {
   };
 
   return (
-    <Box sx={{ maxWidth: 600, mx: "auto", mt: 4, p: 2 }}>
+    <Box sx={boxSx}>
       <Typography variant="h6">
         {productId ? "Edit Product" : "Add Product"}
       </Typography>

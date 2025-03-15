@@ -21,7 +21,7 @@ import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import SizeSelector from "./SizeSelector";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import FavoriteIcon from "@mui/icons-material/Favorite";
-import { Actions } from "./Actions.js";
+import { Actions } from "../../../../Utils/Actions";
 
 export default function ProductDetails() {
   const location = useLocation();

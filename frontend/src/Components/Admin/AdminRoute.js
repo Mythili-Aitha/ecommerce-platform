@@ -1,7 +1,6 @@
 import { Navigate, Outlet } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { getUserDetails } from "./Api";
-
+import { getUserDetails } from "../../Utils/Api";
 const AdminRoute = () => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);

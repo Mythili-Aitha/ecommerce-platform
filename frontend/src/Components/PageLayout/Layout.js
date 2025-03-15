@@ -1,9 +1,9 @@
 import React from "react";
 import { matchPath, useLocation } from "react-router-dom";
 import { Box } from "@mui/material";
-import Header from "./Header";
-import Footer from "./Footer";
-import { useSearchFilter } from "./SearchFilterProvider";
+import Header from "./HeaderFiles/Header";
+import Footer from "./FooterFiles/Footer";
+import { useSearchFilter } from "./HeaderFiles/HeaderTabs/SearchFilterProvider";
 
 export default function Layout({ children }) {
   const location = useLocation();

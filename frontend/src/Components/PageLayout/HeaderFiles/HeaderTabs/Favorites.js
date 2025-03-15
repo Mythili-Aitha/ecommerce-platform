@@ -5,14 +5,12 @@ import {
   Typography,
   Box,
   Avatar,
-  Badge,
 } from "@mui/material";
 import React from "react";
-import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
 import { useNavigate } from "react-router-dom";
-import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import ShoppingCartCheckoutIcon from "@mui/icons-material/ShoppingCartCheckout";
-import { Actions } from "./Actions";
+import { Actions } from "../../../../Utils/Actions";
+import { avatar } from "../../../../Utils/Styles";
 
 export default function Favorites() {
   const navigate = useNavigate();
@@ -39,7 +37,7 @@ export default function Favorites() {
               justifyContent: "space-between",
             }}
           >
-            <Avatar sx={{ width: 60, height: 60 }} src={item.productImage} />
+            <Avatar sx={avatar} src={item.productImage} />
             <Box>
               <Typography>{item.productName}</Typography>
             </Box>

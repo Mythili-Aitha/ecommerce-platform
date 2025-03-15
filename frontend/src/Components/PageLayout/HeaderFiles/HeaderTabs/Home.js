@@ -7,9 +7,14 @@ import {
   Card,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
-import { getCategories, getProducts, getProductsByCategories } from "./Api";
 import { useNavigate } from "react-router-dom";
+import {
+  getCategories,
+  getProducts,
+  getProductsByCategories,
+} from "../../../../Utils/Api";
 import { useSearchFilter } from "./SearchFilterProvider";
+import { avatar, boxHSx } from "../../../../Utils/Styles";
 
 const Home = () => {
   const { searchTerm } = useSearchFilter();
@@ -103,15 +108,7 @@ const Home = () => {
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
       {/* Categories */}
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "center",
-          gap: 3,
-          overflowX: "auto",
-          padding: 2,
-        }}
-      >
+      <Box sx={boxHSx}>
         {categories.length > 0 ? (
           categories.map((category, index) => (
             <Box
@@ -124,14 +121,7 @@ const Home = () => {
               }}
               onClick={() => navigate(`/products?category=${category.name}`)}
             >
-              <Avatar
-                src={category.image}
-                sx={{
-                  width: 45,
-                  height: 45,
-                  border: "2px solid #ddd",
-                }}
-              />
+              <Avatar src={category.image} sx={avatar} />
               <Typography
                 variant="body1"
                 sx={{ mt: 1, fontSize: "14px", fontWeight: 500 }}

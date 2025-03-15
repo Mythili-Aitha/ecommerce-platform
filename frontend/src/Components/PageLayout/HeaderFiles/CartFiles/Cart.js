@@ -11,7 +11,8 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import Add from "@mui/icons-material/Add";
 import Remove from "@mui/icons-material/Remove";
-import { Actions } from "./Actions";
+import { Actions } from "../../../../Utils/Actions";
+import { avatar, boxCSx, cardCSx } from "../../../../Utils/Styles";
 
 export default function Cart() {
   const navigate = useNavigate();
@@ -34,31 +35,17 @@ export default function Cart() {
         </Typography>
       ) : (
         cart.map((item) => (
-          <Card
-            key={item.productId}
-            sx={{
-              padding: 2,
-              marginTop: 3,
-              display: "flex",
-              justifyContent: "space-between",
-            }}
-          >
+          <Card key={item.productId} sx={cardCSx}>
             <Checkbox
               checked={item.selected || false}
               onChange={() => toggleSelectItem(item.productId)}
             />
-            <Avatar sx={{ width: 60, height: 60 }} src={item.productImage} />
+            <Avatar sx={avatar} src={item.productImage} />
             <Box>
               <Typography>{item.productName}</Typography>
               <Typography>${item.productPrice}</Typography>
             </Box>
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-              }}
-            >
+            <Box sx={boxCSx}>
               <Box sx={{ display: "flex", alignItems: "center" }}>
                 <IconButton
                   onClick={() =>

@@ -1,11 +1,5 @@
 import React, { useState, useEffect } from "react";
 import {
-  addAddress,
-  getUserAddresses,
-  updateAddress,
-  deleteAddress,
-} from "../Components/Api.js";
-import {
   Box,
   Button,
   FormControl,
@@ -16,6 +10,13 @@ import {
   TextField,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import {
+  getUserAddresses,
+  addAddress,
+  updateAddress,
+  deleteAddress,
+} from "../../../Utils/Api";
+import { boxApSx, boxPaSx } from "../../../Utils/Styles";
 
 const AddressForm = () => {
   const storedAddress = localStorage.getItem("selectedAddress");
@@ -131,13 +132,11 @@ const AddressForm = () => {
   };
 
   return (
-    <Box sx={{ display: "flex", flexDirection: "column", padding: 3, gap: 2 }}>
+    <Box sx={boxPaSx}>
       <h2>Manage Addresses</h2>
 
       <form onSubmit={handleSubmit}>
-        <Box
-          sx={{ display: "flex", flexDirection: "column", padding: 1, gap: 3 }}
-        >
+        <Box sx={boxApSx}>
           <TextField
             type="text"
             placeholder="Street"
