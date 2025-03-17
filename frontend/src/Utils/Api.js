@@ -264,8 +264,16 @@ export const getAllUsers = async () => {
   return apiClient.get(`/admin/users`);
 };
 
+export const getUserById = async (userId) => {
+  return apiClient.get(`/admin/users/${userId}`);
+};
+
 export const updateUserRole = async (userId, newRole) => {
   return apiClient.put(`/admin/users/${userId}/role`, { role: newRole });
+};
+
+export const blockUser = async (userId) => {
+  return apiClient.put(`/admin/users/${userId}/block`);
 };
 
 export const getAdminProducts = async () => {

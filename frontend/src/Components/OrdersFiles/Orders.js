@@ -1,16 +1,15 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, Button } from "@mui/material";
-import { getUserOrders } from "../../Utils/Api";
+import { Actions } from "../../Utils/Actions";
 
 const Orders = () => {
   const navigate = useNavigate();
   const [orders, setOrders] = useState([]);
+  const { fetchOrders } = Actions;
 
   useEffect(() => {
-    getUserOrders()
-      .then((response) => setOrders(response.data))
-      .catch((error) => console.error("Error fetching orders:", error));
+    fetchOrders();
   }, []);
 
   if (orders.length === 0) return <p>No orders found.</p>;

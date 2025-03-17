@@ -8,10 +8,6 @@ export default function ProfileDetails({
 }) {
   return (
     <Box>
-      <Typography variant="h5" textAlign="center">
-        {user ? `${user.name}'s Profile` : "Loading..."}
-      </Typography>
-
       <p>
         <strong>Name:</strong> {user?.name}
       </p>
@@ -24,7 +20,6 @@ export default function ProfileDetails({
       <p>
         <strong>Phone:</strong> {user?.phoneNumber}
       </p>
-
       <Button
         fullWidth
         variant="contained"

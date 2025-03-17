@@ -75,6 +75,11 @@ export default function Login() {
         setSOpen(true);
         return;
       }
+      if (response.data.isBlocked) {
+        setSMessage("Your account has been blocked. Please contact support.");
+        setSOpen(true);
+        return;
+      }
       localStorage.setItem("user", JSON.stringify(response.data));
       localStorage.setItem("role", response.data.role);
       setUser(response.data);

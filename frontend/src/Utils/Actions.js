@@ -36,9 +36,6 @@ export const Actions = () => {
     const storedHistory = localStorage.getItem("history");
     return storedHistory ? JSON.parse(storedHistory) : [];
   });
-  useEffect(() => {
-    localStorage.setItem("history", JSON.stringify(history));
-  }, [history]);
 
   const addToHistory = (action, details) => {
     const newEntry = {
@@ -46,9 +43,11 @@ export const Actions = () => {
       details,
       date: new Date().toLocaleString(),
     };
-    setHistory((prevHistory) => [newEntry, ...prevHistory]); // Add new action to history
+    const updatedHistory = [newEntry, ...history];
+    setHistory((prevHistory) => [newEntry, ...prevHistory]);
+    localStorage.setItem("history", JSON.stringify(updatedHistory));
   };
-  const handleChange = (e, newValue) => {
+  const handleChange = (newValue) => {
     setValue(newValue);
   };
   const toggleDrawer = (newOpen) => () => {
@@ -105,18 +104,23 @@ export const Actions = () => {
     navigate("/auth");
   };
 
-  // ✅ Fetch cart and favorites on load
-  useEffect(() => {
-    getUserFavorites()
-      .then((data) => setFavorites(data))
-      .catch((error) => console.error("Error fetching favorites:", error));
-  }, []);
+  const fetchFavorites = async () => {
+    try {
+      const data = await getUserFavorites();
+      setFavorites(data);
+    } catch (error) {
+      console.error("Error fetching favorites:", error);
+    }
+  };
 
-  useEffect(() => {
-    getUserOrders()
-      .then((data) => setOrders(data))
-      .catch((error) => console.error("Error fetching orders:", error));
-  }, []);
+  const fetchOrders = async () => {
+    try {
+      const data = await getUserOrders();
+      setOrders(data);
+    } catch (error) {
+      console.error("Error fetching orders:", error);
+    }
+  };
 
   // ✅ Add to cart
   const handleAddToCart = async (productId) => {
@@ -344,6 +348,8 @@ export const Actions = () => {
     snackbarOpen,
     history,
     setCart,
+    fetchFavorites,
+    fetchOrders,
     addToHistory,
     filterProducts,
     setEditable,

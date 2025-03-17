@@ -21,13 +21,14 @@ import Profile from "./Components/PageLayout/HeaderFiles/AuthFiles/ProfileFiles/
 import History from "./Components/OrdersFiles/History.js";
 import { CartProvider } from "./Components/PageLayout/HeaderFiles/CartFiles/CartProvider.js";
 import Admin from "./Components/Admin/Admin.js";
-import Users from "./Components/Admin/SideBarFiles/Users.js";
+import Users from "./Components/Admin/SideBarFiles/UserFiles/Users.js";
 import AdminRoute from "./Components/Admin/AdminRoute.js";
 import { AdminProducts } from "./Components/Admin/SideBarFiles/ProductandPage/AdminProducts.js";
 import { AdminProductForm } from "./Components/Admin/SideBarFiles/ProductandPage/AdminProductForm.js";
 import Layout from "./Components/PageLayout/Layout.js";
 import Products from "./Components/PageLayout/HeaderFiles/UserProductFiles/Products.js";
 import ProductDetails from "./Components/PageLayout/HeaderFiles/UserProductFiles/ProductsDetailsPage/ProductDetails.js";
+import UserDetails from "./Components/Admin/SideBarFiles/UserFiles/UserDetails.js";
 
 function App() {
   const location = useLocation();
@@ -55,6 +56,10 @@ function App() {
                       element={<OrderDetails />}
                     />
                     <Route path="/admin/users" element={<Users />} />
+                    <Route
+                      path="/admin/users/:userId"
+                      element={<UserDetails />}
+                    />
                     <Route path="/admin/products" element={<AdminProducts />} />
                     <Route
                       path="/admin/products/new"

@@ -7,6 +7,7 @@ import DrawerMenu from "./DrawerMenu";
 import NavigationTabs from "./NavigationTabs";
 import SearchBox from "./SearchBox";
 import HeaderActions from "./HeaderActions";
+import MenuIcon from "@mui/icons-material/Menu";
 
 export default function Header() {
   const { searchTerm, setSearchTerm, toggleFilter } = useSearchFilter();
@@ -50,12 +51,15 @@ export default function Header() {
           }}
         >
           {showDrawer && (
-            <DrawerMenu
-              open={open}
-              toggleDrawer={toggleDrawer}
-              user={user}
-              handleSignOut={handleSignOut}
-            />
+            <>
+              <MenuIcon fontSize="large" onClick={toggleDrawer(true)} />
+              <DrawerMenu
+                open={open}
+                toggleDrawer={toggleDrawer}
+                user={user}
+                handleSignOut={handleSignOut}
+              />
+            </>
           )}
           <NavigationTabs
             showBackButton={showBackButton}

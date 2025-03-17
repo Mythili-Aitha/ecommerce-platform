@@ -6,20 +6,23 @@ import {
   Box,
   Avatar,
 } from "@mui/material";
-import React from "react";
+import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import ShoppingCartCheckoutIcon from "@mui/icons-material/ShoppingCartCheckout";
 import { Actions } from "../../../../Utils/Actions";
 import { avatar, cardFSx } from "../../../../Utils/Styles";
 
 export default function Favorites() {
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const {
     favorites,
-    totalQuantity,
+    fetchFavorites,
     handleRemoveFromFavorites,
     handleMoveToCart,
   } = Actions();
+  useEffect(() => {
+    fetchFavorites();
+  }, []);
   return (
     <>
       {favorites.length === 0 ? (
