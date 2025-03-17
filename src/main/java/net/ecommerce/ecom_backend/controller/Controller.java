@@ -18,6 +18,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api")
@@ -218,8 +219,8 @@ public class Controller {
         Map<String, Object> stats = new HashMap<>();
         stats.put("totalOrders", orderRepo.count());
         stats.put("totalRevenue", orderRepo.getTotalRevenue());
-        stats.put("totalCustomers", userRepo.count());
-        stats.put("lowStockItems", productRepo.countByStockLessThan(5)); // Products with stock < 5
+        stats.put("totalCustomers", userRepo.countByRole("User"));
+        stats.put("lowStockItems", productRepo.countByStockLessThan(5));
         return ResponseEntity.ok(stats);
     }
 
@@ -295,11 +296,48 @@ public class Controller {
                     dto.setCreatedAt(user.getCreatedAt());
                     dto.setUpdatedAt(user.getUpdatedAt());
                     dto.setRole(user.getRole());
+                    dto.setBlocked(user.isBlocked());
                     return dto;
                 })
                 .toList();
 
         return ResponseEntity.ok(userDtos);
+    }
+
+    @PreAuthorize("hasAuthority('Admin')")
+    @GetMapping("/admin/users/{id}")
+    public ResponseEntity<UserDto> getAdminUserById(@PathVariable Long id) {
+        Optional<User> userOptional = userRepo.findById(id);
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            UserDto dto = new UserDto();
+            dto.setUserId(user.getUserId());
+            dto.setName(user.getName());
+            dto.setUsername(user.getUsername());
+            dto.setPassword(user.getPassword());
+            dto.setEmail(user.getEmail());
+            dto.setPhoneNumber(user.getPhoneNumber());
+            dto.setCreatedAt(user.getCreatedAt());
+            dto.setUpdatedAt(user.getUpdatedAt());
+            dto.setRole(user.getRole());
+            dto.setBlocked(user.isBlocked());
+            return ResponseEntity.ok(dto);
+        }
+        return ResponseEntity.notFound().build();
+    }
+
+    @PreAuthorize("hasAuthority('Admin')")
+    @PutMapping("/admin/users/{id}/block")
+    public ResponseEntity<String> blockOrUnblockUser(@PathVariable Long id) {
+        Optional<User> userOptional = userRepo.findById(id);
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            boolean newBlockedStatus = !user.isBlocked();
+            user.setBlocked(newBlockedStatus);
+            userRepo.save(user);
+            return ResponseEntity.ok(user.isBlocked() ? "User blocked successfully" : "User unblocked successfully");
+        }
+        return ResponseEntity.notFound().build();
     }
 
     @PreAuthorize("hasAuthority('Admin')")
@@ -326,4 +364,6 @@ public class Controller {
         service.deleteProduct(id);
         return ResponseEntity.noContent().build();
     }
+
+
 }

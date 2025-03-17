@@ -24,6 +24,7 @@ public class Mapper {
         userDto.setCreatedAt(user.getCreatedAt());
         userDto.setUpdatedAt(user.getUpdatedAt());
         userDto.setRole(user.getRole());
+        userDto.setBlocked(user.isBlocked());
         return userDto;
 
     }
@@ -42,6 +43,7 @@ public class Mapper {
         user.setCreatedAt(userDto.getCreatedAt());
         user.setUpdatedAt(userDto.getUpdatedAt());
         user.setRole(userDto.getRole());
+        user.setBlocked(userDto.isBlocked());
         return user;
     }
 

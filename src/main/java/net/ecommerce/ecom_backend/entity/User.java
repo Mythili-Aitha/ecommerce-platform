@@ -32,6 +32,8 @@ public class User {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private String role= "User";
+    @Column(nullable = false)
+    private boolean blocked = false;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Address> addresses= new ArrayList<>();

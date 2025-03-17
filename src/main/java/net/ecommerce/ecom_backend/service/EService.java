@@ -62,8 +62,13 @@ public class EService {
     public UserDto LoginUser(LoginDto loginDto) {
         User user = userRepo.findByUsername(loginDto.getUsername());
 
-        if (user != null && user.getPassword().equals(loginDto.getPassword())) {
-            return Mapper.toUserDto(user); // Return user details without password
+        if (user != null) {
+            if (user.isBlocked()) {
+                throw new RuntimeException("Your account is blocked. Please contact support.");
+            }
+            if (user.getPassword().equals(loginDto.getPassword())) {
+                return Mapper.toUserDto(user);
+            }
         }
 
         return null;
@@ -95,8 +100,6 @@ public class EService {
 
         return "Password updated successfully";
     }
-
-
 
 //    Address Methods
     public AddressDto addAddress(AddressDto addressDto) {
