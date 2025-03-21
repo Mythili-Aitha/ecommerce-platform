@@ -13,7 +13,7 @@ import Login from "./Components/PageLayout/HeaderFiles/AuthFiles/LoginFiles/Logi
 import Cart from "./Components/PageLayout/HeaderFiles/CartFiles/Cart.js";
 import Favorites from "./Components/PageLayout/HeaderFiles/HeaderTabs/Favorites.js";
 import OrderConfo from "./Components/OrdersFiles/OrderConfirmations/OrderConfoPage/OrderConfo.js";
-import Home from "./Components/PageLayout/HeaderFiles/HeaderTabs/Home.js";
+import Home from "./Components/PageLayout/HeaderFiles/HeaderTabs/HomePageFiles/Home.js";
 import AddressForm from "./Components/OrdersFiles/AddressFiles/AddressForm.js";
 import PaymentForm from "./Components/OrdersFiles/PaymentFiles/PaymentForm.js";
 import Orders from "./Components/OrdersFiles/Orders.js";
@@ -29,6 +29,9 @@ import Layout from "./Components/PageLayout/Layout.js";
 import Products from "./Components/PageLayout/HeaderFiles/UserProductFiles/Products.js";
 import ProductDetails from "./Components/PageLayout/HeaderFiles/UserProductFiles/ProductsDetailsPage/ProductDetails.js";
 import UserDetails from "./Components/Admin/SideBarFiles/UserFiles/UserDetails.js";
+import TotalRevenueCard from "./Components/Admin/SideBarFiles/DashboardCards/TotalRevenueCard.js";
+import LowStockCard from "./Components/Admin/SideBarFiles/DashboardCards/LowStockCard.js";
+import OrdersPage from "./Components/Admin/AdminOrdersFiles/OrdersPage.js";
 
 function App() {
   const location = useLocation();
@@ -69,6 +72,12 @@ function App() {
                       path="/admin/products/:productId"
                       element={<AdminProductForm />}
                     />
+                    <Route
+                      path="/admin/revenue"
+                      element={<TotalRevenueCard />}
+                    />
+                    <Route path="/admin/lowstock" element={<LowStockCard />} />
+                    <Route path="/admin/orders" element={<OrdersPage />} />
                   </Route>
                   <Route path="/cart" element={<Cart />} />
                   <Route path="/products" element={<Products />} />

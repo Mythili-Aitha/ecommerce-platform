@@ -57,8 +57,7 @@ export const getUserAddresses = async () => {
   try {
     const userId = getUserId();
     if (!userId) throw new Error("User ID is required");
-    const response = await apiClient.get(`/address/users/${userId}`);
-    return response.data;
+    return apiClient.get(`/address/users/${userId}`);
   } catch (error) {
     console.error("Error fetching addresses:", error);
     throw error;
@@ -76,6 +75,15 @@ export const deleteAddress = async (id) => {
 // ✅ Payment APIs
 export const addPaymentInfo = async (paymentData) => {
   return await apiClient.post(`/payments`, paymentData);
+};
+
+export const selectPaymentMethod = async (userId, paymentId) => {
+  return await apiClient.put(`/payments/select/${userId}/${paymentId}`);
+};
+
+export const getSelectedPayment = async () => {
+  const userId = getUserId();
+  return await apiClient.get(`/payments/selected/${userId}`);
 };
 
 export const getUserPaymentInfo = async () => {
@@ -101,6 +109,17 @@ export const getProducts = async () => {
   }
 };
 
+export const getProductById = async (productId) => {
+  try {
+    const response = await apiClient.get(`/products/${productId}`);
+    console.log("Fetched Product from API:", response.data);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching product by ID:", error);
+    return null;
+  }
+};
+
 export const getCategories = async () => {
   try {
     const response = await apiClient.get(`/products/category`);
@@ -118,6 +137,16 @@ export const getProductsByCategories = async (category) => {
   } catch (error) {
     console.log("Error while fetched Products by Categories", error);
     throw error;
+  }
+};
+
+export const getTrendingProduct = async () => {
+  try {
+    const response = await apiClient(`/products/trending`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching trending product", error);
+    return null;
   }
 };
 
@@ -148,8 +177,7 @@ export const getUserFavorites = async () => {
   try {
     const userId = getUserId();
     if (!userId) throw new Error("User ID is required");
-    const response = await apiClient.get(`/favorites/users/${userId}`);
-    return response.data;
+    return apiClient.get(`/favorites/users/${userId}`);
   } catch (error) {
     console.error("Error fetching favorites:", error);
     throw error;
@@ -294,4 +322,14 @@ export const updateAdminProduct = async (productId, productData) => {
 
 export const addAdminProduct = async (productData) => {
   return apiClient.post(`/admin/products`, productData);
+};
+
+export const getRevenueBreakdown = async () => {
+  return apiClient.get(`/revenue/breakdown`);
+};
+
+export const getAllOrders = async (sortOrder = "desc", status = "") => {
+  return await apiClient.get(`/orders/admin`, {
+    params: { sortOrder, status },
+  });
 };

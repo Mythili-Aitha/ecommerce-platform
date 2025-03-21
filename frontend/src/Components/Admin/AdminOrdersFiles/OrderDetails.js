@@ -19,6 +19,7 @@ const OrderDetails = () => {
   useEffect(() => {
     getOrderDetails(orderId)
       .then((response) => {
+        console.log("Order Details Response:", response.data);
         setOrder(response.data);
         setLoading(false);
       })
@@ -96,9 +97,14 @@ const OrderDetails = () => {
           <Typography variant="h6" sx={{ marginTop: 2 }}>
             Shipping Address:
           </Typography>
-          {/* <Typography>
-            {order.address.street}, {order.address.city}, {order.address.state}
-          </Typography> */}
+          {order.address ? (
+            <Typography>
+              {order.address.street}, {order.address.city},{" "}
+              {order.address.state}, {order.address.zip}
+            </Typography>
+          ) : (
+            <Typography>No shipping address available</Typography>
+          )}
 
           <Typography variant="h6" sx={{ marginTop: 2 }}>
             Items Ordered:
@@ -106,7 +112,7 @@ const OrderDetails = () => {
           {order.items.map((item) => (
             <Box key={item.id} sx={{ marginBottom: 1 }}>
               <Typography>
-                {item.name} - ${item.price} x {item.quantity}
+                {item.productName} - ${item.price} x {item.quantity}
               </Typography>
             </Box>
           ))}

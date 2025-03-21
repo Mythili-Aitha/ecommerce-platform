@@ -74,3 +74,28 @@ export const cardFSx = {
   display: "flex",
   justifyContent: "space-between",
 };
+
+export const boxhSx = {
+  width: "90%",
+  margin: "auto",
+  mt: 3,
+  padding: 2,
+  border: "2px solid black",
+  borderRadius: "10px",
+  textAlign: "center",
+};
+
+export const styleSx = {
+  maxBlockSize: 100,
+  maxHeight: 100,
+  maxWidth: 100,
+};
+
+export const sideBarSx = {
+  "&.Mui-selected": {
+    backgroundColor: "#98c9e4",
+  },
+  "&:hover": {
+    backgroundColor: "#f0f0f0",
+  },
+};

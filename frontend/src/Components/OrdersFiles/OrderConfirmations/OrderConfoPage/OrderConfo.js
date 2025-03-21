@@ -1,46 +1,40 @@
 import { Card, Button, Box, Snackbar } from "@mui/material";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
 import { useNavigate } from "react-router-dom";
 import { Actions } from "../../../../Utils/Actions";
 import { buttonSx, cardSx } from "../../../../Utils/Styles";
 import OrderAddress from "./OrderAddress";
 import ShippingMethod from "./ShippingMethod";
-import PaymentMethod from "./PaymentMethod";
 import OrderSummary from "./OrderSummary";
+import { getSelectedPayment, getUserId } from "../../../../Utils/Api";
 
 export default function OrderConfo() {
   const navigate = useNavigate();
-  const {
-    snackbarOpen,
-    snackbarMessage,
-    totalPrice,
-    setSnackbarOpen,
-    setSnackbarMessage,
-    handlePlaceOrder,
-  } = Actions();
-  const storedAddress = localStorage.getItem("selectedAddress");
+  const { totalPrice, handlePlaceOrder } = Actions();
+  const userId = getUserId();
+  const storedAddress = localStorage.getItem(`selectedAddress_${userId}`);
   const selectedAddress = storedAddress ? JSON.parse(storedAddress) : null;
-  const storedPayment = localStorage.getItem("selectedPayment");
-  const selectedPayment = storedPayment ? JSON.parse(storedPayment) : null;
-  const storedPaymentMethods = localStorage.getItem("paymentMethods");
-  const paymentMethods = storedPaymentMethods
-    ? JSON.parse(storedPaymentMethods)
-    : [];
-
-  const storedUser = JSON.parse(localStorage.getItem("user"));
   const storedItems = localStorage.getItem("selectedItems");
   const selectedItems = storedItems ? JSON.parse(storedItems) : [];
 
-  const handlePaymentSelection = (e) => {
-    const selected = paymentMethods.find((p) => p.paymentId === e.target.value);
-    localStorage.setItem(
-      "selectedPayment",
-      JSON.stringify(selected || e.target.value)
-    );
-    navigate("/oconfo");
-  };
+  const [selectedPayment, setSelectedPayment] = useState(null);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
 
+  const storedUser = JSON.parse(localStorage.getItem("user"));
+
+  useEffect(() => {
+    const fetchSelectedPayment = async () => {
+      try {
+        const response = await getSelectedPayment();
+        setSelectedPayment(response.data);
+      } catch (error) {
+        console.error("Error fetching selected payment method", error);
+      }
+    };
+    fetchSelectedPayment();
+  }, []);
   const handleContinue = () => {
     if (!selectedAddress) {
       setSnackbarMessage("Please add an address before continuing.");
@@ -54,7 +48,12 @@ export default function OrderConfo() {
       setSnackbarOpen(true);
       return;
     } else {
-      handlePlaceOrder(selectedItems, totalPrice);
+      handlePlaceOrder(
+        selectedItems,
+        totalPrice,
+        selectedAddress,
+        selectedPayment
+      );
     }
   };
 
@@ -77,11 +76,21 @@ export default function OrderConfo() {
           selectedAddress={selectedAddress}
         />
         <ShippingMethod />
-        <PaymentMethod
-          paymentMethods={paymentMethods}
-          selectedPayment={selectedPayment}
-          handlePaymentSelection={handlePaymentSelection}
-        />
+        <Box>
+          <h3>Selected Payment Method:</h3>
+          {selectedPayment ? (
+            selectedPayment.cardNumber ? (
+              <p>Card Ending in **** {selectedPayment.cardNumber.slice(-4)}</p>
+            ) : (
+              <p>{selectedPayment}</p>
+            )
+          ) : (
+            <p>No payment method selected</p>
+          )}
+          <Button variant="outlined" onClick={() => navigate("/payments")}>
+            Change Payment Method
+          </Button>
+        </Box>
         <OrderSummary selectedItems={selectedItems} totalPrice={totalPrice} />
 
         <Button

@@ -1,14 +1,12 @@
 import { useState, useEffect } from "react";
 import {
   getUserId,
-  getUserFavorites,
   addToFavorites,
   removeFromFavorites,
   addToCart,
   updateCartQuantity,
   removeFromCart,
   placeOrder,
-  getUserOrders,
   getUserDetails,
   updateUserProfile,
   updateUserPassword,
@@ -21,7 +19,6 @@ const userId = getUserId();
 
 export const Actions = () => {
   const { cart, setCart } = useCart();
-  const [favorites, setFavorites] = useState([]);
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
   const [value, setValue] = useState("1");
@@ -102,24 +99,6 @@ export const Actions = () => {
     localStorage.removeItem("user");
     setUser(null);
     navigate("/auth");
-  };
-
-  const fetchFavorites = async () => {
-    try {
-      const data = await getUserFavorites();
-      setFavorites(data);
-    } catch (error) {
-      console.error("Error fetching favorites:", error);
-    }
-  };
-
-  const fetchOrders = async () => {
-    try {
-      const data = await getUserOrders();
-      setOrders(data);
-    } catch (error) {
-      console.error("Error fetching orders:", error);
-    }
   };
 
   // ✅ Add to cart
@@ -225,30 +204,13 @@ export const Actions = () => {
   };
 
   // ✅ Remove from favorites
-  const handleRemoveFromFavorites = async (productId) => {
-    try {
-      await removeFromFavorites(userId, productId);
-      setFavorites((prevFavorites) =>
-        prevFavorites.filter((item) => item.productId !== productId)
-      );
-    } catch (error) {
-      console.error("Error removing from favorites:", error);
-    }
-  };
 
-  const handleMoveToCart = async (productId) => {
-    try {
-      await addToCart(productId, 1);
-      await removeFromFavorites(userId, productId);
-      setFavorites((prevFavorites) =>
-        prevFavorites.filter((item) => item.productId !== productId)
-      );
-    } catch (error) {
-      console.error("Error moving item to cart:", error);
-    }
-  };
-
-  const handlePlaceOrder = async (selectedItems, totalPrice) => {
+  const handlePlaceOrder = async (
+    selectedItems,
+    totalPrice,
+    selectedAddress,
+    selectedPayment
+  ) => {
     try {
       const userId = getUserId();
       if (!userId) {
@@ -259,9 +221,10 @@ export const Actions = () => {
         />;
         return;
       }
-
       const orderData = {
         userId,
+        addressId: selectedAddress?.id,
+        paymentId: selectedPayment?.paymentId,
         totalPrice,
         items: selectedItems.map((item) => ({
           productId: item.productId,
@@ -336,7 +299,6 @@ export const Actions = () => {
     open,
     value,
     cart,
-    favorites,
     totalQuantity,
     totalPrice,
     selectedItems,
@@ -348,8 +310,6 @@ export const Actions = () => {
     snackbarOpen,
     history,
     setCart,
-    fetchFavorites,
-    fetchOrders,
     addToHistory,
     filterProducts,
     setEditable,
@@ -362,8 +322,6 @@ export const Actions = () => {
     handleUpdateCartQuantity,
     handleRemoveFromCart,
     handleAddToFavorites,
-    handleRemoveFromFavorites,
-    handleMoveToCart,
     handlePlaceOrder,
     handleProfileChange,
     handleUpdateProfile,

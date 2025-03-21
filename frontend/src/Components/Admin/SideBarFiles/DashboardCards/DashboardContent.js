@@ -4,7 +4,8 @@ import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import MonetizationOnIcon from "@mui/icons-material/MonetizationOn";
 import PeopleIcon from "@mui/icons-material/People";
 import WarningIcon from "@mui/icons-material/Warning";
-import { getStats } from "../../../Utils/Api";
+import { getStats } from "../../../../Utils/Api";
+import { useNavigate } from "react-router-dom";
 
 const DashboardContent = () => {
   const [stats, setStats] = useState({
@@ -13,6 +14,7 @@ const DashboardContent = () => {
     totalCustomers: 0,
     lowStockItems: 0,
   });
+  const navigate = useNavigate();
 
   useEffect(() => {
     getStats()
@@ -25,21 +27,25 @@ const DashboardContent = () => {
       title: "Total Orders",
       value: stats.totalOrders,
       icon: <ShoppingCartIcon fontSize="large" />,
+      onclick: () => navigate("/admin/orders"),
     },
     {
       title: "Total Revenue",
       value: stats.totalRevenue,
       icon: <MonetizationOnIcon fontSize="large" />,
+      onclick: () => navigate("/admin/revenue"),
     },
     {
       title: "Total Customers",
       value: stats.totalCustomers,
       icon: <PeopleIcon fontSize="large" />,
+      onclick: () => navigate("/admin/users"),
     },
     {
       title: "Low Stock Alerts",
       value: stats.lowStockItems,
       icon: <WarningIcon fontSize="large" />,
+      onclick: () => navigate("/admin/lowstock"),
     },
   ];
 
@@ -48,10 +54,13 @@ const DashboardContent = () => {
       <Grid container spacing={3}>
         {statsCards.map((stat, index) => (
           <Grid item xs={12} sm={6} md={3} key={index}>
-            <Card sx={{ display: "flex", alignItems: "center", p: 2 }}>
+            <Card
+              sx={{ display: "flex", alignItems: "center", p: 2 }}
+              onClick={stat.onclick}
+            >
               <Box sx={{ mr: 2 }}>{stat.icon}</Box>
               <CardContent>
-                <Typography variant="h6">{stat.title}</Typography>
+                <Typography variant="h5">{stat.title}</Typography>
                 <Typography variant="h5" fontWeight="bold">
                   {stat.value}
                 </Typography>

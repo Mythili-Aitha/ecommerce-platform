@@ -1,7 +1,7 @@
 import { Box, Toolbar, Typography } from "@mui/material";
 import React from "react";
 import Sidebar from "./SideBarFiles/Sidebar";
-import DashboardContent from "./SideBarFiles/DashboardContent";
+import DashboardContent from "./SideBarFiles/DashboardCards/DashboardContent";
 import OrdersTable from "./AdminOrdersFiles/OrdersTable";
 
 export default function Admin() {

@@ -1,4 +1,5 @@
-import { Box, Typography } from "@mui/material";
+import { Box, Typography, IconButton, Button } from "@mui/material";
+import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import React from "react";
 import { Actions } from "../../../../Utils/Actions";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -8,6 +9,7 @@ import NavigationTabs from "./NavigationTabs";
 import SearchBox from "./SearchBox";
 import HeaderActions from "./HeaderActions";
 import MenuIcon from "@mui/icons-material/Menu";
+import PersonIcon from "@mui/icons-material/Person";
 
 export default function Header() {
   const { searchTerm, setSearchTerm, toggleFilter } = useSearchFilter();
@@ -21,6 +23,8 @@ export default function Header() {
     handleChange,
     toggleDrawer,
   } = Actions();
+
+  const isAdminPage = location.pathname.startsWith("/admin");
 
   const showSearch = ["/", "/products", "/products/:id"].some((path) =>
     location.pathname.includes(path)
@@ -50,42 +54,75 @@ export default function Header() {
             justifyContent: "space-between",
           }}
         >
-          {showDrawer && (
+          {isAdminPage ? (
             <>
-              <MenuIcon fontSize="large" onClick={toggleDrawer(true)} />
-              <DrawerMenu
-                open={open}
-                toggleDrawer={toggleDrawer}
+              <Box
+                sx={{
+                  display: "flex",
+                  flexDirection: "row",
+                  gap: 2,
+                  padding: 2,
+                }}
+              >
+                <ChevronLeftIcon onClick={() => navigate(-1)} />
+                <Button onClick={() => navigate("/admin")} variant="contained">
+                  Home
+                </Button>
+              </Box>
+
+              {user && (
+                <IconButton
+                  color="inherit"
+                  sx={{ flexDirection: "column" }}
+                  onClick={() => navigate(user ? "/profile" : "/auth")}
+                >
+                  <PersonIcon />
+                  <Typography variant="caption">
+                    {user ? user.name : "Log in/Sign Up"}
+                  </Typography>
+                </IconButton>
+              )}
+            </>
+          ) : (
+            <>
+              {showDrawer && (
+                <>
+                  <MenuIcon fontSize="large" onClick={toggleDrawer(true)} />
+                  <DrawerMenu
+                    open={open}
+                    toggleDrawer={toggleDrawer}
+                    user={user}
+                    handleSignOut={handleSignOut}
+                  />
+                </>
+              )}
+              <NavigationTabs
+                showBackButton={showBackButton}
+                location={location}
+                navigate={navigate}
+                handleChange={handleChange}
+              />
+              <Box sx={{ display: "flex", alignItems: "center" }}>
+                {pageTitle ? (
+                  <Typography variant="h6">{pageTitle}</Typography>
+                ) : (
+                  showSearch && (
+                    <SearchBox
+                      searchTerm={searchTerm}
+                      setSearchTerm={setSearchTerm}
+                    />
+                  )
+                )}
+              </Box>
+              <HeaderActions
+                showFilter={showFilter}
+                toggleFilter={toggleFilter}
                 user={user}
-                handleSignOut={handleSignOut}
+                totalQuantity={totalQuantity}
+                navigate={navigate}
               />
             </>
           )}
-          <NavigationTabs
-            showBackButton={showBackButton}
-            location={location}
-            navigate={navigate}
-            handleChange={handleChange}
-          />
-          <Box sx={{ display: "flex", alignItems: "center" }}>
-            {pageTitle ? (
-              <Typography variant="h6">{pageTitle}</Typography>
-            ) : (
-              showSearch && (
-                <SearchBox
-                  searchTerm={searchTerm}
-                  setSearchTerm={setSearchTerm}
-                />
-              )
-            )}
-          </Box>
-          <HeaderActions
-            showFilter={showFilter}
-            toggleFilter={toggleFilter}
-            user={user}
-            totalQuantity={totalQuantity}
-            navigate={navigate}
-          />
         </Box>
       </Box>
     </>

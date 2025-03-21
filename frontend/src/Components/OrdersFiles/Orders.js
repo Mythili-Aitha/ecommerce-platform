@@ -1,12 +1,26 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, Button } from "@mui/material";
-import { Actions } from "../../Utils/Actions";
+import { getUserOrders } from "../../Utils/Api";
 
 const Orders = () => {
   const navigate = useNavigate();
   const [orders, setOrders] = useState([]);
-  const { fetchOrders } = Actions;
+  const fetchOrders = async () => {
+    try {
+      const response = await getUserOrders();
+      const data = response.data;
+      if (Array.isArray(data)) {
+        setOrders(data);
+      } else {
+        console.error("Error: getUserOrders() did not return an array", data);
+        setOrders([]);
+      }
+    } catch (error) {
+      console.error("Error fetching orders:", error);
+      setOrders([]);
+    }
+  };
 
   useEffect(() => {
     fetchOrders();

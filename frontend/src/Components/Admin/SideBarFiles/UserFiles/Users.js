@@ -55,7 +55,7 @@ const Users = () => {
             >
               <ListItemText
                 primary={user.name}
-                secondary={`${user.email} - ${user.role}`}
+                secondary={`${user.email}` - `${user.role}`}
               />
               <ListItemSecondaryAction>
                 {user.role !== "Admin" && (

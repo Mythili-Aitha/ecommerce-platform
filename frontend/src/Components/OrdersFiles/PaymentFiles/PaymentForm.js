@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import {
   Box,
   Button,
@@ -6,24 +6,20 @@ import {
   FormControlLabel,
   Radio,
   RadioGroup,
-  TextField,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import {
   getUserPaymentInfo,
-  addPaymentInfo,
   deletePaymentInfo,
+  addPaymentInfo,
+  selectPaymentMethod,
 } from "../../../Utils/Api";
-import { boxApSx, boxPaSx } from "../../../Utils/Styles";
+import SavedCard from "./SavedCard";
+import CardForm from "./CardForm";
 
-const storedPayment = localStorage.getItem("selectedPayment");
-const parsedPayment = storedPayment ? JSON.parse(storedPayment) : null;
 const PaymentForm = () => {
   const [paymentMethods, setPaymentMethods] = useState([]);
-  const [selectedPayment, setSelectedPayment] = useState(parsedPayment);
-  const [selectedValue, setSelectedValue] = useState(
-    parsedPayment?.paymentId || ""
-  );
+  const [selectedValue, setSelectedValue] = useState("");
   const [showCardForm, setShowCardForm] = useState(false);
   const [formData, setFormData] = useState({
     cardHolderName: "",
@@ -32,54 +28,47 @@ const PaymentForm = () => {
     cvv: "",
     cardType: "CREDIT",
   });
+
   const navigate = useNavigate();
   const storedUser = JSON.parse(localStorage.getItem("user"));
   const userId = storedUser?.userId;
 
-  // console.log("payment id:", paymentMethods.paymentId);
-  useEffect(() => {
-    fetchPaymentMethods();
-  }, []);
-
-  const fetchPaymentMethods = async () => {
+  const fetchPaymentMethods = useCallback(async () => {
     try {
       const response = await getUserPaymentInfo(userId);
       setPaymentMethods(response.data);
-      if (parsedPayment) {
-        const exists = response.data.some(
-          (pay) => pay.paymentId === parsedPayment.paymentId
-        );
-        if (!exists) {
-          localStorage.removeItem("selectedPayment");
-          setSelectedPayment(null);
-          setSelectedValue("");
-        }
-      }
     } catch (error) {
       console.error("Error fetching payment methods", error);
     }
-  };
-  const handlePaymentSelection = (e) => {
-    const selected = paymentMethods.find((p) => p.paymentId === e.target.value);
-    setSelectedValue(e.target.value);
-    setSelectedPayment(selected);
-    localStorage.setItem(
-      "selectedPayment",
-      JSON.stringify(selected || e.target.value)
-    );
-    if (e.target.value === "credit card") {
+  }, [userId]);
+
+  useEffect(() => {
+    fetchPaymentMethods();
+  }, [fetchPaymentMethods]);
+
+  const handlePaymentSelection = async (e) => {
+    const value = e.target.value;
+    setSelectedValue(value);
+
+    if (value === "credit card") {
       setShowCardForm(true);
-    } else {
+      return;
+    }
+
+    try {
+      await selectPaymentMethod(userId, value);
       setShowCardForm(false);
       navigate("/oconfo");
+    } catch (error) {
+      console.error("Error selecting payment method", error);
     }
   };
 
-  const handleSubmit = async (e) => {
+  const handleAddCard = async (e) => {
     e.preventDefault();
     try {
       await addPaymentInfo({ ...formData, userId });
-      fetchPaymentMethods();
+      await fetchPaymentMethods();
       alert("Payment method added successfully!");
       setShowCardForm(false);
     } catch (error) {
@@ -90,20 +79,15 @@ const PaymentForm = () => {
   const handleDelete = async (paymentId) => {
     try {
       await deletePaymentInfo(paymentId);
-      fetchPaymentMethods();
-      if (selectedPayment?.paymentId === paymentId) {
-        localStorage.removeItem("selectedPayment");
-        setSelectedPayment(null);
-        setSelectedValue("");
-      }
+      await fetchPaymentMethods();
     } catch (error) {
       console.error("Error deleting payment method", error);
     }
   };
 
   return (
-    <Box sx={boxPaSx}>
-      <h2>Manage Payment Methods </h2>
+    <Box sx={{ display: "flex", flexDirection: "column", padding: 3, gap: 2 }}>
+      <h2>Manage Payment Methods</h2>
 
       <FormControl>
         <RadioGroup value={selectedValue} onChange={handlePaymentSelection}>
@@ -115,26 +99,13 @@ const PaymentForm = () => {
           />
           <FormControlLabel value="venmo" control={<Radio />} label="Venmo" />
 
-          {paymentMethods.length > 0 &&
-            paymentMethods.map((payment) => (
-              <Box
-                key={payment.paymentId}
-                sx={{ display: "flex", alignItems: "center" }}
-              >
-                <FormControlLabel
-                  value={payment.paymentId}
-                  control={<Radio />}
-                  label={`Card Ending in **** ${payment.cardNumber.slice(-4)}`}
-                />
-                <Button
-                  variant="outlined"
-                  size="small"
-                  onClick={() => handleDelete(payment.paymentId)}
-                >
-                  Delete
-                </Button>
-              </Box>
-            ))}
+          {paymentMethods.map((payment) => (
+            <SavedCard
+              key={payment.paymentId}
+              payment={payment}
+              onDelete={handleDelete}
+            />
+          ))}
 
           {paymentMethods.length === 0 && (
             <FormControlLabel
@@ -147,45 +118,11 @@ const PaymentForm = () => {
       </FormControl>
 
       {showCardForm && (
-        <form onSubmit={handleSubmit}>
-          <Box sx={boxApSx}>
-            <TextField
-              type="text"
-              placeholder="CardHolder Name"
-              onChange={(e) =>
-                setFormData({ ...formData, cardHolderName: e.target.value })
-              }
-              required
-            />
-            <TextField
-              type="text"
-              placeholder="Card Number"
-              onChange={(e) =>
-                setFormData({ ...formData, cardNumber: e.target.value })
-              }
-              required
-            />
-            <TextField
-              type="text"
-              placeholder="Expiry Date"
-              onChange={(e) =>
-                setFormData({ ...formData, expiryDate: e.target.value })
-              }
-              required
-            />
-            <TextField
-              type="text"
-              placeholder="Cvv"
-              onChange={(e) =>
-                setFormData({ ...formData, cvv: e.target.value })
-              }
-              required
-            />
-            <Button variant="contained" type="submit">
-              Add Card
-            </Button>
-          </Box>
-        </form>
+        <CardForm
+          formData={formData}
+          setFormData={setFormData}
+          onSubmit={handleAddCard}
+        />
       )}
     </Box>
   );

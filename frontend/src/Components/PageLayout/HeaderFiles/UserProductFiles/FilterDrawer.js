@@ -22,7 +22,7 @@ export default function FilterDrawer({ open, toggleDrawer, applyFilters }) {
   // State to manage filter selections
   const [category, setCategory] = useState("");
   const [brand, setBrand] = useState("");
-  const [priceRange, setPriceRange] = useState([0, 100]); // Adjust max based on data
+  const [priceRange, setPriceRange] = useState([0, 100]);
   const [stock, setStock] = useState(false);
   const [rating, setRating] = useState("");
   const [tags, setTags] = useState([]);

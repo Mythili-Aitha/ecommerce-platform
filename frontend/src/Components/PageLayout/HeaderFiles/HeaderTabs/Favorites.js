@@ -6,23 +6,55 @@ import {
   Box,
   Avatar,
 } from "@mui/material";
-import React, { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
 import ShoppingCartCheckoutIcon from "@mui/icons-material/ShoppingCartCheckout";
-import { Actions } from "../../../../Utils/Actions";
 import { avatar, cardFSx } from "../../../../Utils/Styles";
+import {
+  addToCart,
+  getUserFavorites,
+  getUserId,
+  removeFromFavorites,
+} from "../../../../Utils/Api";
 
 export default function Favorites() {
-  // const navigate = useNavigate();
-  const {
-    favorites,
-    fetchFavorites,
-    handleRemoveFromFavorites,
-    handleMoveToCart,
-  } = Actions();
+  const [favorites, setFavorites] = useState([]);
+  const userId = getUserId();
+  const fetchFavorites = async () => {
+    try {
+      const response = await getUserFavorites();
+      setFavorites(response.data);
+    } catch (error) {
+      console.error("Error fetching favorites:", error);
+    }
+  };
+
+  const handleMoveToCart = async (productId) => {
+    try {
+      await addToCart(productId, 1);
+      await removeFromFavorites(userId, productId);
+      setFavorites((prevFavorites) =>
+        prevFavorites.filter((item) => item.productId !== productId)
+      );
+    } catch (error) {
+      console.error("Error moving item to cart:", error);
+    }
+  };
+
+  const handleRemoveFromFavorites = async (productId) => {
+    try {
+      await removeFromFavorites(userId, productId);
+      setFavorites((prevFavorites) =>
+        prevFavorites.filter((item) => item.productId !== productId)
+      );
+    } catch (error) {
+      console.error("Error removing from favorites:", error);
+    }
+  };
+
   useEffect(() => {
     fetchFavorites();
   }, []);
+  console.log("favorites", favorites);
   return (
     <>
       {favorites.length === 0 ? (
@@ -37,7 +69,7 @@ export default function Favorites() {
               <Typography>{item.productName}</Typography>
             </Box>
             <Box>
-              <IconButton onClick={() => handleMoveToCart(item.productId)}>
+              <IconButton onClick={() => handleMoveToCart(item.id)}>
                 <ShoppingCartCheckoutIcon />
               </IconButton>
               <Button onClick={() => handleRemoveFromFavorites(item.productId)}>

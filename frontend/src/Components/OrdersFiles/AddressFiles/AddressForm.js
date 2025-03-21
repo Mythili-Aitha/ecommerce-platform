@@ -30,17 +30,12 @@ const AddressForm = () => {
   const storedUser = JSON.parse(localStorage.getItem("user"));
   const userId = storedUser?.userId;
 
-  useEffect(() => {
-    fetchAddresses();
-  }, []);
-
   const fetchAddresses = async () => {
     try {
       const response = await getUserAddresses(userId);
-      console.log("response", response);
-      console.log("Response Data:", response?.data);
-      setAddresses(Array.isArray(response) ? response : []);
-      const storedSelected = localStorage.getItem("selectedAddress");
+      const addressList = response?.data || response;
+      setAddresses(Array.isArray(addressList) ? addressList : []);
+      const storedSelected = localStorage.getItem(`selectedAddress_${userId}`);
       const parsedSelected = storedSelected ? JSON.parse(storedSelected) : null;
 
       if (parsedSelected) {
@@ -51,7 +46,7 @@ const AddressForm = () => {
           setSelectedValue(parsedSelected.id);
           setSelectedAddress(parsedSelected);
         } else {
-          localStorage.removeItem("selectedAddress");
+          localStorage.removeItem(`selectedAddress_${userId}`);
           setSelectedAddress(null);
           setSelectedValue("");
         }
@@ -61,20 +56,35 @@ const AddressForm = () => {
       setAddresses([]);
     }
   };
+  useEffect(() => {
+    fetchAddresses();
+  }, []);
 
   const handleChange = (e) => {
     const selectedId = Number(e.target.value);
     const selected = addresses.find((address) => address.id === selectedId);
     setSelectedValue(e.target.value);
     setSelectedAddress(selected);
-    localStorage.setItem("selectedAddress", JSON.stringify(selected));
+    if (userId) {
+      localStorage.setItem(
+        `selectedAddress_${userId}`,
+        JSON.stringify(selected)
+      );
+    }
     navigate("/oconfo");
   };
 
   const handleEdit = (address) => {
     if (!address) return;
-    console.log("Editing Address:", address);
     setEditAddress(address);
+    setFormData({
+      street: address.street,
+      city: address.city,
+      state: address.state,
+      zip: address.zip,
+      country: address.country,
+      addressType: address.addressType,
+    });
   };
 
   const handleSubmit = async (e) => {
@@ -88,7 +98,7 @@ const AddressForm = () => {
         await addAddress({ ...formData, userId });
         alert("Address added successfully!");
       }
-      fetchAddresses();
+      setEditAddress(null);
       setFormData({
         street: "",
         city: "",
@@ -97,6 +107,7 @@ const AddressForm = () => {
         country: "",
         addressType: "HOME",
       });
+      fetchAddresses();
     } catch (error) {
       console.error("Error saving address", error);
     }
