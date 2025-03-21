@@ -19,4 +19,5 @@ public class OrderResponseDto {
     private String orderStatus;
     private LocalDateTime orderDate;
     private List<OrderItemResponseDto> items;
+    private AddressDto address;
 }

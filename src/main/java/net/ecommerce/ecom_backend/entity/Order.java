@@ -31,6 +31,12 @@ public class Order {
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL,orphanRemoval = true, fetch = FetchType.LAZY)
     private List<OrderDetails> orderDetails= new ArrayList<>();
+    @ManyToOne
+    @JoinColumn(name = "address_id", nullable = false)
+    private Address address;
+    @ManyToOne
+    @JoinColumn(name = "payment_id", nullable = false)
+    private PaymentInfo paymentInfo;
     public void setOrderDetails(List<OrderDetails> orderDetails) {
         this.orderDetails = orderDetails;
         orderDetails.forEach(details -> details.setOrder(this));

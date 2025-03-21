@@ -94,6 +94,17 @@ public class Controller {
         return ResponseEntity.ok(service.addPaymentInfo(paymentInfoDto));
     }
 
+    @PutMapping("/payments/select/{userId}/{paymentId}")
+    public ResponseEntity<Void> selectPaymentMethod(@PathVariable Long userId, @PathVariable Long paymentId) {
+        service.setSelectedPayment(userId, paymentId);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/payments/selected/{userId}")
+    public ResponseEntity<PaymentInfoDto> getSelectedPayment(@PathVariable Long userId) {
+        return ResponseEntity.ok(service.getSelectedPayment(userId));
+    }
+
     @GetMapping("/payments/users/{userId}")
     public ResponseEntity<List<PaymentInfoDto>> getUserPaymentInfos(@PathVariable Long userId) {
         return ResponseEntity.ok(service.getUserPaymentInfos(userId));
@@ -137,6 +148,13 @@ public class Controller {
         List<String> categories = service.getAllCategories();
         return ResponseEntity.ok(categories);
     }
+
+    @GetMapping("/products/trending")
+    public ResponseEntity<ProductDto> getTrendingProduct() {
+        ProductDto trendingProduct = service.getTrendingProduct();
+        return trendingProduct != null ? ResponseEntity.ok(trendingProduct) : ResponseEntity.noContent().build();
+    }
+
 
     @DeleteMapping("/products/{id}")
     public void deleteProduct(@PathVariable Long id) {
@@ -212,6 +230,21 @@ public class Controller {
         return ResponseEntity.ok(userOrders);
     }
 
+    @GetMapping("/revenue/breakdown")
+    public ResponseEntity<List<RevenueBreakDownDto>> getRevenueByCategory() {
+        List<RevenueBreakDownDto> breakdown = service.getRevenueByCategory();
+        return ResponseEntity.ok(breakdown);
+    }
+
+    @GetMapping("/orders/admin")
+    public ResponseEntity<List<OrderResponseDto>> getAllOrders(
+            @RequestParam(defaultValue = "desc") String sortOrder,
+            @RequestParam(required = false) String status) {
+
+        List<OrderResponseDto> orders = service.getAllOrdersWithFilters(sortOrder, status);
+        return ResponseEntity.ok(orders);
+    }
+
 
     //ADMIN API CALLS
     @GetMapping("/admin/stats")
@@ -239,7 +272,16 @@ public class Controller {
                                         details.getProduct().getTitle(),
                                         details.getQuantity(),
                                         details.getPrice()))
-                                .toList()
+                                .toList(),new AddressDto(
+                        order.getAddress().getId(),
+                        order.getAddress().getStreet(),
+                        order.getAddress().getCity(),
+                        order.getAddress().getState(),
+                        order.getAddress().getZip(),
+                        order.getAddress().getCountry(),
+                        order.getAddress().getAddressType(),
+                        order.getUser().getUserId()
+                )
                 ))
                 .toList();
 

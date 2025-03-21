@@ -6,12 +6,14 @@ import net.ecommerce.ecom_backend.entity.*;
 import net.ecommerce.ecom_backend.mapper.Mapper;
 import net.ecommerce.ecom_backend.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -147,6 +149,20 @@ public class EService {
         return Mapper.toPaymentInfoDto(paymentInfoRepo.save(paymentInfo));
     }
 
+    public void setSelectedPayment(Long userId, Long paymentId) {
+        List<PaymentInfo> payments = paymentInfoRepo.findByUserUserId(userId);
+        for (PaymentInfo p : payments) {
+            p.setSelected(p.getPaymentId().equals(paymentId));
+        }
+        paymentInfoRepo.saveAll(payments);
+    }
+
+    public PaymentInfoDto getSelectedPayment(Long userId) {
+        PaymentInfo payment = paymentInfoRepo.findSelectedByUserId(userId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No selected payment found"));
+        return Mapper.toPaymentInfoDto(payment);
+    }
+
     public List<PaymentInfoDto> getUserPaymentInfos(Long userId) {
         return paymentInfoRepo.findByUserUserId(userId).stream().map(Mapper::toPaymentInfoDto).collect(Collectors.toList());
     }
@@ -198,6 +214,17 @@ public class EService {
         return savedProducts.stream()
                 .map(Mapper::toProductDto)
                 .collect(Collectors.toList());
+    }
+
+    public ProductDto getTrendingProduct() {
+        Long trendingProductId = orderDetailsRepo.findBestSellingProductId();
+        if (trendingProductId != null) {
+            Product product = productRepo.findById(trendingProductId).orElse(null);
+            if (product != null) {
+                return Mapper.toProductDto(product);
+            }
+        }
+        return null;
     }
 
 
@@ -293,9 +320,14 @@ public class EService {
     public OrderResponseDto placeOrder(OrderRequestDto orderRequestDto) {
         User user = userRepo.findById(orderRequestDto.getUserId())
                 .orElseThrow(() -> new RuntimeException("User not found"));
-
+        Address address = addressRepo.findById(orderRequestDto.getAddressId())
+                .orElseThrow(() -> new RuntimeException("Address not found"));
+        PaymentInfo paymentInfo = paymentInfoRepo.findById(orderRequestDto.getPaymentId())
+                .orElseThrow(() -> new RuntimeException("Payment info not found"));
         Order order = new Order();
         order.setUser(user);
+        order.setAddress(address);
+        order.setPaymentInfo(paymentInfo);
         order.setTotalPrice(orderRequestDto.getTotalPrice());
         order.setOrderDate(LocalDateTime.now());
         order.setOrderStatus("Placed");
@@ -325,8 +357,19 @@ public class EService {
         return Mapper.toOrderResponseDto(order);
     }
     public OrderResponseDto getOrderById(Long orderId) {
+        System.out.println("Fetching order with ID: " + orderId);
         Order order = orderRepo.findById(orderId)
                 .orElseThrow(() -> new RuntimeException("Order not found"));
+        AddressDto addressDto = new AddressDto(
+                order.getAddress().getId(),
+                order.getAddress().getStreet(),
+                order.getAddress().getCity(),
+                order.getAddress().getState(),
+                order.getAddress().getZip(),
+                order.getAddress().getCountry(),
+                order.getAddress().getAddressType(),
+                order.getUser().getUserId()
+        );
         return new OrderResponseDto(
                 order.getOrderId(),
                 order.getUser().getUsername(),
@@ -338,12 +381,61 @@ public class EService {
                                 details.getProduct().getTitle(),
                                 details.getQuantity(),
                                 details.getPrice()))
-                        .toList()
+                        .toList(),
+                addressDto
         );
     }
 
     public List<OrderResponseDto> getOrdersByUser(Long userId) {
         List<Order> orders = orderRepo.findByUserUserId(userId);
         return orders.stream().map(Mapper::toOrderResponseDto).collect(Collectors.toList());
+    }
+
+    public List<RevenueBreakDownDto> getRevenueByCategory() {
+        List<Object[]> result = orderRepo.getRevenueByCategory();
+        List<RevenueBreakDownDto> breakdowns = new ArrayList<>();
+        for (Object[] row : result) {
+            String categoryName = (String) row[0];
+            Double revenue = (Double) row[1];
+            breakdowns.add(new RevenueBreakDownDto(categoryName, revenue));
+        }
+        return breakdowns;
+    }
+
+    public List<OrderResponseDto> getAllOrdersWithFilters(String sortOrder, String status) {
+        Sort sort = sortOrder.equalsIgnoreCase("asc") ? Sort.by("orderDate").ascending() : Sort.by("orderDate").descending();
+
+        List<Order> orders;
+        if (status != null && !status.isEmpty()) {
+            orders = orderRepo.findByOrderStatus(status, sort);
+        } else {
+            orders = orderRepo.findAll(sort);
+        }
+
+        return orders.stream()
+                .map(order -> new OrderResponseDto(
+                        order.getOrderId(),
+                        order.getUser().getUsername(),
+                        order.getTotalPrice(),
+                        order.getOrderStatus(),
+                        order.getOrderDate(),
+                        order.getOrderDetails().stream()
+                                .map(details -> new OrderItemResponseDto(
+                                        details.getProduct().getTitle(),
+                                        details.getQuantity(),
+                                        details.getPrice()))
+                                .toList(),
+                        new AddressDto(
+                                order.getAddress().getId(),
+                                order.getAddress().getStreet(),
+                                order.getAddress().getCity(),
+                                order.getAddress().getState(),
+                                order.getAddress().getZip(),
+                                order.getAddress().getCountry(),
+                                order.getAddress().getAddressType(),
+                                order.getUser().getUserId()
+                        )
+                ))
+                .toList();
     }
 }
