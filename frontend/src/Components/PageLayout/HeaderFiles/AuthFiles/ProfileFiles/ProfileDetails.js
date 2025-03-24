@@ -1,4 +1,4 @@
-import { Box, Button, Typography } from "@mui/material";
+import { Box, Button, Typography, CircularProgress } from "@mui/material";
 
 export default function ProfileDetails({
   user,
@@ -6,20 +6,27 @@ export default function ProfileDetails({
   handleChangePassword,
   handleSignOut,
 }) {
+  if (!user) {
+    return (
+      <Box sx={{ display: "flex", justifyContent: "center", p: 2 }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
   return (
     <Box>
-      <p>
+      <Typography>
         <strong>Name:</strong> {user?.name}
-      </p>
-      <p>
+      </Typography>
+      <Typography>
         <strong>Username:</strong> {user?.username}
-      </p>
-      <p>
+      </Typography>
+      <Typography>
         <strong>Email:</strong> {user?.email}
-      </p>
-      <p>
+      </Typography>
+      <Typography>
         <strong>Phone:</strong> {user?.phoneNumber}
-      </p>
+      </Typography>
       <Button
         fullWidth
         variant="contained"

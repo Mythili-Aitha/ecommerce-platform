@@ -4,7 +4,7 @@ import { Box } from "@mui/material";
 import Header from "./HeaderFiles/HeaderPage/Header";
 import Footer from "./FooterFiles/Footer";
 import { useSearchFilter } from "./HeaderFiles/HeaderTabs/SearchFilterProvider";
-import { boxLSx } from "../../Utils/Styles";
+import { LayoutBox } from "../../Utils/Styles";
 
 export default function Layout({ children }) {
   const location = useLocation();
@@ -16,7 +16,7 @@ export default function Layout({ children }) {
   return (
     <Box sx={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
       {!hideHeader && (
-        <Box sx={boxLSx}>
+        <Box sx={LayoutBox}>
           <Header
             searchTerm={searchTerm}
             setSearchTerm={setSearchTerm}

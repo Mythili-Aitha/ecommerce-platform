@@ -1,10 +1,16 @@
-import { Box, Button, FormControlLabel, Radio } from "@mui/material";
+import {
+  Box,
+  Button,
+  FormControlLabel,
+  Radio,
+  Typography,
+} from "@mui/material";
 
 export default function AddressList({ addresses, handleEdit, handleDelete }) {
   return (
     <Box>
       {addresses.length === 0 ? (
-        <p>No addresses found.</p>
+        <Typography>No addresses found.</Typography>
       ) : (
         addresses.map((address) => (
           <Box

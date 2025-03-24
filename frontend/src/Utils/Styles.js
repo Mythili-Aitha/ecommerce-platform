@@ -60,7 +60,7 @@ export const boxHSx = {
   padding: 2,
 };
 
-export const boxLSx = {
+export const LayoutBox = {
   position: "sticky",
   top: 0,
   zIndex: 1000,
@@ -98,4 +98,12 @@ export const sideBarSx = {
   "&:hover": {
     backgroundColor: "#f0f0f0",
   },
+};
+
+export const offerSx = {
+  display: "flex",
+  overflowX: "auto",
+  gap: 2,
+  py: 2,
+  "&::-webkit-scrollbar": { display: "none" },
 };

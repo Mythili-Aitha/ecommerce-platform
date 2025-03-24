@@ -19,6 +19,7 @@ const Users = () => {
     const fetchUsers = async () => {
       try {
         const response = await getAllUsers();
+        console.log("Fetched Users:", response.data);
         setUsers(response.data);
       } catch (error) {
         console.error("Error fetching users:", error);
@@ -55,7 +56,7 @@ const Users = () => {
             >
               <ListItemText
                 primary={user.name}
-                secondary={`${user.email}` - `${user.role}`}
+                secondary={`${user.email} - ${user.role}`}
               />
               <ListItemSecondaryAction>
                 {user.role !== "Admin" && (

@@ -58,7 +58,6 @@ export const AdminProductForm = () => {
         {productId ? "Edit Product" : "Add Product"}
       </Typography>
       <form onSubmit={handleSubmit}>
-        {/* Basic Info */}
         <Section title="Basic Info">
           <GroupedTextField
             group="basicInfo"
@@ -67,8 +66,6 @@ export const AdminProductForm = () => {
             fields={["title", "description", "category", "brand"]}
           />
         </Section>
-
-        {/* Pricing */}
         <Section title="Pricing">
           <GroupedTextField
             group="pricing"
@@ -78,8 +75,6 @@ export const AdminProductForm = () => {
             type="number"
           />
         </Section>
-
-        {/* Identifiers */}
         <Section title="Identifiers">
           <GroupedTextField
             group="identifiers"
@@ -88,8 +83,6 @@ export const AdminProductForm = () => {
             fields={["sku", "tags"]}
           />
         </Section>
-
-        {/* Dimensions */}
         <Section title="Dimensions">
           <GroupedTextField
             group="dimensions"
@@ -99,8 +92,6 @@ export const AdminProductForm = () => {
             type="number"
           />
         </Section>
-
-        {/* Metadata */}
         <Section title="Metadata">
           <GroupedTextField
             group="metadata"
@@ -109,8 +100,6 @@ export const AdminProductForm = () => {
             fields={["barcode", "qrCode"]}
           />
         </Section>
-
-        {/* Media */}
         <Section title="Media">
           <GroupedTextField
             group="media"

@@ -21,12 +21,12 @@ export default function DrawerMenu({
         sx={{ "& .MuiPaper-root": { width: 250 } }}
         anchor="left"
         open={open}
-        onClose={toggleDrawer(false)}
+        onClose={() => toggleDrawer(false)}
       >
         <Box sx={{ display: "flex", flexDirection: "column", padding: 3 }}>
           <Button onClick={() => navigate("/")}>Home</Button>
           <Button onClick={() => navigate("/products")}>Products</Button>
-          <Button>Catergories</Button>
+          <Button>Categories</Button>
           <Divider />
           <Button onClick={() => navigate("/orders")}>Orders</Button>
           <Button onClick={() => navigate("/history")}>History</Button>

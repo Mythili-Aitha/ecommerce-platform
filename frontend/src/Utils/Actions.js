@@ -15,8 +15,6 @@ import { useNavigate } from "react-router-dom";
 import { Snackbar } from "@mui/material";
 import { useCart } from "../Components/PageLayout/HeaderFiles/CartFiles/CartProvider.js";
 
-const userId = getUserId();
-
 export const Actions = () => {
   const { cart, setCart } = useCart();
   const [user, setUser] = useState(null);
@@ -233,8 +231,14 @@ export const Actions = () => {
         })),
       };
       const response = await placeOrder(orderData);
+      for (const item of selectedItems) {
+        await removeFromCart(item.productId);
+      }
       const updatedCart = cart.filter(
-        (item) => !selectedItems.some((selected) => selected.id === item.id)
+        (item) =>
+          !selectedItems.some(
+            (selected) => selected.productId === item.productId
+          )
       );
       setCart(updatedCart);
       addToHistory("Placed Order", "Order placed successfully");

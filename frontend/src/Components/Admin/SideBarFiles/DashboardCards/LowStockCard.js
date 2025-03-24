@@ -10,7 +10,7 @@ const LowStockCard = () => {
         setProducts(data);
       })
       .catch((error) => console.log(error));
-  });
+  }, []);
   const lowStockProducts = products.filter((product) => product.stock < 10);
 
   return (

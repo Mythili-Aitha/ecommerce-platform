@@ -1,4 +1,4 @@
-import { Box, Card } from "@mui/material";
+import { Box, Card, Typography } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import ColorSelector from "../ColorSelector";
@@ -40,16 +40,16 @@ export default function ProductDetails() {
       <ProductInfo product={product} />
 
       <Box>
-        <p>
+        <Typography>
           Color: <strong>{colors[0]}</strong>
-        </p>
+        </Typography>
         <ColorSelector colors={colors} />
       </Box>
 
       <Box>
-        <p>
+        <Typography>
           Size: <strong>{sizes[0]}</strong>
-        </p>
+        </Typography>
         <SizeSelector sizes={sizes} />
       </Box>
 

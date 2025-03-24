@@ -40,7 +40,11 @@ export default function Header() {
   };
   const pageTitle =
     pageTitles[location.pathname] ||
-    (location.pathname.includes("/products/:id") ? "Product Details" : "");
+    (location.pathname.startsWith("/orders/")
+      ? "Order Details"
+      : location.pathname.startsWith("/products/")
+      ? "Product Details"
+      : "");
 
   return (
     <>

@@ -333,3 +333,19 @@ export const getAllOrders = async (sortOrder = "desc", status = "") => {
     params: { sortOrder, status },
   });
 };
+
+export const getDiscountedProducts = async () => {
+  return await apiClient.get("/products/offers");
+};
+
+export const applyDiscounts = async () => {
+  return await apiClient.post("/products/discounts/apply");
+};
+
+export const clearDiscounts = async () => {
+  return await apiClient.delete("/products/discounts/clear");
+};
+
+export const getDiscountHistory = async () => {
+  return await apiClient.get("/admin/discounts/history");
+};

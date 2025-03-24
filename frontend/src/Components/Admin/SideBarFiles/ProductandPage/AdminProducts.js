@@ -34,7 +34,7 @@ export const AdminProducts = () => {
       return;
 
     try {
-      deleteAdminProduct(productId);
+      await deleteAdminProduct(productId);
       setProducts(products.filter((product) => product.id !== productId));
     } catch (error) {
       console.error("Error deleting product:", error);

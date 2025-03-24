@@ -26,12 +26,13 @@ import AdminRoute from "./Components/Admin/AdminRoute.js";
 import { AdminProducts } from "./Components/Admin/SideBarFiles/ProductandPage/AdminProducts.js";
 import { AdminProductForm } from "./Components/Admin/SideBarFiles/ProductandPage/AdminProductForm.js";
 import Layout from "./Components/PageLayout/Layout.js";
-import Products from "./Components/PageLayout/HeaderFiles/UserProductFiles/Products.js";
+import Products from "./Components/PageLayout/HeaderFiles/UserProductFiles/ProductsFiles/Products.js";
 import ProductDetails from "./Components/PageLayout/HeaderFiles/UserProductFiles/ProductsDetailsPage/ProductDetails.js";
 import UserDetails from "./Components/Admin/SideBarFiles/UserFiles/UserDetails.js";
 import TotalRevenueCard from "./Components/Admin/SideBarFiles/DashboardCards/TotalRevenueCard.js";
 import LowStockCard from "./Components/Admin/SideBarFiles/DashboardCards/LowStockCard.js";
 import OrdersPage from "./Components/Admin/AdminOrdersFiles/OrdersPage.js";
+import DiscountsPage from "./Components/Admin/SideBarFiles/DiscountsPage.js";
 
 function App() {
   const location = useLocation();
@@ -78,6 +79,10 @@ function App() {
                     />
                     <Route path="/admin/lowstock" element={<LowStockCard />} />
                     <Route path="/admin/orders" element={<OrdersPage />} />
+                    <Route
+                      path="/admin/discounts"
+                      element={<DiscountsPage />}
+                    />
                   </Route>
                   <Route path="/cart" element={<Cart />} />
                   <Route path="/products" element={<Products />} />

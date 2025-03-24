@@ -6,6 +6,7 @@ import PeopleIcon from "@mui/icons-material/People";
 import WarningIcon from "@mui/icons-material/Warning";
 import { getStats } from "../../../../Utils/Api";
 import { useNavigate } from "react-router-dom";
+import { CircularProgress } from "@mui/material";
 
 const DashboardContent = () => {
   const [stats, setStats] = useState({
@@ -14,12 +15,19 @@ const DashboardContent = () => {
     totalCustomers: 0,
     lowStockItems: 0,
   });
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
     getStats()
-      .then((response) => setStats(response.data))
-      .catch((error) => console.error("Error fetching stats data", error));
+      .then((response) => {
+        setStats(response.data);
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.error("Error fetching stats data", error);
+        setLoading(false);
+      });
   }, []);
 
   const statsCards = [
@@ -51,24 +59,30 @@ const DashboardContent = () => {
 
   return (
     <Box sx={{ flexGrow: 1, p: 3 }}>
-      <Grid container spacing={3}>
-        {statsCards.map((stat, index) => (
-          <Grid item xs={12} sm={6} md={3} key={index}>
-            <Card
-              sx={{ display: "flex", alignItems: "center", p: 2 }}
-              onClick={stat.onclick}
-            >
-              <Box sx={{ mr: 2 }}>{stat.icon}</Box>
-              <CardContent>
-                <Typography variant="h5">{stat.title}</Typography>
-                <Typography variant="h5" fontWeight="bold">
-                  {stat.value}
-                </Typography>
-              </CardContent>
-            </Card>
-          </Grid>
-        ))}
-      </Grid>
+      {loading ? (
+        <Box sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
+          <CircularProgress size={40} />
+        </Box>
+      ) : (
+        <Grid container spacing={3}>
+          {statsCards.map((stat, index) => (
+            <Grid item xs={12} sm={6} md={3} key={index}>
+              <Card
+                sx={{ display: "flex", alignItems: "center", p: 2 }}
+                onClick={stat.onclick}
+              >
+                <Box sx={{ mr: 2 }}>{stat.icon}</Box>
+                <CardContent>
+                  <Typography variant="h5">{stat.title}</Typography>
+                  <Typography variant="h5" fontWeight="bold">
+                    {stat.value}
+                  </Typography>
+                </CardContent>
+              </Card>
+            </Grid>
+          ))}
+        </Grid>
+      )}
     </Box>
   );
 };

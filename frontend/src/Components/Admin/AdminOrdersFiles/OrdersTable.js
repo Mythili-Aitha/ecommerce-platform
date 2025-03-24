@@ -15,6 +15,14 @@ import { Link } from "react-router-dom";
 
 const OrdersTable = () => {
   const [orders, setOrders] = useState([]);
+  const TABLE_HEADERS = [
+    "Order ID",
+    "Date",
+    "Customer",
+    "Amount",
+    "Status",
+    "Actions",
+  ];
   useEffect(() => {
     getRecentOrders()
       .then((response) => setOrders(response.data))
@@ -28,12 +36,9 @@ const OrdersTable = () => {
       <Table>
         <TableHead>
           <TableRow>
-            <TableCell>Order ID</TableCell>
-            <TableCell>Date</TableCell>
-            <TableCell>Customer</TableCell>
-            <TableCell>Amount</TableCell>
-            <TableCell>Status</TableCell>
-            <TableCell>Actions</TableCell>
+            {TABLE_HEADERS.map((header) => (
+              <TableCell key={header}>{header}</TableCell>
+            ))}
           </TableRow>
         </TableHead>
         <TableBody>

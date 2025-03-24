@@ -6,6 +6,7 @@ import {
   IconButton,
   Typography,
   Checkbox,
+  CircularProgress,
 } from "@mui/material";
 import React from "react";
 import { useNavigate } from "react-router-dom";
@@ -25,7 +26,7 @@ export default function Cart() {
   } = Actions();
   if (!Array.isArray(cart)) {
     console.error("Cart data is not an array:", cart);
-    return <p>Loading cart...</p>;
+    return <CircularProgress />;
   }
   return (
     <>

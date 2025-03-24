@@ -1,17 +1,33 @@
 import { Typography } from "@mui/material";
 
 export default function ProductInfo({ product }) {
+  const { title, description, price, availabilityStatus, discountPercentage } =
+    product;
   return (
     <>
       <Typography variant="h4" sx={{ marginTop: 2 }}>
-        {product.title}
+        {title}
       </Typography>
       <Typography variant="body1" sx={{ marginBottom: 2 }}>
-        {product.description}
+        {description}
       </Typography>
-      <Typography variant="h6">Price: ${product.price}</Typography>
+      {discountPercentage > 0 ? (
+        <>
+          <Typography
+            variant="h6"
+            sx={{ textDecoration: "line-through", color: "gray" }}
+          >
+            ${price.toFixed(2)}
+          </Typography>
+          <Typography variant="h5" color="error">
+            ${(price - discountPercentage).toFixed(2)} (10% OFF)
+          </Typography>
+        </>
+      ) : (
+        <Typography variant="h5">${price.toFixed(2)}</Typography>
+      )}
       <Typography variant="body2" color="gray">
-        {product.availabilityStatus}
+        {availabilityStatus}
       </Typography>
     </>
   );

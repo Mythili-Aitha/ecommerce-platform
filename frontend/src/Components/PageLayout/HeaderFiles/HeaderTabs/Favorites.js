@@ -31,7 +31,7 @@ export default function Favorites() {
   const handleMoveToCart = async (productId) => {
     try {
       await addToCart(productId, 1);
-      await removeFromFavorites(userId, productId);
+      await removeFromFavorites(productId);
       setFavorites((prevFavorites) =>
         prevFavorites.filter((item) => item.productId !== productId)
       );
@@ -42,7 +42,7 @@ export default function Favorites() {
 
   const handleRemoveFromFavorites = async (productId) => {
     try {
-      await removeFromFavorites(userId, productId);
+      await removeFromFavorites(productId);
       setFavorites((prevFavorites) =>
         prevFavorites.filter((item) => item.productId !== productId)
       );
@@ -69,7 +69,7 @@ export default function Favorites() {
               <Typography>{item.productName}</Typography>
             </Box>
             <Box>
-              <IconButton onClick={() => handleMoveToCart(item.id)}>
+              <IconButton onClick={() => handleMoveToCart(item.productId)}>
                 <ShoppingCartCheckoutIcon />
               </IconButton>
               <Button onClick={() => handleRemoveFromFavorites(item.productId)}>

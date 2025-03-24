@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Card, Button } from "@mui/material";
+import { Card, Button, Typography, Box } from "@mui/material";
 import { getUserOrders } from "../../Utils/Api";
 
 const Orders = () => {
@@ -29,19 +29,19 @@ const Orders = () => {
   if (orders.length === 0) return <p>No orders found.</p>;
 
   return (
-    <div>
-      <h2>My Orders</h2>
+    <Box>
+      <Typography variant="h4">My Orders</Typography>
       {orders.map((order) => (
         <Card key={order.orderId} sx={{ margin: 2, padding: 2 }}>
-          <p>
+          <Typography>
             <strong>Order ID:</strong> {order.orderId}
-          </p>
-          <p>
+          </Typography>
+          <Typography>
             <strong>Status:</strong> {order.status}
-          </p>
-          <p>
+          </Typography>
+          <Typography>
             <strong>Total Price:</strong> ${order.totalPrice.toFixed(2)}
-          </p>
+          </Typography>
           <Button
             variant="contained"
             onClick={() => navigate(`/orders/${order.orderId}`)}
@@ -50,7 +50,7 @@ const Orders = () => {
           </Button>
         </Card>
       ))}
-    </div>
+    </Box>
   );
 };
 

@@ -8,21 +8,16 @@ export default function NavigationTabs({
   navigate,
   handleChange,
 }) {
-  const getTabValue = () => {
-    switch (location.pathname) {
-      case "/":
-        return "2";
-      case "/products":
-        return "3";
-      default:
-        return false;
-    }
+  const tabValues = {
+    "/": "2",
+    "/products": "3",
   };
+  const tabValue = tabValues[location.pathname] || false;
 
   return (
     <Box sx={{ display: "flex", alignItems: "center", width: "auto" }}>
       <Tabs
-        value={getTabValue()}
+        value={tabValue}
         onChange={handleChange}
         aria-label="Dashboard Tabs"
       >

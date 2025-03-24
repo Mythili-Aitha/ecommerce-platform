@@ -1,8 +1,7 @@
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
 import InventoryIcon from "@mui/icons-material/Inventory";
-// import PaymentIcon from "@mui/icons-material/Payment";
-// import StarIcon from "@mui/icons-material/Star";
+import StarIcon from "@mui/icons-material/Star";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import {
   Drawer,
@@ -22,9 +21,7 @@ export default function Sidebar() {
     { text: "Users", icon: <PeopleAltIcon />, path: "/admin/users" },
     { text: "Products", icon: <ShoppingCartIcon />, path: "/admin/products" },
     { text: "Orders", icon: <InventoryIcon />, path: "/admin/orders" },
-    // { text: "Inventory", icon: <InventoryIcon />, path: "/admin/inventory" },
-    // { text: "Payments", icon: <PaymentIcon />, path: "/admin/payments" },
-    // { text: "Reviews", icon: <StarIcon />, path: "/admin/reviews" },
+    { text: "Discounts", icon: <StarIcon />, path: "/admin/discounts" },
   ];
   const handleClick = (path) => {
     setSelectedItem(path);

@@ -3,7 +3,6 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   getCategories,
-  getProducts,
   getProductsByCategories,
   getTrendingProduct,
 } from "../../../../../Utils/Api";
@@ -12,6 +11,7 @@ import CategoryItem from "./CategoryItem";
 import { boxhSx, boxHSx, styleSx } from "../../../../../Utils/Styles";
 import ProductCard from "./ProductCard";
 import useFetchProducts from "../../../../../Hooks/useFetchProducts";
+import OffersSection from "./OffersSection";
 
 const Home = () => {
   const { searchTerm } = useSearchFilter();
@@ -124,6 +124,7 @@ const Home = () => {
           ))}
         </Grid>
       </Box>
+      <OffersSection />
     </Box>
   );
 };
