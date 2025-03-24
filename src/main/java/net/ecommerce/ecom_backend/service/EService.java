@@ -12,8 +12,15 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -38,8 +45,14 @@ public class EService {
     @Autowired
     private OrderRepo orderRepo;
     @Autowired
+    private DiscountLogRepo discountLogRepo;
+    @Autowired
     private OrderDetailsRepo orderDetailsRepo;
     private final PasswordEncoder passwordEncoder;
+    private final JavaMailSender mailSender;
+
+    @Value("${spring.mail.username}")
+    private String fromEmail;
 
 
     //User Methods
@@ -227,6 +240,54 @@ public class EService {
         return null;
     }
 
+    @Transactional
+    public List<Product> applyDiscountToTopStockProducts() {
+        List<Product> highStockProducts = productRepo.findTop10ByOrderByStockDesc();
+
+        productRepo.resetAllDiscounts();
+        List<DiscountLog> discountLogs = new ArrayList<>();
+        for (Product product : highStockProducts) {
+            double discount = product.getPrice() * 0.10;
+            product.setDiscountPercentage(discount);
+
+            DiscountLog log = new DiscountLog();
+            log.setProductId(product.getId());
+            log.setProductTitle(product.getTitle());
+            log.setOriginalPrice(product.getPrice());
+            log.setDiscountApplied(discount);
+            log.setDiscountDate(LocalDateTime.now());
+
+            discountLogs.add(log);
+        }
+        discountLogRepo.saveAll(discountLogs);
+        return productRepo.saveAll(highStockProducts);
+    }
+
+    public List<ProductDto> getDiscountedProducts() {
+        List<Product> discountedProducts = productRepo.findByDiscountPercentageGreaterThan(0.0);
+        return discountedProducts.stream()
+                .map(Mapper::toProductDto)
+                .collect(Collectors.toList());
+    }
+    @Transactional
+    public void clearAllDiscounts() {
+        productRepo.resetAllDiscounts();
+    }
+
+    public List<DiscountLogDto> getDiscountHistory() {
+        List<DiscountLog> logs = discountLogRepo.findAll(Sort.by(Sort.Direction.DESC, "discountDate"));
+        return logs.stream()
+                .map(Mapper::toDiscountLogDto)
+                .collect(Collectors.toList());
+    }
+
+    public List<DiscountLogDto> getAllDiscountLogs() {
+        return discountLogRepo.findAll(Sort.by(Sort.Direction.DESC, "discountDate"))
+                .stream()
+                .map(Mapper::toDiscountLogDto)
+                .collect(Collectors.toList());
+    }
+
 
     public void deleteProduct(Long id) {
         productRepo.deleteById(id);
@@ -354,8 +415,12 @@ public class EService {
 
         order.setOrderDetails(orderDetailsList);
         orderRepo.save(order);
+        sendOrderConfirmation(
+                user.getEmail(), user.getUsername(), order.getOrderId(), order.getTotalPrice()
+        );
         return Mapper.toOrderResponseDto(order);
     }
+
     public OrderResponseDto getOrderById(Long orderId) {
         System.out.println("Fetching order with ID: " + orderId);
         Order order = orderRepo.findById(orderId)
@@ -403,12 +468,19 @@ public class EService {
     }
 
     public List<OrderResponseDto> getAllOrdersWithFilters(String sortOrder, String status) {
-        Sort sort = sortOrder.equalsIgnoreCase("asc") ? Sort.by("orderDate").ascending() : Sort.by("orderDate").descending();
-
         List<Order> orders;
+
         if (status != null && !status.isEmpty()) {
-            orders = orderRepo.findByOrderStatus(status, sort);
+            orders = orderRepo.findByOrderStatus(status);
+            if ("asc".equalsIgnoreCase(sortOrder)) {
+                orders.sort(Comparator.comparing(Order::getOrderDate));
+            } else {
+                orders.sort(Comparator.comparing(Order::getOrderDate).reversed());
+            }
         } else {
+            Sort sort = sortOrder.equalsIgnoreCase("asc") ?
+                    Sort.by("orderDate").ascending() :
+                    Sort.by("orderDate").descending();
             orders = orderRepo.findAll(sort);
         }
 
@@ -437,5 +509,29 @@ public class EService {
                         )
                 ))
                 .toList();
+    }
+
+    public void sendOrderConfirmation(String toEmail, String username, Long orderId, double totalPrice) {
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true);
+
+            helper.setTo(toEmail);
+            helper.setSubject("Order Confirmation - Order #" + orderId);
+            helper.setText(
+                    "Hi " + username + ",\n\n" +
+                            "Thank you for your order!\n\n" +
+                            "Order ID: " + orderId + "\n" +
+                            "Total Price: $" + totalPrice + "\n" +
+                            "We will notify you once your items are shipped.\n\n" +
+                            "Regards,\nYour E-Commerce Team"
+            );
+
+            helper.setFrom(fromEmail);
+            mailSender.send(message);
+
+        } catch (MessagingException e) {
+            throw new RuntimeException("Failed to send confirmation email", e);
+        }
     }
 }

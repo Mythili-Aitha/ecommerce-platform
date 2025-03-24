@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
@@ -27,5 +28,7 @@ public class ProductDto {
     private MetaDto meta;
     private List<String> images;
     private String thumbnail;
+    private Double discountPercentage;
+    private LocalDateTime discountAppliedAt;
 
 }

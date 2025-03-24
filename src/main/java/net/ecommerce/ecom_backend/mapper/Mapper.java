@@ -2,6 +2,8 @@ package net.ecommerce.ecom_backend.mapper;
 
 import net.ecommerce.ecom_backend.dto.*;
 import net.ecommerce.ecom_backend.entity.*;
+import net.ecommerce.ecom_backend.repository.DiscountLogRepo;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -141,7 +143,9 @@ public class Mapper {
                         product.getMeta().getQrCode()
                 ) : null,
                 product.getImages(),
-                product.getThumbnail()
+                product.getThumbnail(),
+                product.getDiscountPercentage(),
+                product.getDiscountAppliedAt()
         );
     }
 
@@ -194,6 +198,8 @@ public class Mapper {
 
         product.setImages(productDto.getImages());
         product.setThumbnail(productDto.getThumbnail());
+        product.setDiscountPercentage(productDto.getDiscountPercentage());
+        product.setDiscountAppliedAt(productDto.getDiscountAppliedAt());
 
         return product;
     }
@@ -270,5 +276,16 @@ public class Mapper {
         dto.setPrice(orderDetails.getPrice());
         return dto;
     }
+
+    public static DiscountLogDto toDiscountLogDto(DiscountLog log) {
+        return DiscountLogDto.builder()
+                .productId(log.getProductId())
+                .productTitle(log.getProductTitle())
+                .originalPrice(log.getOriginalPrice())
+                .discountApplied(log.getDiscountApplied())
+                .discountDate(log.getDiscountDate())
+                .build();
+    }
+
 
 }

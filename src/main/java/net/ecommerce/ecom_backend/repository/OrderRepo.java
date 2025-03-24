@@ -11,6 +11,7 @@ import java.util.List;
 
 @Repository
 public interface OrderRepo extends JpaRepository<Order, Long> {
+    @Query("SELECT o FROM Order o WHERE o.user.userId = :userId")
     List<Order> findByUserUserId(Long userId);
     @Query("SELECT SUM(o.totalPrice) FROM Order o")
     Double getTotalRevenue();
@@ -20,13 +21,8 @@ public interface OrderRepo extends JpaRepository<Order, Long> {
             "WHERE o.orderStatus = 'SHIPPED' " +
             "GROUP BY p.category")
     List<Object[]> getRevenueByCategory();
-    @Query("SELECT o FROM Order o " +
-            "JOIN FETCH o.orderDetails od " +
-            "JOIN FETCH od.product p " +
-            "JOIN FETCH o.address a " +
-            "JOIN FETCH o.paymentInfo pi " +
-            "WHERE o.user.userId = :userId")
-    List<Order> findByOrderStatus(String status, Sort sort);
+    @Query("SELECT o FROM Order o WHERE o.orderStatus = :status ORDER BY o.orderDate DESC")
+    List<Order> findByOrderStatus(@Param("status") String status);
     List<Order> findTop5ByOrderByOrderDateDesc();
 
 }

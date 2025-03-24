@@ -155,6 +155,23 @@ public class Controller {
         return trendingProduct != null ? ResponseEntity.ok(trendingProduct) : ResponseEntity.noContent().build();
     }
 
+    @PostMapping("/products/discounts/apply")
+    public ResponseEntity<String> applyDiscounts() {
+        service.applyDiscountToTopStockProducts();
+        return ResponseEntity.ok("Discounts applied to top 10 high-stock products.");
+    }
+
+    @GetMapping("/products/offers")
+    public ResponseEntity<List<ProductDto>> getDiscountedProducts() {
+        List<ProductDto> products = service.getDiscountedProducts();
+        return ResponseEntity.ok(products);
+    }
+
+    @DeleteMapping("/products/discounts/clear")
+    public ResponseEntity<String> clearDiscounts() {
+        service.clearAllDiscounts();
+        return ResponseEntity.ok("All discounts cleared.");
+    }
 
     @DeleteMapping("/products/{id}")
     public void deleteProduct(@PathVariable Long id) {
@@ -405,6 +422,13 @@ public class Controller {
     public ResponseEntity<Void> deleteAdminProduct(@PathVariable Long id) {
         service.deleteProduct(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PreAuthorize("hasAuthority('Admin')")
+    @GetMapping("/admin/discounts/history")
+    public ResponseEntity<List<DiscountLogDto>> getDiscountHistory() {
+        List<DiscountLogDto> logs = service.getDiscountHistory();
+        return ResponseEntity.ok(logs);
     }
 
 
