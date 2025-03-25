@@ -18,7 +18,7 @@ public interface OrderRepo extends JpaRepository<Order, Long> {
     @Query("SELECT p.category, SUM(od.quantity * od.price) FROM Order o " +
             "JOIN o.orderDetails od " +
             "JOIN od.product p " +
-            "WHERE o.orderStatus = 'SHIPPED' " +
+            "WHERE o.orderStatus in ('SHIPPED', 'DELIVERED')" +
             "GROUP BY p.category")
     List<Object[]> getRevenueByCategory();
     @Query("SELECT o FROM Order o WHERE o.orderStatus = :status ORDER BY o.orderDate DESC")

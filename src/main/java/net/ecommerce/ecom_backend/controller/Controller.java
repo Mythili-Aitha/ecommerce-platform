@@ -177,6 +177,11 @@ public class Controller {
     public void deleteProduct(@PathVariable Long id) {
         service.deleteProduct(id);
     }
+//    @DeleteMapping("/products/remove")
+//    public ResponseEntity<String> removeDuplicates() {
+//        service.removeDuplicateProducts();
+//        return ResponseEntity.ok("Duplicate products removed.");
+//    }
 
     //FAVORITE API CALLS
     @PostMapping("/favorites/add")
@@ -262,7 +267,6 @@ public class Controller {
         return ResponseEntity.ok(orders);
     }
 
-
     //ADMIN API CALLS
     @GetMapping("/admin/stats")
     public ResponseEntity<Map<String, Object>> getDashboardStats() {
@@ -314,7 +318,8 @@ public class Controller {
 
         order.setOrderStatus(newStatus);
         orderRepo.save(order);
-
+        String message = "Your order #" + order.getOrderId() + " has been " + newStatus.toLowerCase();
+        service.sendNotification(order.getUser().getEmail(), "Order Status Update", message);
         return ResponseEntity.ok("Order status updated to " + newStatus);
     }
 
@@ -394,6 +399,11 @@ public class Controller {
             boolean newBlockedStatus = !user.isBlocked();
             user.setBlocked(newBlockedStatus);
             userRepo.save(user);
+            String subject = newBlockedStatus ? "Account Blocked" : "Account Unblocked";
+            String message = newBlockedStatus
+                    ? "Dear " + user.getName() + ", your account has been blocked by the admin. You will not be able to log in until it is unblocked."
+                    : "Dear " + user.getName() + ", your account has been unblocked. You may now log in again.";
+            service.sendNotification(user.getEmail(),"Account Blocked", message);
             return ResponseEntity.ok(user.isBlocked() ? "User blocked successfully" : "User unblocked successfully");
         }
         return ResponseEntity.notFound().build();

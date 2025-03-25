@@ -8,6 +8,7 @@ import net.ecommerce.ecom_backend.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
+import org.springframework.mail.SimpleMailMessage;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
@@ -19,10 +20,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @org.springframework.stereotype.Service
@@ -79,7 +77,7 @@ public class EService {
 
         if (user != null) {
             if (user.isBlocked()) {
-                throw new RuntimeException("Your account is blocked. Please contact support.");
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Your account is blocked. Please contact support.");
             }
             if (user.getPassword().equals(loginDto.getPassword())) {
                 return Mapper.toUserDto(user);
@@ -104,12 +102,10 @@ public class EService {
         User user = userRepo.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        // Check if old password matches
         if (!passwordEncoder.matches(passwordUpdateDto.getOldPassword(), user.getPassword())) {
             throw new RuntimeException("Incorrect old password");
         }
 
-        // Encode and update new password
         user.setPassword(passwordEncoder.encode(passwordUpdateDto.getNewPassword()));
         userRepo.save(user);
 
@@ -229,6 +225,19 @@ public class EService {
                 .collect(Collectors.toList());
     }
 
+    public void removeDuplicateProducts() {
+        List<Product> allProducts = productRepo.findAll();
+        Set<String> seenSkus = new HashSet<>();
+
+        for (Product product : allProducts) {
+            if (seenSkus.contains(product.getSku())) {
+                productRepo.delete(product);
+            } else {
+                seenSkus.add(product.getSku());
+            }
+        }
+    }
+
     public ProductDto getTrendingProduct() {
         Long trendingProductId = orderDetailsRepo.findBestSellingProductId();
         if (trendingProductId != null) {
@@ -245,20 +254,23 @@ public class EService {
         List<Product> highStockProducts = productRepo.findTop10ByOrderByStockDesc();
 
         productRepo.resetAllDiscounts();
+
         List<DiscountLog> discountLogs = new ArrayList<>();
         for (Product product : highStockProducts) {
-            double discount = product.getPrice() * 0.10;
-            product.setDiscountPercentage(discount);
+            double discountPercentage = 10.0;
+            product.setDiscountPercentage(discountPercentage);
+            double discountAmount = product.getPrice() * (discountPercentage / 100.0);
 
             DiscountLog log = new DiscountLog();
             log.setProductId(product.getId());
             log.setProductTitle(product.getTitle());
             log.setOriginalPrice(product.getPrice());
-            log.setDiscountApplied(discount);
+            log.setDiscountApplied(discountAmount);
             log.setDiscountDate(LocalDateTime.now());
 
             discountLogs.add(log);
         }
+
         discountLogRepo.saveAll(discountLogs);
         return productRepo.saveAll(highStockProducts);
     }
@@ -533,5 +545,13 @@ public class EService {
         } catch (MessagingException e) {
             throw new RuntimeException("Failed to send confirmation email", e);
         }
+    }
+
+    public void sendNotification(String email, String subject, String message) {
+        SimpleMailMessage mail = new SimpleMailMessage();
+        mail.setTo(email);
+        mail.setSubject(subject);
+        mail.setText(message);
+        mailSender.send(mail);
     }
 }

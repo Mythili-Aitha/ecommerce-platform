@@ -27,6 +27,7 @@ public class Product {
     private Double rating;
     private Integer stock;
     private String brand;
+    @Column(unique = true)
     private String sku;
 
     @ElementCollection
