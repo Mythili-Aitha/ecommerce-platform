@@ -4,7 +4,7 @@ export const buttonSx = {
   alignItems: "flex-start",
 };
 
-export const boxSx = {
+export const basicBox = {
   maxWidth: 600,
   mx: "auto",
   mt: 4,

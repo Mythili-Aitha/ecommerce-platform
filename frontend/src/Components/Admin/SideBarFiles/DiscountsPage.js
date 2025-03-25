@@ -88,15 +88,16 @@ const DiscountsPage = () => {
                     variant="body2"
                     sx={{ textDecoration: "line-through", color: "gray" }}
                   >
-                    ${product.price}
+                    ${product.price.toFixed(2)}
                   </Typography>
                 ) : null}
                 <Typography variant="h6" color="error">
                   $
-                  {product.price && product.discountPercentage
-                    ? product.price - product.discountPercentage
-                    : "0.00"}{" "}
-                  (10% OFF)
+                  {(
+                    product.price -
+                    (product.price * product.discountPercentage) / 100
+                  ).toFixed(2)}{" "}
+                  ({product.discountPercentage}% OFF)
                 </Typography>
               </CardContent>
             </Card>
@@ -104,7 +105,6 @@ const DiscountsPage = () => {
         ))}
       </Grid>
 
-      {/* History Dialog */}
       <Dialog
         open={historyOpen}
         onClose={handleCloseHistory}

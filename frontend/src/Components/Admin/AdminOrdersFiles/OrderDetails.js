@@ -83,6 +83,13 @@ const OrderDetails = () => {
             </Button>
             <Button
               variant="contained"
+              color="success"
+              onClick={() => handleStatusChange("DELIVERED")}
+            >
+              Mark as Delivered
+            </Button>
+            <Button
+              variant="contained"
               color="secondary"
               sx={{ marginLeft: 2 }}
               onClick={handleDelete}

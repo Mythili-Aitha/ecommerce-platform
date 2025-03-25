@@ -57,6 +57,7 @@ export const AdminProducts = () => {
       <Table>
         <TableHead>
           <TableRow>
+            <TableCell>Product Image</TableCell>
             <TableCell>Product ID</TableCell>
             <TableCell>Name</TableCell>
             <TableCell>Price</TableCell>

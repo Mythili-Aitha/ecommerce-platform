@@ -1,21 +1,9 @@
-import {
-  Box,
-  Button,
-  Card,
-  Divider,
-  TextField,
-  Tabs,
-  Tab,
-  InputAdornment,
-  IconButton,
-  Snackbar,
-} from "@mui/material";
-import { Visibility, VisibilityOff } from "@mui/icons-material";
+import { Button, Card, Tabs, Tab, Snackbar } from "@mui/material";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
 import apiClient from "../../../../../Utils/apiClient";
-import { boxPaSx, cardSx } from "../../../../../Utils/Styles";
+import { cardSx } from "../../../../../Utils/Styles";
 import LoginForm from "./LoginForm";
 import RegisterForm from "./RegisterForm";
 
@@ -75,18 +63,22 @@ export default function Login() {
         setSOpen(true);
         return;
       }
-      if (response.data.isBlocked) {
-        setSMessage("Your account has been blocked. Please contact support.");
-        setSOpen(true);
-        return;
-      }
       localStorage.setItem("user", JSON.stringify(response.data));
       localStorage.setItem("role", response.data.role);
       setUser(response.data);
       navigate(response.data.role === "Admin" ? "/admin" : "/");
-    } catch (error) {
-      if (error.response) {
-        if (type === "register" && error.response.status === 409) {
+    } catch (e) {
+      if (e.response) {
+        const message = e.response.data?.message;
+        console.log("Login error response:", e.response);
+        if (
+          type === "login" &&
+          e.response.status === 403 &&
+          typeof message === "string" &&
+          message.toLowerCase().includes("blocked")
+        ) {
+          setSMessage("Your account has been blocked. Please contact support.");
+        } else if (type === "register" && e.response.status === 409) {
           setSMessage("User already exists. Please log in.");
         } else if (type === "login") {
           setSMessage("Invalid username or password.");
@@ -109,6 +101,13 @@ export default function Login() {
       >
         <KeyboardArrowLeftIcon />
       </Button>
+      <div style={{ textAlign: "center", marginBottom: "8px" }}>
+        <img
+          src="/assets/logo.png"
+          alt="Daisy Logo"
+          style={{ height: "200px", marginBottom: "8px" }}
+        />
+      </div>
       <h2 style={{ color: "#692dc6", fontSize: "24px", textAlign: "center" }}>
         Welcome !!
       </h2>

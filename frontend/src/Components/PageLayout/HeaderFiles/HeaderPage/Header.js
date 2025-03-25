@@ -69,6 +69,11 @@ export default function Header() {
                 }}
               >
                 <ChevronLeftIcon onClick={() => navigate(-1)} />
+                <img
+                  src="/assets/logo.png"
+                  alt="Daisy Logo"
+                  style={{ height: "80px" }}
+                />
                 <Button onClick={() => navigate("/admin")} variant="contained">
                   Home
                 </Button>
@@ -91,6 +96,11 @@ export default function Header() {
             <>
               {showDrawer && (
                 <>
+                  <img
+                    src="/assets/logo.png"
+                    alt="Daisy Logo"
+                    style={{ height: "80px" }}
+                  />
                   <MenuIcon fontSize="large" onClick={toggleDrawer(true)} />
                   <DrawerMenu
                     open={open}

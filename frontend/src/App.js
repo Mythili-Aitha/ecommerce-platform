@@ -24,7 +24,7 @@ import Admin from "./Components/Admin/Admin.js";
 import Users from "./Components/Admin/SideBarFiles/UserFiles/Users.js";
 import AdminRoute from "./Components/Admin/AdminRoute.js";
 import { AdminProducts } from "./Components/Admin/SideBarFiles/ProductandPage/AdminProducts.js";
-import { AdminProductForm } from "./Components/Admin/SideBarFiles/ProductandPage/AdminProductForm.js";
+import { AdminProductForm } from "./Components/Admin/SideBarFiles/ProductandPage/ProductFormFiles/AdminProductForm.js";
 import Layout from "./Components/PageLayout/Layout.js";
 import Products from "./Components/PageLayout/HeaderFiles/UserProductFiles/ProductsFiles/Products.js";
 import ProductDetails from "./Components/PageLayout/HeaderFiles/UserProductFiles/ProductsDetailsPage/ProductDetails.js";
