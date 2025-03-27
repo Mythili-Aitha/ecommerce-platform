@@ -15,8 +15,8 @@ public interface ProductRepo extends JpaRepository<Product, Long> {
     List<Product> findByCategory(String category);
     @Query("select distinct p.category from Product p")
     List<String> findAllCategories();
-    @Query("SELECT p FROM Product p WHERE p.stock > :stockThreshold ORDER BY p.stock DESC")
-    List<Product> findTopHighStockProducts(@Param("stockThreshold") int threshold, Pageable pageable);
+//    @Query("SELECT p FROM Product p WHERE p.stock > :stockThreshold ORDER BY p.stock DESC")
+//    List<Product> findTopHighStockProducts(@Param("stockThreshold") int threshold, Pageable pageable);
     List<Product> findTop10ByOrderByStockDesc();
     @Modifying
     @Query("UPDATE Product p SET p.discountPercentage = 0.0")

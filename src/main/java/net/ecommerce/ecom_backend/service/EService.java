@@ -257,6 +257,7 @@ public class EService {
 
         List<DiscountLog> discountLogs = new ArrayList<>();
         for (Product product : highStockProducts) {
+            if (product.getPrice() == null || product.getPrice() <= 0) continue;
             double discountPercentage = 10.0;
             product.setDiscountPercentage(discountPercentage);
             double discountAmount = product.getPrice() * (discountPercentage / 100.0);
