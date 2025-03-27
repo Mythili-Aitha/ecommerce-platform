@@ -1,33 +1,38 @@
 import React, { useRef } from "react";
 import { Route, Routes, useLocation } from "react-router-dom";
 import { CSSTransition, TransitionGroup } from "react-transition-group";
-import Login from "./Components/Login.js";
-import Cart from "./Components/Cart.js";
-import Favorites from "./Components/Favorites.js";
-import OrderConfo from "./Components/OrderConfo.js";
-import Products from "./Components/Products.js";
-import Layout from "./Components/Layout.js";
-import Home from "./Components/Home.js";
-import AddressForm from "./Components/AddressForm.js";
-import PaymentForm from "./Components/PaymentForm.js";
-import ProductDetails from "./Components/ProductDetails.js";
-import OrderConfirmation from "./Components/OrderConfirmation.js";
-import Orders from "./Components/Orders.js";
-import OrderDetails from "./Components/OrderDetails.js";
-import Profile from "./Components/Profile.js";
-import History from "./Components/History.js";
-import About from "./Components/About.js";
-import Faq from "./Components/Faq.js";
-import Contact from "./Components/Contact.js";
-import Policies from "./Components/Policies.js";
-import Media from "./Components/Media.js";
-import { CartProvider } from "./Components/CartProvider.js";
-import { SearchFilterProvider } from "./Components/SearchFilterProvider.js";
-import Admin from "./Components/Admin.js";
-import Users from "./Components/Users.js";
-import AdminRoute from "./Components/AdminRoute.js";
-import { AdminProducts } from "./Components/AdminProducts.js";
-import { AdminProductForm } from "./Components/AdminProductForm.js";
+import OrderConfirmation from "./Components/OrdersFiles/OrderConfirmations/OrderConfirmation.js";
+import OrderDetails from "./Components/Admin/AdminOrdersFiles/OrderDetails.js";
+import About from "./Components/PageLayout/FooterFiles/About.js";
+import Faq from "./Components/PageLayout/FooterFiles/Faq.js";
+import Contact from "./Components/PageLayout/FooterFiles/Contact.js";
+import Policies from "./Components/PageLayout/FooterFiles/Policies.js";
+import Media from "./Components/PageLayout/FooterFiles/Media.js";
+import { SearchFilterProvider } from "./Components/PageLayout/HeaderFiles/HeaderTabs/SearchFilterProvider.js";
+import Login from "./Components/PageLayout/HeaderFiles/AuthFiles/LoginFiles/Login.js";
+import Cart from "./Components/PageLayout/HeaderFiles/CartFiles/Cart.js";
+import Favorites from "./Components/PageLayout/HeaderFiles/HeaderTabs/Favorites.js";
+import OrderConfo from "./Components/OrdersFiles/OrderConfirmations/OrderConfoPage/OrderConfo.js";
+import Home from "./Components/PageLayout/HeaderFiles/HeaderTabs/HomePageFiles/Home.js";
+import AddressForm from "./Components/OrdersFiles/AddressFiles/AddressForm.js";
+import PaymentForm from "./Components/OrdersFiles/PaymentFiles/PaymentForm.js";
+import Orders from "./Components/OrdersFiles/Orders.js";
+import Profile from "./Components/PageLayout/HeaderFiles/AuthFiles/ProfileFiles/Profile.js";
+import History from "./Components/OrdersFiles/History.js";
+import { CartProvider } from "./Components/PageLayout/HeaderFiles/CartFiles/CartProvider.js";
+import Admin from "./Components/Admin/Admin.js";
+import Users from "./Components/Admin/SideBarFiles/UserFiles/Users.js";
+import AdminRoute from "./Components/Admin/AdminRoute.js";
+import { AdminProducts } from "./Components/Admin/SideBarFiles/ProductandPage/AdminProducts.js";
+import { AdminProductForm } from "./Components/Admin/SideBarFiles/ProductandPage/ProductFormFiles/AdminProductForm.js";
+import Layout from "./Components/PageLayout/Layout.js";
+import Products from "./Components/PageLayout/HeaderFiles/UserProductFiles/ProductsFiles/Products.js";
+import ProductDetails from "./Components/PageLayout/HeaderFiles/UserProductFiles/ProductsDetailsPage/ProductDetails.js";
+import UserDetails from "./Components/Admin/SideBarFiles/UserFiles/UserDetails.js";
+import TotalRevenueCard from "./Components/Admin/SideBarFiles/DashboardCards/TotalRevenueCard.js";
+import LowStockCard from "./Components/Admin/SideBarFiles/DashboardCards/LowStockCard.js";
+import OrdersPage from "./Components/Admin/AdminOrdersFiles/OrdersPage.js";
+import DiscountsPage from "./Components/Admin/SideBarFiles/DiscountsPage.js";
 
 function App() {
   const location = useLocation();
@@ -55,6 +60,10 @@ function App() {
                       element={<OrderDetails />}
                     />
                     <Route path="/admin/users" element={<Users />} />
+                    <Route
+                      path="/admin/users/:userId"
+                      element={<UserDetails />}
+                    />
                     <Route path="/admin/products" element={<AdminProducts />} />
                     <Route
                       path="/admin/products/new"
@@ -63,6 +72,16 @@ function App() {
                     <Route
                       path="/admin/products/:productId"
                       element={<AdminProductForm />}
+                    />
+                    <Route
+                      path="/admin/revenue"
+                      element={<TotalRevenueCard />}
+                    />
+                    <Route path="/admin/lowstock" element={<LowStockCard />} />
+                    <Route path="/admin/orders" element={<OrdersPage />} />
+                    <Route
+                      path="/admin/discounts"
+                      element={<DiscountsPage />}
                     />
                   </Route>
                   <Route path="/cart" element={<Cart />} />
