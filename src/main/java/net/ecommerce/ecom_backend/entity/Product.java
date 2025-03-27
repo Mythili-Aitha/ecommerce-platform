@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
@@ -26,6 +27,7 @@ public class Product {
     private Double rating;
     private Integer stock;
     private String brand;
+    @Column(unique = true)
     private String sku;
 
     @ElementCollection
@@ -43,6 +45,9 @@ public class Product {
     @ElementCollection
     private List<String> images;
     private String thumbnail;
+
+    private Double discountPercentage = 0.0;
+    private LocalDateTime discountAppliedAt;
 
 
 }

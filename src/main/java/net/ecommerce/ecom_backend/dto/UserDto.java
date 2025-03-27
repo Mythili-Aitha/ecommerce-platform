@@ -16,4 +16,7 @@ public class UserDto {
     private String phoneNumber;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private String role;
+    private boolean blocked;
+
 }

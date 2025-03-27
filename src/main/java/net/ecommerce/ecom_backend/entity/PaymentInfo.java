@@ -18,6 +18,8 @@ public class PaymentInfo {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long paymentId;
+    @Column(name = "is_selected")
+    private boolean selected;
     private String cardNumber;
     private String cardHolderName;
     private String expiryDate;

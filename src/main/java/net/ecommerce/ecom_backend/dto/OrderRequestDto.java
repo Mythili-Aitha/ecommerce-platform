@@ -13,6 +13,8 @@ import java.util.List;
 @AllArgsConstructor
 public class OrderRequestDto {
     private Long userId;
+    private Long addressId;
+    private Long paymentId;
     private Double totalPrice;
     private List<OrderItemDto> items;
 }

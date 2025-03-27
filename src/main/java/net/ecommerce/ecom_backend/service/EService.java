@@ -6,14 +6,21 @@ import net.ecommerce.ecom_backend.entity.*;
 import net.ecommerce.ecom_backend.mapper.Mapper;
 import net.ecommerce.ecom_backend.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
+import org.springframework.mail.SimpleMailMessage;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
+
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @org.springframework.stereotype.Service
@@ -36,8 +43,14 @@ public class EService {
     @Autowired
     private OrderRepo orderRepo;
     @Autowired
+    private DiscountLogRepo discountLogRepo;
+    @Autowired
     private OrderDetailsRepo orderDetailsRepo;
     private final PasswordEncoder passwordEncoder;
+    private final JavaMailSender mailSender;
+
+    @Value("${spring.mail.username}")
+    private String fromEmail;
 
 
     //User Methods
@@ -50,6 +63,7 @@ public class EService {
         LocalDateTime now = LocalDateTime.now();
         user.setCreatedAt(now);
         user.setUpdatedAt(now);
+        user.setRole("User");
         User savedUser = userRepo.save(user);
         return Mapper.toUserDto(savedUser);
     }
@@ -61,8 +75,13 @@ public class EService {
     public UserDto LoginUser(LoginDto loginDto) {
         User user = userRepo.findByUsername(loginDto.getUsername());
 
-        if (user != null && user.getPassword().equals(loginDto.getPassword())) {
-            return Mapper.toUserDto(user); // Return user details without password
+        if (user != null) {
+            if (user.isBlocked()) {
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Your account is blocked. Please contact support.");
+            }
+            if (user.getPassword().equals(loginDto.getPassword())) {
+                return Mapper.toUserDto(user);
+            }
         }
 
         return null;
@@ -83,19 +102,15 @@ public class EService {
         User user = userRepo.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        // Check if old password matches
         if (!passwordEncoder.matches(passwordUpdateDto.getOldPassword(), user.getPassword())) {
             throw new RuntimeException("Incorrect old password");
         }
 
-        // Encode and update new password
         user.setPassword(passwordEncoder.encode(passwordUpdateDto.getNewPassword()));
         userRepo.save(user);
 
         return "Password updated successfully";
     }
-
-
 
 //    Address Methods
     public AddressDto addAddress(AddressDto addressDto) {
@@ -141,6 +156,20 @@ public class EService {
         PaymentInfo paymentInfo = Mapper.toPaymentInfo(paymentInfoDto);
         paymentInfo.setUser(user.get());
         return Mapper.toPaymentInfoDto(paymentInfoRepo.save(paymentInfo));
+    }
+
+    public void setSelectedPayment(Long userId, Long paymentId) {
+        List<PaymentInfo> payments = paymentInfoRepo.findByUserUserId(userId);
+        for (PaymentInfo p : payments) {
+            p.setSelected(p.getPaymentId().equals(paymentId));
+        }
+        paymentInfoRepo.saveAll(payments);
+    }
+
+    public PaymentInfoDto getSelectedPayment(Long userId) {
+        PaymentInfo payment = paymentInfoRepo.findSelectedByUserId(userId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No selected payment found"));
+        return Mapper.toPaymentInfoDto(payment);
     }
 
     public List<PaymentInfoDto> getUserPaymentInfos(Long userId) {
@@ -193,6 +222,82 @@ public class EService {
 
         return savedProducts.stream()
                 .map(Mapper::toProductDto)
+                .collect(Collectors.toList());
+    }
+
+    public void removeDuplicateProducts() {
+        List<Product> allProducts = productRepo.findAll();
+        Set<String> seenSkus = new HashSet<>();
+
+        for (Product product : allProducts) {
+            if (seenSkus.contains(product.getSku())) {
+                productRepo.delete(product);
+            } else {
+                seenSkus.add(product.getSku());
+            }
+        }
+    }
+
+    public ProductDto getTrendingProduct() {
+        Long trendingProductId = orderDetailsRepo.findBestSellingProductId();
+        if (trendingProductId != null) {
+            Product product = productRepo.findById(trendingProductId).orElse(null);
+            if (product != null) {
+                return Mapper.toProductDto(product);
+            }
+        }
+        return null;
+    }
+
+    @Transactional
+    public List<Product> applyDiscountToTopStockProducts() {
+        List<Product> highStockProducts = productRepo.findTop10ByOrderByStockDesc();
+
+        productRepo.resetAllDiscounts();
+
+        List<DiscountLog> discountLogs = new ArrayList<>();
+        for (Product product : highStockProducts) {
+            if (product.getPrice() == null || product.getPrice() <= 0) continue;
+            double discountPercentage = 10.0;
+            product.setDiscountPercentage(discountPercentage);
+            double discountAmount = product.getPrice() * (discountPercentage / 100.0);
+
+            DiscountLog log = new DiscountLog();
+            log.setProductId(product.getId());
+            log.setProductTitle(product.getTitle());
+            log.setOriginalPrice(product.getPrice());
+            log.setDiscountApplied(discountAmount);
+            log.setDiscountDate(LocalDateTime.now());
+
+            discountLogs.add(log);
+        }
+
+        discountLogRepo.saveAll(discountLogs);
+        return productRepo.saveAll(highStockProducts);
+    }
+
+    public List<ProductDto> getDiscountedProducts() {
+        List<Product> discountedProducts = productRepo.findByDiscountPercentageGreaterThan(0.0);
+        return discountedProducts.stream()
+                .map(Mapper::toProductDto)
+                .collect(Collectors.toList());
+    }
+    @Transactional
+    public void clearAllDiscounts() {
+        productRepo.resetAllDiscounts();
+    }
+
+    public List<DiscountLogDto> getDiscountHistory() {
+        List<DiscountLog> logs = discountLogRepo.findAll(Sort.by(Sort.Direction.DESC, "discountDate"));
+        return logs.stream()
+                .map(Mapper::toDiscountLogDto)
+                .collect(Collectors.toList());
+    }
+
+    public List<DiscountLogDto> getAllDiscountLogs() {
+        return discountLogRepo.findAll(Sort.by(Sort.Direction.DESC, "discountDate"))
+                .stream()
+                .map(Mapper::toDiscountLogDto)
                 .collect(Collectors.toList());
     }
 
@@ -289,9 +394,14 @@ public class EService {
     public OrderResponseDto placeOrder(OrderRequestDto orderRequestDto) {
         User user = userRepo.findById(orderRequestDto.getUserId())
                 .orElseThrow(() -> new RuntimeException("User not found"));
-
+        Address address = addressRepo.findById(orderRequestDto.getAddressId())
+                .orElseThrow(() -> new RuntimeException("Address not found"));
+        PaymentInfo paymentInfo = paymentInfoRepo.findById(orderRequestDto.getPaymentId())
+                .orElseThrow(() -> new RuntimeException("Payment info not found"));
         Order order = new Order();
         order.setUser(user);
+        order.setAddress(address);
+        order.setPaymentInfo(paymentInfo);
         order.setTotalPrice(orderRequestDto.getTotalPrice());
         order.setOrderDate(LocalDateTime.now());
         order.setOrderStatus("Placed");
@@ -316,21 +426,133 @@ public class EService {
             return orderDetails;
         }).collect(Collectors.toList());
 
-        orderDetailsRepo.saveAll(orderDetailsList);
-        cartRepo.deleteByUserIdAndProductIds(user.getUserId(),
-                orderDetailsList.stream().map(d -> d.getProduct().getId()).collect(Collectors.toList()));
-        savedOrder.setOrderDetails(orderDetailsList);
-        orderRepo.save(savedOrder);
-        return Mapper.toOrderResponseDto(savedOrder);
+        order.setOrderDetails(orderDetailsList);
+        orderRepo.save(order);
+        sendOrderConfirmation(
+                user.getEmail(), user.getUsername(), order.getOrderId(), order.getTotalPrice()
+        );
+        return Mapper.toOrderResponseDto(order);
     }
+
     public OrderResponseDto getOrderById(Long orderId) {
+        System.out.println("Fetching order with ID: " + orderId);
         Order order = orderRepo.findById(orderId)
                 .orElseThrow(() -> new RuntimeException("Order not found"));
-        return Mapper.toOrderResponseDto(order);
+        AddressDto addressDto = new AddressDto(
+                order.getAddress().getId(),
+                order.getAddress().getStreet(),
+                order.getAddress().getCity(),
+                order.getAddress().getState(),
+                order.getAddress().getZip(),
+                order.getAddress().getCountry(),
+                order.getAddress().getAddressType(),
+                order.getUser().getUserId()
+        );
+        return new OrderResponseDto(
+                order.getOrderId(),
+                order.getUser().getUsername(),
+                order.getTotalPrice(),
+                order.getOrderStatus(),
+                order.getOrderDate(),
+                order.getOrderDetails().stream()
+                        .map(details-> new OrderItemResponseDto(
+                                details.getProduct().getTitle(),
+                                details.getQuantity(),
+                                details.getPrice()))
+                        .toList(),
+                addressDto
+        );
     }
 
     public List<OrderResponseDto> getOrdersByUser(Long userId) {
         List<Order> orders = orderRepo.findByUserUserId(userId);
         return orders.stream().map(Mapper::toOrderResponseDto).collect(Collectors.toList());
+    }
+
+    public List<RevenueBreakDownDto> getRevenueByCategory() {
+        List<Object[]> result = orderRepo.getRevenueByCategory();
+        List<RevenueBreakDownDto> breakdowns = new ArrayList<>();
+        for (Object[] row : result) {
+            String categoryName = (String) row[0];
+            Double revenue = (Double) row[1];
+            breakdowns.add(new RevenueBreakDownDto(categoryName, revenue));
+        }
+        return breakdowns;
+    }
+
+    public List<OrderResponseDto> getAllOrdersWithFilters(String sortOrder, String status) {
+        List<Order> orders;
+
+        if (status != null && !status.isEmpty()) {
+            orders = orderRepo.findByOrderStatus(status);
+            if ("asc".equalsIgnoreCase(sortOrder)) {
+                orders.sort(Comparator.comparing(Order::getOrderDate));
+            } else {
+                orders.sort(Comparator.comparing(Order::getOrderDate).reversed());
+            }
+        } else {
+            Sort sort = sortOrder.equalsIgnoreCase("asc") ?
+                    Sort.by("orderDate").ascending() :
+                    Sort.by("orderDate").descending();
+            orders = orderRepo.findAll(sort);
+        }
+
+        return orders.stream()
+                .map(order -> new OrderResponseDto(
+                        order.getOrderId(),
+                        order.getUser().getUsername(),
+                        order.getTotalPrice(),
+                        order.getOrderStatus(),
+                        order.getOrderDate(),
+                        order.getOrderDetails().stream()
+                                .map(details -> new OrderItemResponseDto(
+                                        details.getProduct().getTitle(),
+                                        details.getQuantity(),
+                                        details.getPrice()))
+                                .toList(),
+                        new AddressDto(
+                                order.getAddress().getId(),
+                                order.getAddress().getStreet(),
+                                order.getAddress().getCity(),
+                                order.getAddress().getState(),
+                                order.getAddress().getZip(),
+                                order.getAddress().getCountry(),
+                                order.getAddress().getAddressType(),
+                                order.getUser().getUserId()
+                        )
+                ))
+                .toList();
+    }
+
+    public void sendOrderConfirmation(String toEmail, String username, Long orderId, double totalPrice) {
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true);
+
+            helper.setTo(toEmail);
+            helper.setSubject("Order Confirmation - Order #" + orderId);
+            helper.setText(
+                    "Hi " + username + ",\n\n" +
+                            "Thank you for your order!\n\n" +
+                            "Order ID: " + orderId + "\n" +
+                            "Total Price: $" + totalPrice + "\n" +
+                            "We will notify you once your items are shipped.\n\n" +
+                            "Regards,\nYour E-Commerce Team"
+            );
+
+            helper.setFrom(fromEmail);
+            mailSender.send(message);
+
+        } catch (MessagingException e) {
+            throw new RuntimeException("Failed to send confirmation email", e);
+        }
+    }
+
+    public void sendNotification(String email, String subject, String message) {
+        SimpleMailMessage mail = new SimpleMailMessage();
+        mail.setTo(email);
+        mail.setSubject(subject);
+        mail.setText(message);
+        mailSender.send(mail);
     }
 }

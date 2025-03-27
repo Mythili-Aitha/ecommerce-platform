@@ -1,23 +1,36 @@
 package net.ecommerce.ecom_backend.controller;
 
 import net.ecommerce.ecom_backend.dto.*;
+import net.ecommerce.ecom_backend.entity.Order;
+import net.ecommerce.ecom_backend.entity.Product;
 import net.ecommerce.ecom_backend.entity.User;
+import net.ecommerce.ecom_backend.repository.OrderRepo;
+import net.ecommerce.ecom_backend.repository.ProductRepo;
 import net.ecommerce.ecom_backend.repository.UserRepo;
 import net.ecommerce.ecom_backend.service.EService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api")
 public class Controller {
     @Autowired
     private EService service;
+    @Autowired
+    private OrderRepo orderRepo;
+    @Autowired
+    private UserRepo userRepo;
+    @Autowired
+    private ProductRepo productRepo;
 
 
     //USER API CALLS
@@ -36,6 +49,7 @@ public class Controller {
         UserDto userDto = service.LoginUser(loginDto);
         return userDto != null ? ResponseEntity.ok(userDto) : ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
+
     @PutMapping("/users/{userId}/profile")
     public ResponseEntity<User> updateProfile(
             @PathVariable Long userId,
@@ -43,6 +57,7 @@ public class Controller {
         User updatedUser = service.updateUserProfile(userId, userUpdateDto);
         return ResponseEntity.ok(updatedUser);
     }
+
     @PutMapping("/users/{userId}/password")
     public ResponseEntity<String> updatePassword(
             @PathVariable Long userId,
@@ -72,10 +87,22 @@ public class Controller {
         service.deleteAddress(id);
         return ResponseEntity.noContent().build();
     }
+
     //PAYMENTS API CALLS
     @PostMapping("/payments")
     public ResponseEntity<PaymentInfoDto> addPaymentInfo(@RequestBody PaymentInfoDto paymentInfoDto) {
         return ResponseEntity.ok(service.addPaymentInfo(paymentInfoDto));
+    }
+
+    @PutMapping("/payments/select/{userId}/{paymentId}")
+    public ResponseEntity<Void> selectPaymentMethod(@PathVariable Long userId, @PathVariable Long paymentId) {
+        service.setSelectedPayment(userId, paymentId);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/payments/selected/{userId}")
+    public ResponseEntity<PaymentInfoDto> getSelectedPayment(@PathVariable Long userId) {
+        return ResponseEntity.ok(service.getSelectedPayment(userId));
     }
 
     @GetMapping("/payments/users/{userId}")
@@ -105,10 +132,6 @@ public class Controller {
         return service.getProductById(id);
     }
 
-//    @PostMapping("/products")
-//    public ProductDto addProduct(@RequestBody ProductDto productDto) {
-//        return service.saveProduct(productDto);
-//    }
     @PostMapping("/products/bulk")
     public List<ProductDto> addProducts(@RequestBody List<ProductDto> productDtos) {
         return service.saveProducts(productDtos);
@@ -116,8 +139,8 @@ public class Controller {
 
     @GetMapping("/products/category/{category}")
     public ResponseEntity<List<ProductDto>> getProductsByCategory(@PathVariable String category) {
-       List<ProductDto> products = service.getProductsByCategory(category);
-       return ResponseEntity.ok(products);
+        List<ProductDto> products = service.getProductsByCategory(category);
+        return ResponseEntity.ok(products);
     }
 
     @GetMapping("/products/category")
@@ -126,10 +149,39 @@ public class Controller {
         return ResponseEntity.ok(categories);
     }
 
+    @GetMapping("/products/trending")
+    public ResponseEntity<ProductDto> getTrendingProduct() {
+        ProductDto trendingProduct = service.getTrendingProduct();
+        return trendingProduct != null ? ResponseEntity.ok(trendingProduct) : ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/products/discounts/apply")
+    public ResponseEntity<String> applyDiscounts() {
+        service.applyDiscountToTopStockProducts();
+        return ResponseEntity.ok("Discounts applied to top 10 high-stock products.");
+    }
+
+    @GetMapping("/products/offers")
+    public ResponseEntity<List<ProductDto>> getDiscountedProducts() {
+        List<ProductDto> products = service.getDiscountedProducts();
+        return ResponseEntity.ok(products);
+    }
+
+    @DeleteMapping("/products/discounts/clear")
+    public ResponseEntity<String> clearDiscounts() {
+        service.clearAllDiscounts();
+        return ResponseEntity.ok("All discounts cleared.");
+    }
+
     @DeleteMapping("/products/{id}")
     public void deleteProduct(@PathVariable Long id) {
         service.deleteProduct(id);
     }
+//    @DeleteMapping("/products/remove")
+//    public ResponseEntity<String> removeDuplicates() {
+//        service.removeDuplicateProducts();
+//        return ResponseEntity.ok("Duplicate products removed.");
+//    }
 
     //FAVORITE API CALLS
     @PostMapping("/favorites/add")
@@ -199,5 +251,195 @@ public class Controller {
         List<OrderResponseDto> userOrders = service.getOrdersByUser(userId);
         return ResponseEntity.ok(userOrders);
     }
+
+    @GetMapping("/revenue/breakdown")
+    public ResponseEntity<List<RevenueBreakDownDto>> getRevenueByCategory() {
+        List<RevenueBreakDownDto> breakdown = service.getRevenueByCategory();
+        return ResponseEntity.ok(breakdown);
+    }
+
+    @GetMapping("/orders/admin")
+    public ResponseEntity<List<OrderResponseDto>> getAllOrders(
+            @RequestParam(defaultValue = "desc") String sortOrder,
+            @RequestParam(required = false) String status) {
+
+        List<OrderResponseDto> orders = service.getAllOrdersWithFilters(sortOrder, status);
+        return ResponseEntity.ok(orders);
+    }
+
+    //ADMIN API CALLS
+    @GetMapping("/admin/stats")
+    public ResponseEntity<Map<String, Object>> getDashboardStats() {
+        Map<String, Object> stats = new HashMap<>();
+        stats.put("totalOrders", orderRepo.count());
+        stats.put("totalRevenue", orderRepo.getTotalRevenue());
+        stats.put("totalCustomers", userRepo.countByRole("User"));
+        stats.put("lowStockItems", productRepo.countByStockLessThan(5));
+        return ResponseEntity.ok(stats);
+    }
+
+    @GetMapping("/admin/recent")
+    public ResponseEntity<List<OrderResponseDto>> getRecentOrders() {
+        List<Order> recentOrders = orderRepo.findTop5ByOrderByOrderDateDesc();
+        List<OrderResponseDto> orderDtos = recentOrders.stream()
+                .map(order -> new OrderResponseDto(
+                        order.getOrderId(),
+                        order.getUser().getUsername(),
+                        order.getTotalPrice(),
+                        order.getOrderStatus(),
+                        order.getOrderDate(),
+                        order.getOrderDetails().stream()
+                                .map(details -> new OrderItemResponseDto(
+                                        details.getProduct().getTitle(),
+                                        details.getQuantity(),
+                                        details.getPrice()))
+                                .toList(),new AddressDto(
+                        order.getAddress().getId(),
+                        order.getAddress().getStreet(),
+                        order.getAddress().getCity(),
+                        order.getAddress().getState(),
+                        order.getAddress().getZip(),
+                        order.getAddress().getCountry(),
+                        order.getAddress().getAddressType(),
+                        order.getUser().getUserId()
+                )
+                ))
+                .toList();
+
+        return ResponseEntity.ok(orderDtos);
+    }
+
+    @PutMapping("/admin/orders/{orderId}/status")
+    public ResponseEntity<String> updateOrderStatus(@PathVariable Long orderId, @RequestBody Map<String, String> request) {
+        String newStatus = request.get("status");
+
+        Order order = orderRepo.findById(orderId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Order not found"));
+
+        order.setOrderStatus(newStatus);
+        orderRepo.save(order);
+        String message = "Your order #" + order.getOrderId() + " has been " + newStatus.toLowerCase();
+        service.sendNotification(order.getUser().getEmail(), "Order Status Update", message);
+        return ResponseEntity.ok("Order status updated to " + newStatus);
+    }
+
+    @DeleteMapping("/admin/orders/{orderId}")
+    public ResponseEntity<String> deleteOrder(@PathVariable Long orderId) {
+        Order order = orderRepo.findById(orderId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Order not found"));
+
+        orderRepo.delete(order);
+        return ResponseEntity.ok("Order deleted successfully");
+    }
+
+    @PutMapping("/admin/users/{userId}/role")
+    public ResponseEntity<String> updateUserRole(@PathVariable Long userId, @RequestBody Map<String, String> request) {
+        User user = userRepo.findById(userId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+
+        String newRole = request.get("role");
+        user.setRole(newRole);
+        userRepo.save(user);
+
+        return ResponseEntity.ok("User role updated to " + newRole);
+    }
+
+    @PreAuthorize("hasAuthority('Admin')")
+    @GetMapping("/admin/users")
+    public ResponseEntity<List<UserDto>> getAllUsers() {
+        List<User> users = userRepo.findAll();
+        List<UserDto> userDtos = users.stream()
+                .map(user -> {
+                    UserDto dto = new UserDto();
+                    dto.setUserId(user.getUserId());
+                    dto.setName(user.getName());
+                    dto.setUsername(user.getUsername());
+                    dto.setPassword(user.getPassword());
+                    dto.setEmail(user.getEmail());
+                    dto.setPhoneNumber(user.getPhoneNumber());
+                    dto.setCreatedAt(user.getCreatedAt());
+                    dto.setUpdatedAt(user.getUpdatedAt());
+                    dto.setRole(user.getRole());
+                    dto.setBlocked(user.isBlocked());
+                    return dto;
+                })
+                .toList();
+
+        return ResponseEntity.ok(userDtos);
+    }
+
+    @PreAuthorize("hasAuthority('Admin')")
+    @GetMapping("/admin/users/{id}")
+    public ResponseEntity<UserDto> getAdminUserById(@PathVariable Long id) {
+        Optional<User> userOptional = userRepo.findById(id);
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            UserDto dto = new UserDto();
+            dto.setUserId(user.getUserId());
+            dto.setName(user.getName());
+            dto.setUsername(user.getUsername());
+            dto.setPassword(user.getPassword());
+            dto.setEmail(user.getEmail());
+            dto.setPhoneNumber(user.getPhoneNumber());
+            dto.setCreatedAt(user.getCreatedAt());
+            dto.setUpdatedAt(user.getUpdatedAt());
+            dto.setRole(user.getRole());
+            dto.setBlocked(user.isBlocked());
+            return ResponseEntity.ok(dto);
+        }
+        return ResponseEntity.notFound().build();
+    }
+
+    @PreAuthorize("hasAuthority('Admin')")
+    @PutMapping("/admin/users/{id}/block")
+    public ResponseEntity<String> blockOrUnblockUser(@PathVariable Long id) {
+        Optional<User> userOptional = userRepo.findById(id);
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            boolean newBlockedStatus = !user.isBlocked();
+            user.setBlocked(newBlockedStatus);
+            userRepo.save(user);
+            String subject = newBlockedStatus ? "Account Blocked" : "Account Unblocked";
+            String message = newBlockedStatus
+                    ? "Dear " + user.getName() + ", your account has been blocked by the admin. You will not be able to log in until it is unblocked."
+                    : "Dear " + user.getName() + ", your account has been unblocked. You may now log in again.";
+            service.sendNotification(user.getEmail(),"Account Blocked", message);
+            return ResponseEntity.ok(user.isBlocked() ? "User blocked successfully" : "User unblocked successfully");
+        }
+        return ResponseEntity.notFound().build();
+    }
+
+    @PreAuthorize("hasAuthority('Admin')")
+    @GetMapping("/admin/products")
+    public List<ProductDto> getAllAdminProducts() {
+        return service.getAllProducts();
+    }
+
+    @PreAuthorize("hasAuthority('Admin')")
+    @GetMapping("/admin/products/{id}")
+    public ProductDto getAdminProductById(@PathVariable Long id) {
+        return service.getProductById(id);
+    }
+
+    @PreAuthorize("hasAuthority('Admin')")
+    @PostMapping("/admin/products")
+    public List<ProductDto> saveProducts(@RequestBody List<ProductDto> productDtos) {
+        return service.saveProducts(productDtos);
+    }
+
+    @PreAuthorize("hasAuthority('Admin')")
+    @DeleteMapping("/admin/products/{id}")
+    public ResponseEntity<Void> deleteAdminProduct(@PathVariable Long id) {
+        service.deleteProduct(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PreAuthorize("hasAuthority('Admin')")
+    @GetMapping("/admin/discounts/history")
+    public ResponseEntity<List<DiscountLogDto>> getDiscountHistory() {
+        List<DiscountLogDto> logs = service.getDiscountHistory();
+        return ResponseEntity.ok(logs);
+    }
+
 
 }
