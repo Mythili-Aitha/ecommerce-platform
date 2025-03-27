@@ -35,6 +35,7 @@ const DiscountsPage = () => {
   useEffect(() => {
     fetchDiscountedProducts();
   }, []);
+  console.log("Product:", discountedProducts);
   const validDiscountedProducts = discountedProducts.filter(
     (p) => p.price !== undefined && p.discountPercentage !== undefined
   );
@@ -72,37 +73,40 @@ const DiscountsPage = () => {
         </Button>
       </Box>
       <Grid container spacing={2}>
-        {validDiscountedProducts.map((product) => (
-          <Grid item xs={12} sm={6} md={4} key={product.id}>
-            <Card>
-              <CardMedia
-                component="img"
-                height="120"
-                image={product.thumbnail}
-                alt={product.title}
-              />
-              <CardContent>
-                <Typography variant="h6">{product.title}</Typography>
-                {product.price ? (
+        {validDiscountedProducts.map((product) => {
+          const finalPrice =
+            product.price - (product.price * product.discountPercentage) / 100;
+
+          return (
+            <Grid item xs={12} sm={6} md={4} key={product.id}>
+              <Card>
+                <CardMedia
+                  component="img"
+                  height="120"
+                  image={product.thumbnail}
+                  alt={product.title}
+                />
+                <CardContent>
+                  <Typography variant="h6">{product.title}</Typography>
                   <Typography
                     variant="body2"
                     sx={{ textDecoration: "line-through", color: "gray" }}
                   >
                     ${product.price.toFixed(2)}
                   </Typography>
-                ) : null}
-                <Typography variant="h6" color="error">
-                  $
-                  {(
-                    product.price -
-                    (product.price * product.discountPercentage) / 100
-                  ).toFixed(2)}{" "}
-                  ({product.discountPercentage}% OFF)
-                </Typography>
-              </CardContent>
-            </Card>
-          </Grid>
-        ))}
+                  {finalPrice > 0 ? (
+                    <Typography variant="h6" color="error">
+                      ${finalPrice.toFixed(2)} ({product.discountPercentage}%
+                      OFF)
+                    </Typography>
+                  ) : (
+                    <Typography color="error">Invalid Price</Typography>
+                  )}
+                </CardContent>
+              </Card>
+            </Grid>
+          );
+        })}
       </Grid>
 
       <Dialog

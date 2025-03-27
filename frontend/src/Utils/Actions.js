@@ -2,9 +2,6 @@ import { useState, useEffect } from "react";
 import {
   getUserId,
   addToFavorites,
-  removeFromFavorites,
-  addToCart,
-  updateCartQuantity,
   removeFromCart,
   placeOrder,
   getUserDetails,
@@ -97,81 +94,6 @@ export const Actions = () => {
     localStorage.removeItem("user");
     setUser(null);
     navigate("/auth");
-  };
-
-  // ✅ Add to cart
-  const handleAddToCart = async (productId) => {
-    try {
-      const response = await addToCart(productId, 1);
-      addToHistory("Added to Cart", `Product ID: ${productId}`);
-      if (response.data === "Quantity updated in cart") {
-        <Snackbar
-          open={open}
-          autoHideDuration={6000}
-          message="Quantity Updated in Cart"
-        />;
-      } else {
-        <Snackbar
-          open={open}
-          autoHideDuration={6000}
-          message="Added to Cart"
-        />;
-      }
-    } catch (error) {
-      if (error.response && error.response.data) {
-        alert(error.response.data);
-      } else {
-        console.error("Error adding to cart:", error);
-      }
-    }
-  };
-
-  // ✅ Update cart quantity
-  const handleUpdateCartQuantity = async (productId, quantity) => {
-    try {
-      const updatedItem = await updateCartQuantity(productId, quantity);
-      setCart((prevCart) =>
-        prevCart.map((item) =>
-          item.productId === productId
-            ? { ...item, quantity: updatedItem.quantity }
-            : item
-        )
-      );
-    } catch (error) {
-      console.error("Error updating cart:", error);
-    }
-  };
-
-  const toggleSelectItem = (productId) => {
-    setCart((prevCart) => {
-      const updatedCart = prevCart.map((item) =>
-        item.productId === productId
-          ? { ...item, selected: !item.selected }
-          : item
-      );
-      const selectedItems = updatedCart.filter((item) => item.selected);
-      localStorage.setItem("selectedItems", JSON.stringify(selectedItems));
-      return updatedCart;
-    });
-  };
-  const selectedItems = cart.filter((item) => item.selected);
-  const totalPrice = selectedItems.reduce(
-    (total, item) => total + item.productPrice * item.quantity,
-    0
-  );
-
-  const totalQuantity = cart.reduce((total, item) => total + item.quantity, 0);
-
-  // ✅ Remove from cart
-  const handleRemoveFromCart = async (productId) => {
-    try {
-      await removeFromCart(productId);
-      setCart((prevCart) =>
-        prevCart.filter((item) => item.productId !== productId)
-      );
-    } catch (error) {
-      console.error("Error removing from cart:", error);
-    }
   };
 
   // ✅ Add to favorites
@@ -302,10 +224,6 @@ export const Actions = () => {
     user,
     open,
     value,
-    cart,
-    totalQuantity,
-    totalPrice,
-    selectedItems,
     orders,
     editable,
     updatedData,
@@ -313,18 +231,13 @@ export const Actions = () => {
     snackbarMessage,
     snackbarOpen,
     history,
-    setCart,
     addToHistory,
     filterProducts,
     setEditable,
     setSnackbarOpen,
     handleChange,
     toggleDrawer,
-    toggleSelectItem,
     handleSignOut,
-    handleAddToCart,
-    handleUpdateCartQuantity,
-    handleRemoveFromCart,
     handleAddToFavorites,
     handlePlaceOrder,
     handleProfileChange,

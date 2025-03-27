@@ -12,8 +12,8 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import Add from "@mui/icons-material/Add";
 import Remove from "@mui/icons-material/Remove";
-import { Actions } from "../../../../Utils/Actions";
 import { avatar, boxCSx, cardCSx } from "../../../../Utils/Styles";
+import { useCartActions } from "../../../../Hooks/useCartActions";
 
 export default function Cart() {
   const navigate = useNavigate();
@@ -23,7 +23,7 @@ export default function Cart() {
     handleUpdateCartQuantity,
     handleRemoveFromCart,
     toggleSelectItem,
-  } = Actions();
+  } = useCartActions();
   if (!Array.isArray(cart)) {
     console.error("Cart data is not an array:", cart);
     return <CircularProgress />;

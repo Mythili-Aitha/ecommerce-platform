@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   getCategories,
+  getProducts,
   getProductsByCategories,
   getTrendingProduct,
 } from "../../../../../Utils/Api";
@@ -15,13 +16,17 @@ import OffersSection from "./OffersSection";
 
 const Home = () => {
   const { searchTerm } = useSearchFilter();
-  const [filteredProducts, setFilteredProducts] = useState([]);
-  const [categories, setCategories] = useState([]);
-  const [trendingProduct, setTrendingProduct] = useState(null);
   const navigate = useNavigate();
 
   const isMobile = useMediaQuery("(max-width:600px)");
   const isTablet = useMediaQuery("(min-width:601px) and (max-width:1024px)");
+
+  const featuredProducts = useFetchProducts(isMobile, isTablet);
+
+  const [allProducts, setAllProducts] = useState([]);
+  const [filteredProducts, setFilteredProducts] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [trendingProduct, setTrendingProduct] = useState(null);
 
   useEffect(() => {
     async function fetchTrendingProduct() {
@@ -58,20 +63,28 @@ const Home = () => {
     }
     fetchCategories();
   }, []);
-
-  const products = useFetchProducts(isMobile, isTablet);
+  useEffect(() => {
+    const fetchAllProducts = async () => {
+      try {
+        const all = await getProducts();
+        setAllProducts(all);
+      } catch (err) {
+        console.error("Error fetching all products", err);
+      }
+    };
+    fetchAllProducts();
+  }, []);
 
   useEffect(() => {
     if (!searchTerm.trim()) {
-      setFilteredProducts(products);
+      setFilteredProducts(featuredProducts);
     } else {
-      setFilteredProducts(
-        products.filter((product) =>
-          product.name.toLowerCase().includes(searchTerm.toLowerCase())
-        )
+      const result = allProducts.filter((product) =>
+        product.title.toLowerCase().includes(searchTerm.toLowerCase())
       );
+      setFilteredProducts(result);
     }
-  }, [searchTerm, products]);
+  }, [searchTerm, allProducts, featuredProducts]);
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
@@ -111,18 +124,24 @@ const Home = () => {
       </Box>
       {/* Product Cards Grid */}
       <Box sx={{ width: "90%", margin: "auto", mt: 3 }}>
-        <Grid container spacing={2}>
-          {filteredProducts.map((product) => (
-            <Grid item xs={6} sm={4} md={3} key={product.id}>
-              <ProductCard
-                product={product}
-                onClick={() =>
-                  navigate(`/products/${product.id}`, { state: { product } })
-                }
-              />
-            </Grid>
-          ))}
-        </Grid>
+        {filteredProducts.length === 0 ? (
+          <Typography sx={{ textAlign: "center", mt: 5 }}>
+            No products found.
+          </Typography>
+        ) : (
+          <Grid container spacing={2}>
+            {filteredProducts.map((product) => (
+              <Grid item xs={6} sm={4} md={3} key={product.id}>
+                <ProductCard
+                  product={product}
+                  onClick={() =>
+                    navigate(`/products/${product.id}`, { state: { product } })
+                  }
+                />
+              </Grid>
+            ))}
+          </Grid>
+        )}
       </Box>
       <OffersSection />
     </Box>

@@ -70,7 +70,7 @@ export default function Header() {
               >
                 <ChevronLeftIcon onClick={() => navigate(-1)} />
                 <img
-                  src="/assets/logo.png"
+                  src="/assests/logo.svg"
                   alt="Daisy Logo"
                   style={{ height: "80px" }}
                 />
