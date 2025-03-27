@@ -15,6 +15,8 @@ public interface OrderRepo extends JpaRepository<Order, Long> {
     List<Order> findByUserUserId(Long userId);
     @Query("SELECT SUM(o.totalPrice) FROM Order o")
     Double getTotalRevenue();
+    @Query("SELECT o.orderStatus, SUM(o.totalPrice) FROM Order o GROUP BY o.orderStatus")
+    List<Object[]> getRevenueByStatus();
     @Query("SELECT p.category, SUM(od.quantity * od.price) FROM Order o " +
             "JOIN o.orderDetails od " +
             "JOIN od.product p " +
