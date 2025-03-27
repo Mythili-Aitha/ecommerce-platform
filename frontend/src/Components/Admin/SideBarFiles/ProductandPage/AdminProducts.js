@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from "react";
 import {
   Avatar,
+  Box,
   Button,
+  Pagination,
   Paper,
   Table,
   TableBody,
@@ -13,10 +15,17 @@ import {
 } from "@mui/material";
 import { Link } from "react-router-dom";
 import { deleteAdminProduct, getAdminProducts } from "../../../../Utils/Api";
-import { avatar } from "../../../../Utils/Styles";
+import { adminPCard, avatar } from "../../../../Utils/Styles";
+import SearchBox from "../../../PageLayout/HeaderFiles/HeaderPage/SearchBox";
 
 export const AdminProducts = () => {
   const [products, setProducts] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const filteredProducts = products.filter((product) =>
+    product?.title?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
   useEffect(() => {
     const fetchProducts = async () => {
       try {
@@ -27,6 +36,7 @@ export const AdminProducts = () => {
       }
     };
     fetchProducts();
+    // setCurrentPage(1);
   }, []);
 
   const handleDelete = async (productId) => {
@@ -41,19 +51,28 @@ export const AdminProducts = () => {
     }
   };
 
+  const paginatedProducts = filteredProducts.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
   return (
     <TableContainer component={Paper} sx={{ mt: 4, p: 2 }}>
-      <Typography variant="h6" sx={{ mb: 2 }}>
-        Admin Products Management
-      </Typography>
-      <Button
-        variant="contained"
-        sx={{ mb: 2 }}
-        component={Link}
-        to="/admin/products/new"
-      >
-        Add Product
-      </Button>
+      <Box sx={adminPCard}>
+        <Typography variant="h6" sx={{ mb: 2 }}>
+          Admin Products Management
+        </Typography>
+        <SearchBox searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
+        <Button
+          variant="contained"
+          sx={{ mb: 2 }}
+          component={Link}
+          to="/admin/products/new"
+        >
+          Add Product
+        </Button>
+      </Box>
+
       <Table>
         <TableHead>
           <TableRow>
@@ -66,8 +85,8 @@ export const AdminProducts = () => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {products.length > 0 ? (
-            products.map((product) => (
+          {paginatedProducts.length > 0 ? (
+            paginatedProducts.map((product) => (
               <TableRow key={product.id}>
                 <TableCell>
                   <Avatar
@@ -110,6 +129,14 @@ export const AdminProducts = () => {
           )}
         </TableBody>
       </Table>
+      <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
+        <Pagination
+          count={Math.ceil(filteredProducts.length / itemsPerPage)}
+          page={currentPage}
+          onChange={(e, page) => setCurrentPage(page)}
+          color="primary"
+        />
+      </Box>
     </TableContainer>
   );
 };

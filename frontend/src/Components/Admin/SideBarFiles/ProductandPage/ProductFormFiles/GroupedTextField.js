@@ -19,7 +19,7 @@ const GroupedTextField = ({
           name={field}
           fullWidth
           type={type}
-          value={product[group][field]}
+          value={product[group][field] || ""}
           onChange={handleChange(group)}
           required
           sx={{ mb: 2 }}

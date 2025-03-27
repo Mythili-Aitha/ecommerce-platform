@@ -1,8 +1,23 @@
 import { useCart } from "../Components/PageLayout/HeaderFiles/CartFiles/CartProvider";
-import { updateCartQuantity, removeFromCart } from "../Utils/Api";
+import {
+  updateCartQuantity,
+  removeFromCart,
+  addToCart,
+  getUserCart,
+} from "../Utils/Api";
 
 export const useCartActions = () => {
   const { cart, setCart } = useCart();
+
+  const handleAddToCart = async (productId) => {
+    try {
+      await addToCart(productId, 1);
+      const updatedCart = await getUserCart();
+      setCart(updatedCart);
+    } catch (error) {
+      console.error("Error adding to cart:", error);
+    }
+  };
 
   const handleUpdateCartQuantity = async (productId, quantity) => {
     try {
@@ -50,12 +65,15 @@ export const useCartActions = () => {
     (total, item) => total + item.productPrice * item.quantity,
     0
   );
+  const totalQuantity = cart.reduce((total, item) => total + item.quantity, 0);
 
   return {
     cart,
     setCart,
     selectedItems,
     totalPrice,
+    totalQuantity,
+    handleAddToCart,
     handleUpdateCartQuantity,
     handleRemoveFromCart,
     toggleSelectItem,

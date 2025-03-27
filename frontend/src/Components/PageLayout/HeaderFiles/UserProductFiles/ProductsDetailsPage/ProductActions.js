@@ -3,9 +3,11 @@ import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import { useState } from "react";
 import { Actions } from "../../../../../Utils/Actions";
+import { useCartActions } from "../../../../../Hooks/useCartActions";
 
 export default function ProductActions({ product }) {
-  const { handleAddToFavorites, handleAddToCart } = Actions();
+  const { handleAddToFavorites } = Actions();
+  const { handleAddToCart } = useCartActions();
   const [isFav, setIsFav] = useState(false);
 
   return (
