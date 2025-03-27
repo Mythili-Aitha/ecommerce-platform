@@ -30,7 +30,6 @@ export default function DrawerMenu({
           <Divider />
           <Button onClick={() => navigate("/orders")}>Orders</Button>
           <Button onClick={() => navigate("/history")}>History</Button>
-          <Button>Settings</Button>
           <Box sx={{ position: "absolute", bottom: 0, width: "100%" }}>
             {user ? (
               <Button onClick={handleSignOut}>

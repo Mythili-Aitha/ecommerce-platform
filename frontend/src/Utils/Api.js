@@ -328,6 +328,10 @@ export const getRevenueBreakdown = async () => {
   return apiClient.get(`/revenue/breakdown`);
 };
 
+export const getRevenueByStatus = async () => {
+  return await apiClient.get(`/revenue/status`);
+};
+
 export const getAllOrders = async (sortOrder = "desc", status = "") => {
   return await apiClient.get(`/orders/admin`, {
     params: { sortOrder, status },

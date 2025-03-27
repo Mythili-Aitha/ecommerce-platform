@@ -107,3 +107,9 @@ export const offerSx = {
   py: 2,
   "&::-webkit-scrollbar": { display: "none" },
 };
+
+export const adminPCard = {
+  display: "flex",
+  flexDirection: "row",
+  justifyContent: "space-evenly",
+};

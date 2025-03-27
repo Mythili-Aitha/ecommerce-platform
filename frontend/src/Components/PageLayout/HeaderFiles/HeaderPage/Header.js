@@ -1,4 +1,4 @@
-import { Box, Typography, IconButton, Button } from "@mui/material";
+import { Box, Typography, IconButton, Button, Badge } from "@mui/material";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import React from "react";
 import { Actions } from "../../../../Utils/Actions";
@@ -10,19 +10,14 @@ import SearchBox from "./SearchBox";
 import HeaderActions from "./HeaderActions";
 import MenuIcon from "@mui/icons-material/Menu";
 import PersonIcon from "@mui/icons-material/Person";
+import { useCartActions } from "../../../../Hooks/useCartActions";
 
 export default function Header() {
   const { searchTerm, setSearchTerm, toggleFilter } = useSearchFilter();
   const navigate = useNavigate();
   const location = useLocation();
-  const {
-    open,
-    user,
-    totalQuantity,
-    handleSignOut,
-    handleChange,
-    toggleDrawer,
-  } = Actions();
+  const { open, user, handleSignOut, handleChange, toggleDrawer } = Actions();
+  const { totalQuantity } = useCartActions();
 
   const isAdminPage = location.pathname.startsWith("/admin");
 
@@ -70,7 +65,7 @@ export default function Header() {
               >
                 <ChevronLeftIcon onClick={() => navigate(-1)} />
                 <img
-                  src="/assests/logo.svg"
+                  src="/assets/logo.svg"
                   alt="Daisy Logo"
                   style={{ height: "80px" }}
                 />
@@ -97,11 +92,14 @@ export default function Header() {
               {showDrawer && (
                 <>
                   <img
-                    src="/assets/logo.png"
+                    src="/assets/logo.svg"
                     alt="Daisy Logo"
                     style={{ height: "80px" }}
                   />
-                  <MenuIcon fontSize="large" onClick={toggleDrawer(true)} />
+                  <MenuIcon
+                    fontSize="large"
+                    onClick={() => toggleDrawer(true)}
+                  />
                   <DrawerMenu
                     open={open}
                     toggleDrawer={toggleDrawer}

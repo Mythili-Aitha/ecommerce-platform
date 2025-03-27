@@ -8,10 +8,12 @@ import OrderAddress from "./OrderAddress";
 import ShippingMethod from "./ShippingMethod";
 import OrderSummary from "./OrderSummary";
 import { getSelectedPayment, getUserId } from "../../../../Utils/Api";
+import { useCartActions } from "../../../../Hooks/useCartActions";
 
 export default function OrderConfo() {
   const navigate = useNavigate();
-  const { totalPrice, handlePlaceOrder } = Actions();
+  const { handlePlaceOrder } = Actions();
+  const { totalPrice } = useCartActions();
   const userId = getUserId();
   const storedAddress = localStorage.getItem(`selectedAddress_${userId}`);
   const selectedAddress = storedAddress ? JSON.parse(storedAddress) : null;

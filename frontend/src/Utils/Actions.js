@@ -42,7 +42,7 @@ export const Actions = () => {
   const handleChange = (newValue) => {
     setValue(newValue);
   };
-  const toggleDrawer = (newOpen) => () => {
+  const toggleDrawer = (newOpen) => {
     setOpen(newOpen);
   };
 

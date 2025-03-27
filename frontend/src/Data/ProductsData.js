@@ -45,7 +45,9 @@
       barcode: "9164035109868",
       qrCode: "https://assets.dummyjson.com/public/qr-code.png",
     },
-    images: [],
+    images: [
+      "https://cdn.dummyjson.com/products/images/beauty/Essence%20Mascara%20Lash%20Princess/1.png",
+    ],
     thumbnail:
       "https://cdn.dummyjson.com/products/images/beauty/Essence%20Mascara%20Lash%20Princess/thumbnail.png",
     discountPercentage: 0.0,
@@ -97,7 +99,9 @@
       barcode: "2817839095220",
       qrCode: "https://assets.dummyjson.com/public/qr-code.png",
     },
-    images: [],
+    images: [
+      "https://cdn.dummyjson.com/products/images/beauty/Eyeshadow%20Palette%20with%20Mirror/1.png",
+    ],
     thumbnail:
       "https://cdn.dummyjson.com/products/images/beauty/Eyeshadow%20Palette%20with%20Mirror/thumbnail.png",
     discountPercentage: 0.0,
@@ -149,7 +153,9 @@
       barcode: "0516267971277",
       qrCode: "https://assets.dummyjson.com/public/qr-code.png",
     },
-    images: [],
+    images: [
+      "https://cdn.dummyjson.com/products/images/beauty/Powder%20Canister/1.png",
+    ],
     thumbnail:
       "https://cdn.dummyjson.com/products/images/beauty/Powder%20Canister/thumbnail.png",
     discountPercentage: 0.0,
@@ -201,7 +207,9 @@
       barcode: "9444582199406",
       qrCode: "https://assets.dummyjson.com/public/qr-code.png",
     },
-    images: [],
+    images: [
+      "https://cdn.dummyjson.com/products/images/beauty/Red%20Lipstick/1.png",
+    ],
     thumbnail:
       "https://cdn.dummyjson.com/products/images/beauty/Red%20Lipstick/thumbnail.png",
     discountPercentage: 0.0,
@@ -253,7 +261,9 @@
       barcode: "3212847902461",
       qrCode: "https://assets.dummyjson.com/public/qr-code.png",
     },
-    images: [],
+    images: [
+      "https://cdn.dummyjson.com/products/images/beauty/Red%20Nail%20Polish/1.png",
+    ],
     thumbnail:
       "https://cdn.dummyjson.com/products/images/beauty/Red%20Nail%20Polish/thumbnail.png",
     discountPercentage: 0.0,
@@ -305,7 +315,11 @@
       barcode: "2210136215089",
       qrCode: "https://assets.dummyjson.com/public/qr-code.png",
     },
-    images: [],
+    images: [
+      "https://cdn.dummyjson.com/products/images/fragrances/Calvin%20Klein%20CK%20One/1.png",
+      "https://cdn.dummyjson.com/products/images/fragrances/Calvin%20Klein%20CK%20One/2.png",
+      "https://cdn.dummyjson.com/products/images/fragrances/Calvin%20Klein%20CK%20One/3.png",
+    ],
     thumbnail:
       "https://cdn.dummyjson.com/products/images/fragrances/Calvin%20Klein%20CK%20One/thumbnail.png",
     discountPercentage: 0.0,
@@ -357,7 +371,11 @@
       barcode: "1435582999795",
       qrCode: "https://assets.dummyjson.com/public/qr-code.png",
     },
-    images: [],
+    images: [
+      "https://cdn.dummyjson.com/products/images/fragrances/Chanel%20Coco%20Noir%20Eau%20De/1.png",
+      "https://cdn.dummyjson.com/products/images/fragrances/Chanel%20Coco%20Noir%20Eau%20De/2.png",
+      "https://cdn.dummyjson.com/products/images/fragrances/Chanel%20Coco%20Noir%20Eau%20De/3.png",
+    ],
     thumbnail:
       "https://cdn.dummyjson.com/products/images/fragrances/Chanel%20Coco%20Noir%20Eau%20De/thumbnail.png",
     discountPercentage: 0.0,
@@ -409,7 +427,11 @@
       barcode: "0887083199279",
       qrCode: "https://assets.dummyjson.com/public/qr-code.png",
     },
-    images: [],
+    images: [
+      "https://cdn.dummyjson.com/products/images/fragrances/Dior%20J'adore/1.png",
+      "https://cdn.dummyjson.com/products/images/fragrances/Dior%20J'adore/2.png",
+      "https://cdn.dummyjson.com/products/images/fragrances/Dior%20J'adore/3.png",
+    ],
     thumbnail:
       "https://cdn.dummyjson.com/products/images/fragrances/Dior%20J'adore/thumbnail.png",
     discountPercentage: 0.0,
@@ -461,7 +483,11 @@
       barcode: "1939383392674",
       qrCode: "https://assets.dummyjson.com/public/qr-code.png",
     },
-    images: [],
+    images: [
+      "https://cdn.dummyjson.com/products/images/fragrances/Dolce%20Shine%20Eau%20de/1.png",
+      "https://cdn.dummyjson.com/products/images/fragrances/Dolce%20Shine%20Eau%20de/2.png",
+      "https://cdn.dummyjson.com/products/images/fragrances/Dolce%20Shine%20Eau%20de/3.png",
+    ],
     thumbnail:
       "https://cdn.dummyjson.com/products/images/fragrances/Dolce%20Shine%20Eau%20de/thumbnail.png",
     discountPercentage: 0.0,
@@ -513,7 +539,11 @@
       barcode: "8232190382069",
       qrCode: "https://assets.dummyjson.com/public/qr-code.png",
     },
-    images: [],
+    images: [
+      "https://cdn.dummyjson.com/products/images/fragrances/Gucci%20Bloom%20Eau%20de/1.png",
+      "https://cdn.dummyjson.com/products/images/fragrances/Gucci%20Bloom%20Eau%20de/2.png",
+      "https://cdn.dummyjson.com/products/images/fragrances/Gucci%20Bloom%20Eau%20de/3.png",
+    ],
     thumbnail:
       "https://cdn.dummyjson.com/products/images/fragrances/Gucci%20Bloom%20Eau%20de/thumbnail.png",
     discountPercentage: 0.0,
@@ -565,7 +595,11 @@
       barcode: "7113807059215",
       qrCode: "https://assets.dummyjson.com/public/qr-code.png",
     },
-    images: [],
+    images: [
+      "https://cdn.dummyjson.com/products/images/furniture/Annibale%20Colombo%20Bed/1.png",
+      "https://cdn.dummyjson.com/products/images/furniture/Annibale%20Colombo%20Bed/2.png",
+      "https://cdn.dummyjson.com/products/images/furniture/Annibale%20Colombo%20Bed/3.png",
+    ],
     thumbnail:
       "https://cdn.dummyjson.com/products/images/furniture/Annibale%20Colombo%20Bed/thumbnail.png",
     discountPercentage: 0.0,
@@ -617,7 +651,11 @@
       barcode: "0426785817074",
       qrCode: "https://assets.dummyjson.com/public/qr-code.png",
     },
-    images: [],
+    images: [
+      "https://cdn.dummyjson.com/products/images/furniture/Annibale%20Colombo%20Sofa/1.png",
+      "https://cdn.dummyjson.com/products/images/furniture/Annibale%20Colombo%20Sofa/2.png",
+      "https://cdn.dummyjson.com/products/images/furniture/Annibale%20Colombo%20Sofa/3.png",
+    ],
     thumbnail:
       "https://cdn.dummyjson.com/products/images/furniture/Annibale%20Colombo%20Sofa/thumbnail.png",
     discountPercentage: 0.0,
@@ -669,7 +707,11 @@
       barcode: "2913244159666",
       qrCode: "https://assets.dummyjson.com/public/qr-code.png",
     },
-    images: [],
+    images: [
+      "https://cdn.dummyjson.com/products/images/furniture/Bedside%20Table%20African%20Cherry/1.png",
+      "https://cdn.dummyjson.com/products/images/furniture/Bedside%20Table%20African%20Cherry/2.png",
+      "https://cdn.dummyjson.com/products/images/furniture/Bedside%20Table%20African%20Cherry/3.png",
+    ],
     thumbnail:
       "https://cdn.dummyjson.com/products/images/furniture/Bedside%20Table%20African%20Cherry/thumbnail.png",
     discountPercentage: 0.0,
@@ -721,7 +763,11 @@
       barcode: "0726316339746",
       qrCode: "https://assets.dummyjson.com/public/qr-code.png",
     },
-    images: [],
+    images: [
+      "https://cdn.dummyjson.com/products/images/furniture/Knoll%20Saarinen%20Executive%20Conference%20Chair/1.png",
+      "https://cdn.dummyjson.com/products/images/furniture/Knoll%20Saarinen%20Executive%20Conference%20Chair/2.png",
+      "https://cdn.dummyjson.com/products/images/furniture/Knoll%20Saarinen%20Executive%20Conference%20Chair/3.png",
+    ],
     thumbnail:
       "https://cdn.dummyjson.com/products/images/furniture/Knoll%20Saarinen%20Executive%20Conference%20Chair/thumbnail.png",
     discountPercentage: 0.0,
@@ -773,7 +819,11 @@
       barcode: "7839797529453",
       qrCode: "https://assets.dummyjson.com/public/qr-code.png",
     },
-    images: [],
+    images: [
+      "https://cdn.dummyjson.com/products/images/furniture/Wooden%20Bathroom%20Sink%20With%20Mirror/1.png",
+      "https://cdn.dummyjson.com/products/images/furniture/Wooden%20Bathroom%20Sink%20With%20Mirror/2.png",
+      "https://cdn.dummyjson.com/products/images/furniture/Wooden%20Bathroom%20Sink%20With%20Mirror/3.png",
+    ],
     thumbnail:
       "https://cdn.dummyjson.com/products/images/furniture/Wooden%20Bathroom%20Sink%20With%20Mirror/thumbnail.png",
     discountPercentage: 0.0,
@@ -825,7 +875,7 @@
       barcode: "2517819903837",
       qrCode: "https://assets.dummyjson.com/public/qr-code.png",
     },
-    images: [],
+    images: ["https://cdn.dummyjson.com/products/images/groceries/Apple/1.png"],
     thumbnail:
       "https://cdn.dummyjson.com/products/images/groceries/Apple/thumbnail.png",
     discountPercentage: 0.0,
@@ -877,7 +927,9 @@
       barcode: "8335515097879",
       qrCode: "https://assets.dummyjson.com/public/qr-code.png",
     },
-    images: [],
+    images: [
+      "https://cdn.dummyjson.com/products/images/groceries/Beef%20Steak/1.png",
+    ],
     thumbnail:
       "https://cdn.dummyjson.com/products/images/groceries/Beef%20Steak/thumbnail.png",
     discountPercentage: 0.0,
@@ -929,7 +981,9 @@
       barcode: "5503491330693",
       qrCode: "https://assets.dummyjson.com/public/qr-code.png",
     },
-    images: [],
+    images: [
+      "https://cdn.dummyjson.com/products/images/groceries/Cat%20Food/1.png",
+    ],
     thumbnail:
       "https://cdn.dummyjson.com/products/images/groceries/Cat%20Food/thumbnail.png",
     discountPercentage: 0.0,
@@ -981,7 +1035,10 @@
       barcode: "0966223559510",
       qrCode: "https://assets.dummyjson.com/public/qr-code.png",
     },
-    images: [],
+    images: [
+      "https://cdn.dummyjson.com/products/images/groceries/Chicken%20Meat/1.png",
+      "https://cdn.dummyjson.com/products/images/groceries/Chicken%20Meat/2.png",
+    ],
     thumbnail:
       "https://cdn.dummyjson.com/products/images/groceries/Chicken%20Meat/thumbnail.png",
     discountPercentage: 0.0,
@@ -1033,7 +1090,9 @@
       barcode: "6707669443381",
       qrCode: "https://assets.dummyjson.com/public/qr-code.png",
     },
-    images: [],
+    images: [
+      "https://cdn.dummyjson.com/products/images/groceries/Cooking%20Oil/1.png",
+    ],
     thumbnail:
       "https://cdn.dummyjson.com/products/images/groceries/Cooking%20Oil/thumbnail.png",
     discountPercentage: 0.0,
@@ -1085,7 +1144,9 @@
       barcode: "2597004869708",
       qrCode: "https://assets.dummyjson.com/public/qr-code.png",
     },
-    images: [],
+    images: [
+      "https://cdn.dummyjson.com/products/images/groceries/Cucumber/1.png",
+    ],
     thumbnail:
       "https://cdn.dummyjson.com/products/images/groceries/Cucumber/thumbnail.png",
     discountPercentage: 0.0,
@@ -1137,7 +1198,9 @@
       barcode: "7957222289508",
       qrCode: "https://assets.dummyjson.com/public/qr-code.png",
     },
-    images: [],
+    images: [
+      "https://cdn.dummyjson.com/products/images/groceries/Dog%20Food/1.png",
+    ],
     thumbnail:
       "https://cdn.dummyjson.com/products/images/groceries/Dog%20Food/thumbnail.png",
     discountPercentage: 0.0,
@@ -1189,7 +1252,7 @@
       barcode: "7095702028776",
       qrCode: "https://assets.dummyjson.com/public/qr-code.png",
     },
-    images: [],
+    images: ["https://cdn.dummyjson.com/products/images/groceries/Eggs/1.png"],
     thumbnail:
       "https://cdn.dummyjson.com/products/images/groceries/Eggs/thumbnail.png",
     discountPercentage: 0.0,
@@ -1241,7 +1304,9 @@
       barcode: "4250692197342",
       qrCode: "https://assets.dummyjson.com/public/qr-code.png",
     },
-    images: [],
+    images: [
+      "https://cdn.dummyjson.com/products/images/groceries/Fish%20Steak/1.png",
+    ],
     thumbnail:
       "https://cdn.dummyjson.com/products/images/groceries/Fish%20Steak/thumbnail.png",
     discountPercentage: 0.0,
@@ -1293,7 +1358,9 @@
       barcode: "7583442707568",
       qrCode: "https://assets.dummyjson.com/public/qr-code.png",
     },
-    images: [],
+    images: [
+      "https://cdn.dummyjson.com/products/images/groceries/Green%20Bell%20Pepper/1.png",
+    ],
     thumbnail:
       "https://cdn.dummyjson.com/products/images/groceries/Green%20Bell%20Pepper/thumbnail.png",
     discountPercentage: 0.0,
@@ -1345,7 +1412,9 @@
       barcode: "8400326844874",
       qrCode: "https://assets.dummyjson.com/public/qr-code.png",
     },
-    images: [],
+    images: [
+      "https://cdn.dummyjson.com/products/images/groceries/Green%20Chili%20Pepper/1.png",
+    ],
     thumbnail:
       "https://cdn.dummyjson.com/products/images/groceries/Green%20Chili%20Pepper/thumbnail.png",
     discountPercentage: 0.0,
@@ -1397,7 +1466,9 @@
       barcode: "0668665656044",
       qrCode: "https://assets.dummyjson.com/public/qr-code.png",
     },
-    images: [],
+    images: [
+      "https://cdn.dummyjson.com/products/images/groceries/Honey%20Jar/1.png",
+    ],
     thumbnail:
       "https://cdn.dummyjson.com/products/images/groceries/Honey%20Jar/thumbnail.png",
     discountPercentage: 0.0,
@@ -1449,7 +1520,12 @@
       barcode: "9603960319256",
       qrCode: "https://assets.dummyjson.com/public/qr-code.png",
     },
-    images: [],
+    images: [
+      "https://cdn.dummyjson.com/products/images/groceries/Ice%20Cream/1.png",
+      "https://cdn.dummyjson.com/products/images/groceries/Ice%20Cream/2.png",
+      "https://cdn.dummyjson.com/products/images/groceries/Ice%20Cream/3.png",
+      "https://cdn.dummyjson.com/products/images/groceries/Ice%20Cream/4.png",
+    ],
     thumbnail:
       "https://cdn.dummyjson.com/products/images/groceries/Ice%20Cream/thumbnail.png",
     discountPercentage: 0.0,
@@ -1501,7 +1577,7 @@
       barcode: "8546824122355",
       qrCode: "https://assets.dummyjson.com/public/qr-code.png",
     },
-    images: [],
+    images: ["https://cdn.dummyjson.com/products/images/groceries/Juice/1.png"],
     thumbnail:
       "https://cdn.dummyjson.com/products/images/groceries/Juice/thumbnail.png",
     discountPercentage: 0.0,
@@ -1553,7 +1629,7 @@
       barcode: "3325493172934",
       qrCode: "https://assets.dummyjson.com/public/qr-code.png",
     },
-    images: [],
+    images: ["https://cdn.dummyjson.com/products/images/groceries/Kiwi/1.png"],
     thumbnail:
       "https://cdn.dummyjson.com/products/images/groceries/Kiwi/thumbnail.png",
     discountPercentage: 0.0,
@@ -1605,7 +1681,7 @@
       barcode: "6364178053480",
       qrCode: "https://assets.dummyjson.com/public/qr-code.png",
     },
-    images: [],
+    images: ["https://cdn.dummyjson.com/products/images/groceries/Lemon/1.png"],
     thumbnail:
       "https://cdn.dummyjson.com/products/images/groceries/Lemon/thumbnail.png",
     discountPercentage: 0.0,
@@ -1657,7 +1733,7 @@
       barcode: "6340035595037",
       qrCode: "https://assets.dummyjson.com/public/qr-code.png",
     },
-    images: [],
+    images: ["https://cdn.dummyjson.com/products/images/groceries/Milk/1.png"],
     thumbnail:
       "https://cdn.dummyjson.com/products/images/groceries/Milk/thumbnail.png",
     discountPercentage: 0.0,
@@ -1709,7 +1785,9 @@
       barcode: "3327790147313",
       qrCode: "https://assets.dummyjson.com/public/qr-code.png",
     },
-    images: [],
+    images: [
+      "https://cdn.dummyjson.com/products/images/groceries/Mulberry/1.png",
+    ],
     thumbnail:
       "https://cdn.dummyjson.com/products/images/groceries/Mulberry/thumbnail.png",
     discountPercentage: 0.0,
@@ -1761,7 +1839,9 @@
       barcode: "8923332839320",
       qrCode: "https://assets.dummyjson.com/public/qr-code.png",
     },
-    images: [],
+    images: [
+      "https://cdn.dummyjson.com/products/images/groceries/Nescafe%20Coffee/1.png",
+    ],
     thumbnail:
       "https://cdn.dummyjson.com/products/images/groceries/Nescafe%20Coffee/thumbnail.png",
     discountPercentage: 0.0,
@@ -1813,7 +1893,9 @@
       barcode: "1374727655057",
       qrCode: "https://assets.dummyjson.com/public/qr-code.png",
     },
-    images: [],
+    images: [
+      "https://cdn.dummyjson.com/products/images/groceries/Potatoes/1.png",
+    ],
     thumbnail:
       "https://cdn.dummyjson.com/products/images/groceries/Potatoes/thumbnail.png",
     discountPercentage: 0.0,
@@ -1865,7 +1947,9 @@
       barcode: "2858973742684",
       qrCode: "https://assets.dummyjson.com/public/qr-code.png",
     },
-    images: [],
+    images: [
+      "https://cdn.dummyjson.com/products/images/groceries/Protein%20Powder/1.png",
+    ],
     thumbnail:
       "https://cdn.dummyjson.com/products/images/groceries/Protein%20Powder/thumbnail.png",
     discountPercentage: 0.0,
@@ -1917,7 +2001,9 @@
       barcode: "5439836346472",
       qrCode: "https://assets.dummyjson.com/public/qr-code.png",
     },
-    images: [],
+    images: [
+      "https://cdn.dummyjson.com/products/images/groceries/Red%20Onions/1.png",
+    ],
     thumbnail:
       "https://cdn.dummyjson.com/products/images/groceries/Red%20Onions/thumbnail.png",
     discountPercentage: 0.0,
@@ -1969,7 +2055,7 @@
       barcode: "0027455825200",
       qrCode: "https://assets.dummyjson.com/public/qr-code.png",
     },
-    images: [],
+    images: ["https://cdn.dummyjson.com/products/images/groceries/Rice/1.png"],
     thumbnail:
       "https://cdn.dummyjson.com/products/images/groceries/Rice/thumbnail.png",
     discountPercentage: 0.0,
@@ -2021,7 +2107,9 @@
       barcode: "3523564932164",
       qrCode: "https://assets.dummyjson.com/public/qr-code.png",
     },
-    images: [],
+    images: [
+      "https://cdn.dummyjson.com/products/images/groceries/Soft%20Drinks/1.png",
+    ],
     thumbnail:
       "https://cdn.dummyjson.com/products/images/groceries/Soft%20Drinks/thumbnail.png",
     discountPercentage: 0.0,
@@ -2073,7 +2161,9 @@
       barcode: "7936749779940",
       qrCode: "https://assets.dummyjson.com/public/qr-code.png",
     },
-    images: [],
+    images: [
+      "https://cdn.dummyjson.com/products/images/groceries/Strawberry/1.png",
+    ],
     thumbnail:
       "https://cdn.dummyjson.com/products/images/groceries/Strawberry/thumbnail.png",
     discountPercentage: 0.0,
@@ -2125,7 +2215,10 @@
       barcode: "0639828085202",
       qrCode: "https://assets.dummyjson.com/public/qr-code.png",
     },
-    images: [],
+    images: [
+      "https://cdn.dummyjson.com/products/images/groceries/Tissue%20Paper%20Box/1.png",
+      "https://cdn.dummyjson.com/products/images/groceries/Tissue%20Paper%20Box/2.png",
+    ],
     thumbnail:
       "https://cdn.dummyjson.com/products/images/groceries/Tissue%20Paper%20Box/thumbnail.png",
     discountPercentage: 0.0,
@@ -2177,7 +2270,7 @@
       barcode: "7625896901250",
       qrCode: "https://assets.dummyjson.com/public/qr-code.png",
     },
-    images: [],
+    images: ["https://cdn.dummyjson.com/products/images/groceries/Water/1.png"],
     thumbnail:
       "https://cdn.dummyjson.com/products/images/groceries/Water/thumbnail.png",
     discountPercentage: 0.0,

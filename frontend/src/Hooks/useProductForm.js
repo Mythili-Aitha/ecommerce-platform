@@ -41,7 +41,7 @@ export const useProductForm = () => {
   const fetchProductData = async () => {
     try {
       const response = await getAdminProductForm(productId);
-      setProduct(response.data);
+      setProduct(formatProductData(response.data));
     } catch (error) {
       console.error("Error fetching product:", error);
     }
@@ -70,6 +70,7 @@ export const useProductForm = () => {
       const flattened = formatProductData(product);
       if (productId) {
         await updateAdminProduct(productId, flattened);
+        console.log("edited product", flattened);
         setSnackbar({
           open: true,
           message: "Product updated successfully!",
@@ -83,7 +84,10 @@ export const useProductForm = () => {
           severity: "success",
         });
       }
-      setTimeout(() => navigate("/admin/products"), 1500);
+      setTimeout(() => {
+        navigate("/admin/products", { replace: true });
+        window.location.reload();
+      }, 1500);
     } catch (error) {
       console.error("Error saving product:", error);
       setSnackbar({

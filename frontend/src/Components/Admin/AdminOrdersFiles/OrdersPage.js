@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import {
   Box,
-  Button,
   Select,
   MenuItem,
   FormControl,
@@ -9,17 +8,25 @@ import {
   Typography,
   Card,
   CardContent,
+  TextField,
+  Pagination,
 } from "@mui/material";
 import { getAllOrders } from "../../../Utils/Api";
+import { useNavigate } from "react-router-dom";
 
 const OrdersPage = () => {
   const [orders, setOrders] = useState([]);
   const [sortOrder, setSortOrder] = useState("desc");
   const [statusFilter, setStatusFilter] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
+  const navigate = useNavigate();
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
   useEffect(() => {
     fetchOrders();
-  }, [sortOrder, statusFilter]);
+    setCurrentPage(1);
+  }, [searchTerm, sortOrder, statusFilter]);
 
   const fetchOrders = async () => {
     try {
@@ -30,6 +37,23 @@ const OrdersPage = () => {
       console.error("Error fetching orders:", error);
     }
   };
+  const filteredOrders = orders.filter((order) => {
+    const lowerSearch = searchTerm.toLowerCase();
+    const formattedDate = new Date(order.orderDate).toLocaleDateString();
+    return (
+      order.orderId.toString().includes(lowerSearch) ||
+      order.customerName?.toLowerCase().includes(lowerSearch) ||
+      formattedDate.includes(lowerSearch) ||
+      order.items?.some((item) =>
+        item.productName?.toLowerCase().includes(lowerSearch)
+      )
+    );
+  });
+
+  const paginatedOrders = filteredOrders.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
@@ -45,6 +69,13 @@ const OrdersPage = () => {
 
         {/* Sorting and Filtering */}
         <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+          <TextField
+            label="Search Orders"
+            placeholder="Search by Order ID, Product or Customer"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            fullWidth
+          />
           <FormControl sx={{ minWidth: 180 }}>
             <InputLabel>Sort By</InputLabel>
             <Select
@@ -71,10 +102,13 @@ const OrdersPage = () => {
         </Box>
       </Box>
       <Box>
-        {/* Orders List */}
-        {orders.length > 0 ? (
-          orders.map((order) => (
-            <Card key={order.orderId} sx={{ marginBottom: 2 }}>
+        {paginatedOrders.length > 0 ? (
+          paginatedOrders.map((order) => (
+            <Card
+              key={order.orderId}
+              sx={{ marginBottom: 2 }}
+              onClick={() => navigate(`/admin/orders/${order.orderId}`)}
+            >
               <CardContent>
                 <Typography variant="h6">Order ID: {order.orderId}</Typography>
                 <Typography>Status: {order.orderStatus}</Typography>
@@ -97,6 +131,17 @@ const OrdersPage = () => {
           <Typography>No orders found.</Typography>
         )}
       </Box>
+
+      {/* {filteredOrders.length > itemsPerPage && ( */}
+      <Box sx={{ display: "flex", justifyContent: "center", mt: 3 }}>
+        <Pagination
+          count={Math.ceil(filteredOrders.length / itemsPerPage)}
+          page={currentPage}
+          onChange={(e, page) => setCurrentPage(page)}
+          color="primary"
+        />
+      </Box>
+      {/* )} */}
     </Box>
   );
 };

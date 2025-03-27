@@ -1,45 +1,35 @@
-const formatProductData = (product) => {
+const formatProductFormData = (data) => {
   return {
-    title: product.basicInfo.title,
-    description: product.basicInfo.description,
-    category: product.basicInfo.category,
-    brand: product.basicInfo.brand,
-    price: parseFloat(product.pricing.price),
-    stock: parseInt(product.pricing.stock),
-    sku: product.identifiers.sku,
-    tags: product.identifiers.tags.split(",").map((t) => t.trim()),
+    basicInfo: {
+      title: data.title || "",
+      description: data.description || "",
+      category: data.category || "",
+      brand: data.brand || "",
+    },
+    pricing: {
+      price: data.price?.toString() || "",
+      stock: data.stock?.toString() || "",
+    },
+    identifiers: {
+      sku: data.sku || "",
+      tags: data.tags?.join(", ") || "",
+    },
     dimensions: {
-      width: parseFloat(product.dimensions.width),
-      height: parseFloat(product.dimensions.height),
-      depth: parseFloat(product.dimensions.depth),
+      width: data.dimensions?.width?.toString() || "",
+      height: data.dimensions?.height?.toString() || "",
+      depth: data.dimensions?.depth?.toString() || "",
     },
-    meta: {
-      barcode: product.metadata.barcode,
-      qrCode: product.metadata.qrCode,
+    metadata: {
+      barcode: data.meta?.barcode || "",
+      qrCode: data.meta?.qrCode || "",
     },
-    reviews: product.reviews.map((r) => ({
-      rating: parseFloat(r.rating),
-      comment: r.comment,
-      reviewerName: r.reviewerName,
-      reviewerEmail: r.reviewerEmail,
-    })),
-    images: product.media.images
-      ? product.media.images.split(",").map((url) => url.trim())
-      : [],
-    thumbnail: product.media.thumbnail,
-    rating: product.reviews.length
-      ? parseFloat(
-          (
-            product.reviews.reduce(
-              (sum, r) => sum + parseFloat(r.rating || 0),
-              0
-            ) / product.reviews.length
-          ).toFixed(2)
-        )
-      : 0.0,
-    discountPercentage: 0.0,
-    discountAppliedAt: null,
+    media: {
+      images: data.images?.join(", ") || "",
+      thumbnail: data.thumbnail || "",
+    },
+    reviews: data.reviews || [],
+    id: data.id,
   };
 };
 
-export default formatProductData;
+export default formatProductFormData;
