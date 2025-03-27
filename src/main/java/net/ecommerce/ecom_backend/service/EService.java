@@ -224,6 +224,60 @@ public class EService {
                 .map(Mapper::toProductDto)
                 .collect(Collectors.toList());
     }
+    public ProductDto updateProduct(Long productId, ProductDto dto) {
+        Product existing = productRepo.findById(productId)
+                .orElseThrow(() -> new RuntimeException("Product not found with id: " + productId));
+
+        if (dto.getTitle() != null) existing.setTitle(dto.getTitle());
+        if (dto.getDescription() != null) existing.setDescription(dto.getDescription());
+        if (dto.getCategory() != null) existing.setCategory(dto.getCategory());
+        if (dto.getPrice() != null) existing.setPrice(dto.getPrice());
+        if (dto.getRating() != null) existing.setRating(dto.getRating());
+        if (dto.getStock() != null) existing.setStock(dto.getStock());
+        if (dto.getBrand() != null) existing.setBrand(dto.getBrand());
+        if (dto.getSku() != null) existing.setSku(dto.getSku());
+        if (dto.getTags() != null) existing.setTags(dto.getTags());
+        if (dto.getImages() != null) existing.setImages(dto.getImages());
+        if (dto.getThumbnail() != null) existing.setThumbnail(dto.getThumbnail());
+        if (dto.getDiscountPercentage() != null) existing.setDiscountPercentage(dto.getDiscountPercentage());
+        if (dto.getDiscountAppliedAt() != null) existing.setDiscountAppliedAt(dto.getDiscountAppliedAt());
+
+        if (dto.getDimensions() != null) {
+            existing.setDimensions(new Dimensions(
+                    dto.getDimensions().getWidth(),
+                    dto.getDimensions().getHeight(),
+                    dto.getDimensions().getDepth()
+            ));
+        }
+
+        if (dto.getMeta() != null) {
+            existing.setMeta(new Meta(
+                    dto.getMeta().getCreatedAt(),
+                    dto.getMeta().getUpdatedAt(),
+                    dto.getMeta().getBarcode(),
+                    dto.getMeta().getQrCode()
+            ));
+        }
+
+        if (dto.getReviews() != null) {
+            List<Review> reviews = dto.getReviews().stream()
+                    .map(r -> new Review(
+                            null,
+                            r.getRating(),
+                            r.getComment(),
+                            r.getDate(),
+                            r.getReviewerName(),
+                            r.getReviewerEmail(),
+                            existing
+                    ))
+                    .collect(Collectors.toList());
+            existing.getReviews().clear();
+            existing.getReviews().addAll(reviews);
+        }
+
+        Product saved = productRepo.save(existing);
+        return Mapper.toProductDto(saved);
+    }
 
     public void removeDuplicateProducts() {
         List<Product> allProducts = productRepo.findAll();
@@ -478,6 +532,15 @@ public class EService {
             breakdowns.add(new RevenueBreakDownDto(categoryName, revenue));
         }
         return breakdowns;
+    }
+
+    public List<RevenueByStatusDto> getRevenueByStatus() {
+        List<Object[]> result = orderRepo.getRevenueByStatus();
+        List<RevenueByStatusDto> breakdown = new ArrayList<>();
+        for (Object[] row : result) {
+            breakdown.add(new RevenueByStatusDto((String) row[0], (Double) row[1]));
+        }
+        return breakdown;
     }
 
     public List<OrderResponseDto> getAllOrdersWithFilters(String sortOrder, String status) {

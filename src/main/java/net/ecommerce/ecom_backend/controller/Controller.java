@@ -182,7 +182,6 @@ public class Controller {
 //        service.removeDuplicateProducts();
 //        return ResponseEntity.ok("Duplicate products removed.");
 //    }
-
     //FAVORITE API CALLS
     @PostMapping("/favorites/add")
     public ResponseEntity<String> addToFavorites(@RequestParam Long userId, @RequestParam Long productId) {
@@ -256,6 +255,11 @@ public class Controller {
     public ResponseEntity<List<RevenueBreakDownDto>> getRevenueByCategory() {
         List<RevenueBreakDownDto> breakdown = service.getRevenueByCategory();
         return ResponseEntity.ok(breakdown);
+    }
+
+    @GetMapping("/revenue/status")
+    public ResponseEntity<List<RevenueByStatusDto>> getRevenueByStatus() {
+        return ResponseEntity.ok(service.getRevenueByStatus());
     }
 
     @GetMapping("/orders/admin")
@@ -425,6 +429,15 @@ public class Controller {
     @PostMapping("/admin/products")
     public List<ProductDto> saveProducts(@RequestBody List<ProductDto> productDtos) {
         return service.saveProducts(productDtos);
+    }
+
+    @PreAuthorize("hasAuthority('Admin')")
+    @PutMapping("/admin/products/{productId}")
+    public ResponseEntity<ProductDto> updateProduct(
+            @PathVariable Long productId,
+            @RequestBody ProductDto productDto) {
+        ProductDto updated = service.updateProduct(productId, productDto);
+        return ResponseEntity.ok(updated);
     }
 
     @PreAuthorize("hasAuthority('Admin')")
