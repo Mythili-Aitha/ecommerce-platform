@@ -278,7 +278,7 @@ public class Controller {
         stats.put("totalOrders", orderRepo.count());
         stats.put("totalRevenue", orderRepo.getTotalRevenue());
         stats.put("totalCustomers", userRepo.countByRole("User"));
-        stats.put("lowStockItems", productRepo.countByStockLessThan(5));
+        stats.put("lowStockItems", productRepo.countByStockLessThan(10));
         return ResponseEntity.ok(stats);
     }
 

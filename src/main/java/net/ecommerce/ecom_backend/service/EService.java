@@ -124,7 +124,7 @@ public class EService {
     }
 
     public List<AddressDto> getUserAddresses(Long userId) {
-        return addressRepo.findByUserUserId(userId).stream().map(Mapper::toAddressDto).collect(Collectors.toList());
+        return addressRepo.findActiveByUserUserId(userId).stream().map(Mapper::toAddressDto).collect(Collectors.toList());
     }
 
     public AddressDto updateAddress(Long id,AddressDto addressDto) {
@@ -141,10 +141,21 @@ public class EService {
     }
 
     public void deleteAddress(Long id) {
-        if (!addressRepo.existsById(id)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Address not found");
+        Address address = addressRepo.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Address not found"));
+        List<Order> orders = orderRepo.findByAddressId(id);
+        if (orders.isEmpty()) {
+            addressRepo.deleteById(id);
+        }else {
+            address.setStreet("Address has been deleted");
+            address.setCity("N/A");
+            address.setState("N/A");
+            address.setZip(0);
+            address.setCountry("N/A");
+            address.setDeleted(true);
+
+            addressRepo.save(address);
         }
-        addressRepo.deleteById(id);
     }
 
     //PaymentInfo Methods
@@ -225,39 +236,39 @@ public class EService {
                 .collect(Collectors.toList());
     }
     public ProductDto updateProduct(Long productId, ProductDto dto) {
-        Product existing = productRepo.findById(productId)
-                .orElseThrow(() -> new RuntimeException("Product not found with id: " + productId));
+        Product existingProduct = productRepo.findById(productId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found"));
 
-        if (dto.getTitle() != null) existing.setTitle(dto.getTitle());
-        if (dto.getDescription() != null) existing.setDescription(dto.getDescription());
-        if (dto.getCategory() != null) existing.setCategory(dto.getCategory());
-        if (dto.getPrice() != null) existing.setPrice(dto.getPrice());
-        if (dto.getRating() != null) existing.setRating(dto.getRating());
-        if (dto.getStock() != null) existing.setStock(dto.getStock());
-        if (dto.getBrand() != null) existing.setBrand(dto.getBrand());
-        if (dto.getSku() != null) existing.setSku(dto.getSku());
-        if (dto.getTags() != null) existing.setTags(dto.getTags());
-        if (dto.getImages() != null) existing.setImages(dto.getImages());
-        if (dto.getThumbnail() != null) existing.setThumbnail(dto.getThumbnail());
-        if (dto.getDiscountPercentage() != null) existing.setDiscountPercentage(dto.getDiscountPercentage());
-        if (dto.getDiscountAppliedAt() != null) existing.setDiscountAppliedAt(dto.getDiscountAppliedAt());
-
+        existingProduct.setTitle(dto.getTitle());
+        existingProduct.setDescription(dto.getDescription());
+        existingProduct.setCategory(dto.getCategory());
+        existingProduct.setPrice(dto.getPrice());
+        existingProduct.setRating(dto.getRating());
+        existingProduct.setStock(dto.getStock());
+        existingProduct.setBrand(dto.getBrand());
+        existingProduct.setSku(dto.getSku());
+        existingProduct.setTags(dto.getTags());
         if (dto.getDimensions() != null) {
-            existing.setDimensions(new Dimensions(
-                    dto.getDimensions().getWidth(),
-                    dto.getDimensions().getHeight(),
-                    dto.getDimensions().getDepth()
-            ));
+            if (existingProduct.getDimensions() == null) {
+                existingProduct.setDimensions(new Dimensions());
+            }
+            existingProduct.getDimensions().setWidth(dto.getDimensions().getWidth());
+            existingProduct.getDimensions().setHeight(dto.getDimensions().getHeight());
+            existingProduct.getDimensions().setDepth(dto.getDimensions().getDepth());
         }
 
         if (dto.getMeta() != null) {
-            existing.setMeta(new Meta(
-                    dto.getMeta().getCreatedAt(),
-                    dto.getMeta().getUpdatedAt(),
-                    dto.getMeta().getBarcode(),
-                    dto.getMeta().getQrCode()
-            ));
+            if (existingProduct.getMeta() == null) {
+                existingProduct.setMeta(new Meta());
+            }
+            existingProduct.getMeta().setBarcode(dto.getMeta().getBarcode());
+            existingProduct.getMeta().setQrCode(dto.getMeta().getQrCode());
+            existingProduct.getMeta().setUpdatedAt(String.valueOf(LocalDateTime.now()));
         }
+        existingProduct.setImages(dto.getImages());
+        existingProduct.setThumbnail(dto.getThumbnail());
+        existingProduct.setDiscountPercentage(dto.getDiscountPercentage());
+        existingProduct.setDiscountAppliedAt(dto.getDiscountAppliedAt());
 
         if (dto.getReviews() != null) {
             List<Review> reviews = dto.getReviews().stream()
@@ -268,15 +279,15 @@ public class EService {
                             r.getDate(),
                             r.getReviewerName(),
                             r.getReviewerEmail(),
-                            existing
+                            existingProduct
                     ))
                     .collect(Collectors.toList());
-            existing.getReviews().clear();
-            existing.getReviews().addAll(reviews);
+            existingProduct.getReviews().clear();
+            existingProduct.getReviews().addAll(reviews);
         }
 
-        Product saved = productRepo.save(existing);
-        return Mapper.toProductDto(saved);
+        Product updatedProduct = productRepo.save(existingProduct);
+        return Mapper.toProductDto(updatedProduct);
     }
 
     public void removeDuplicateProducts() {
@@ -504,7 +515,7 @@ public class EService {
         );
         return new OrderResponseDto(
                 order.getOrderId(),
-                order.getUser().getUsername(),
+                order.getUser().getName(),
                 order.getTotalPrice(),
                 order.getOrderStatus(),
                 order.getOrderDate(),

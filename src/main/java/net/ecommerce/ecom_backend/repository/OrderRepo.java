@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface OrderRepo extends JpaRepository<Order, Long> {
@@ -26,5 +27,7 @@ public interface OrderRepo extends JpaRepository<Order, Long> {
     @Query("SELECT o FROM Order o WHERE o.orderStatus = :status ORDER BY o.orderDate DESC")
     List<Order> findByOrderStatus(@Param("status") String status);
     List<Order> findTop5ByOrderByOrderDateDesc();
+    @Query("SELECT o FROM Order o WHERE o.address.id = :addressId")
+    List<Order> findByAddressId(@Param("addressId") Long addressId);
 
 }
