@@ -1,21 +1,5 @@
 import React, { useState } from "react";
-import {
-  Drawer,
-  Box,
-  Typography,
-  Slider,
-  Checkbox,
-  FormControlLabel,
-  FormGroup,
-  Button,
-  RadioGroup,
-  Radio,
-  FormControl,
-  FormLabel,
-  MenuItem,
-  Select,
-  IconButton,
-} from "@mui/material";
+import { Drawer, Box, Typography, Button, IconButton } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import CategoryFilter from "./CategoryFilter";
 import BrandFilter from "./BrandFilter";
@@ -53,7 +37,13 @@ export default function FilterDrawer({
 
   return (
     <Drawer anchor="right" open={open} onClose={toggleDrawer(false)}>
-      <Box sx={{ width: 300, padding: 2 }}>
+      <Box
+        sx={{
+          width: 300,
+          padding: 2,
+          backgroundColor: "rgba(255, 255, 255, 0.6)",
+        }}
+      >
         <Box sx={{ display: "flex", justifyContent: "space-between" }}>
           <Typography variant="h6">Filters</Typography>
           <IconButton onClick={toggleDrawer(false)}>

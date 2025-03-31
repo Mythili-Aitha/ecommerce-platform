@@ -9,6 +9,7 @@ import {
 import { Pie } from "react-chartjs-2";
 import { Chart as ChartJS, Title, Tooltip, Legend, ArcElement } from "chart.js";
 import { getRevenueBreakdown, getRevenueByStatus } from "../../../../Utils/Api";
+import { revenueBox } from "../../../../Utils/Styles";
 
 ChartJS.register(Title, Tooltip, Legend, ArcElement);
 
@@ -62,7 +63,7 @@ const TotalRevenueCard = () => {
             {error}
           </Typography>
         ) : (
-          <Box sx={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
+          <Box sx={revenueBox}>
             <Box sx={{ width: 300 }}>
               <Typography variant="subtitle1" align="center">
                 By Category

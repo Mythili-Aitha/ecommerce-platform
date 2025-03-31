@@ -9,6 +9,7 @@ import ProductReviews from "./ProductReviews";
 import ProductActions from "./ProductActions";
 import { getProductById } from "../../../../../Utils/Api";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
+import { productDetailsCard } from "../../../../../Utils/Styles";
 
 export default function ProductDetails() {
   const navigate = useNavigate();
@@ -16,7 +17,6 @@ export default function ProductDetails() {
   const [product, setProduct] = useState(null);
   const colors = ["#99ddcc", "#2625ce", "#df133d", "#ebe93b", "#0a0a09"];
   const sizes = ["XS", "S", "M", "L", "XL", "XXL"];
-  console.log(product);
   useEffect(() => {
     async function fetchProduct() {
       if (!product) {
@@ -34,7 +34,7 @@ export default function ProductDetails() {
 
   if (!product) return <p>Product not found.</p>;
   return (
-    <Card sx={{ display: "flex", flexDirection: "column", gap: 2, padding: 2 }}>
+    <Card sx={productDetailsCard}>
       <ChevronLeftIcon onClick={() => navigate(-1)} />
       <ProductImage product={product} />
       <ProductInfo product={product} />

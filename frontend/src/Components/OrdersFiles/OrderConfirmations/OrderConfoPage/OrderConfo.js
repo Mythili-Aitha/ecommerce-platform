@@ -63,14 +63,6 @@ export default function OrderConfo() {
     <>
       <Card sx={cardSx}>
         <Box sx={{ display: "flex", flexDirection: "row" }}>
-          <Button
-            sx={buttonSx}
-            onClick={() => {
-              navigate(-1);
-            }}
-          >
-            <KeyboardArrowLeftIcon />
-          </Button>
           <h1>Order Confirmation</h1>
         </Box>
         <OrderAddress

@@ -4,6 +4,10 @@ import FavoriteIcon from "@mui/icons-material/Favorite";
 import { useState } from "react";
 import { Actions } from "../../../../../Utils/Actions";
 import { useCartActions } from "../../../../../Hooks/useCartActions";
+import {
+  productActionCard,
+  productActionsButton,
+} from "../../../../../Utils/Styles";
 
 export default function ProductActions({ product }) {
   const { handleAddToFavorites } = Actions();
@@ -11,7 +15,7 @@ export default function ProductActions({ product }) {
   const [isFav, setIsFav] = useState(false);
 
   return (
-    <Box sx={{ display: "flex", gap: 4, padding: 2 }}>
+    <Box sx={productActionCard}>
       <IconButton
         onClick={() => {
           handleAddToFavorites(product.id);
@@ -27,11 +31,7 @@ export default function ProductActions({ product }) {
       <Button
         fullWidth
         variant="contained"
-        sx={{
-          backgroundColor: "black",
-          color: "white",
-          "&:hover": { backgroundColor: "#f0f0f0" },
-        }}
+        sx={productActionsButton}
         onClick={() => handleAddToCart(product.id)}
       >
         Add to Cart

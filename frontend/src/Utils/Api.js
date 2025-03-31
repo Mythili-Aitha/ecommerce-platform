@@ -305,6 +305,7 @@ export const blockUser = async (userId) => {
 };
 
 export const getAdminProducts = async () => {
+  console.log("admin product list");
   return apiClient.get(`/admin/products`);
 };
 

@@ -12,13 +12,11 @@ import { avatar, cardFSx } from "../../../../Utils/Styles";
 import {
   addToCart,
   getUserFavorites,
-  getUserId,
   removeFromFavorites,
 } from "../../../../Utils/Api";
 
 export default function Favorites() {
   const [favorites, setFavorites] = useState([]);
-  const userId = getUserId();
   const fetchFavorites = async () => {
     try {
       const response = await getUserFavorites();

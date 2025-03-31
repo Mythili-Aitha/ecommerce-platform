@@ -1,4 +1,4 @@
-import { Card } from "@mui/material";
+import { Card, Typography } from "@mui/material";
 import React from "react";
 
 export default function About() {
@@ -10,12 +10,13 @@ export default function About() {
         justifyContent: "center",
         gap: 2,
         padding: 3,
+        backgroundColor: "rgba(255, 255, 255, 0.6)",
       }}
     >
-      <p>
+      <Typography>
         <strong>Daisy</strong>
-      </p>
-      <p>
+      </Typography>
+      <Typography>
         Welcome to Daisy, your one-stop destination for a seamless and
         delightful shopping experience. Whether you're looking for the latest
         fashion, everyday essentials, or specialty products, Daisy brings
@@ -37,7 +38,7 @@ export default function About() {
         pair of shoes, Daisy is here to meet all your shopping needs. Join us
         and explore a world of endless choices, great value, and unparalleled
         convenience. Shop Smart. Shop Easy. Shop with Daisy.
-      </p>
+      </Typography>
     </Card>
   );
 }

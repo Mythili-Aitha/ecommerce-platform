@@ -19,7 +19,7 @@ import {
   applyDiscounts,
   clearDiscounts,
   getDiscountHistory,
-} from "../../../Utils/Api";
+} from "../../../../Utils/Api";
 
 const DiscountsPage = () => {
   const [discountedProducts, setDiscountedProducts] = useState([]);

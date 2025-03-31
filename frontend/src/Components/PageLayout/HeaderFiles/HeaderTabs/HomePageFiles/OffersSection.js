@@ -23,10 +23,11 @@ const OffersSection = () => {
 
   return (
     <Box sx={{ padding: 3 }}>
-      <Typography variant="h5" gutterBottom>
-        🎉 Special Offers
-      </Typography>
-
+      {offers.length > 0 ? (
+        <Typography variant="h5" gutterBottom>
+          🎉 Special Offers
+        </Typography>
+      ) : null}
       <Box sx={offerSx}>
         {offers.map((product) => (
           <Badge
@@ -36,7 +37,9 @@ const OffersSection = () => {
             sx={{ cursor: "pointer" }}
             onClick={() => navigate(`/products/${product.id}`)}
           >
-            <Card sx={{ width: 250 }}>
+            <Card
+              sx={{ width: 250, backgroundColor: "rgba(255, 255, 255, 0.6)" }}
+            >
               <CardMedia
                 component="img"
                 height="140"

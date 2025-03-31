@@ -231,6 +231,7 @@ export const Actions = () => {
     snackbarMessage,
     snackbarOpen,
     history,
+    setHistory,
     addToHistory,
     filterProducts,
     setEditable,

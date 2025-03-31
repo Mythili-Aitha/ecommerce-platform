@@ -4,7 +4,7 @@ import { Box } from "@mui/material";
 import Header from "./HeaderFiles/HeaderPage/Header";
 import Footer from "./FooterFiles/Footer";
 import { useSearchFilter } from "./HeaderFiles/HeaderTabs/SearchFilterProvider";
-import { LayoutBox } from "../../Utils/Styles";
+import { footerLayoutBox, LayoutBox, mainLayout } from "../../Utils/Styles";
 
 export default function Layout({ children }) {
   const location = useLocation();
@@ -14,7 +14,7 @@ export default function Layout({ children }) {
     matchPath("/products/:id", location.pathname);
   const { searchTerm, setSearchTerm, toggleFilter } = useSearchFilter();
   return (
-    <Box sx={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
+    <Box sx={mainLayout}>
       {!hideHeader && (
         <Box sx={LayoutBox}>
           <Header
@@ -28,7 +28,7 @@ export default function Layout({ children }) {
         {children}
       </Box>
       {!hideHeader && (
-        <Box sx={{ mt: "auto", width: "100%" }}>
+        <Box sx={footerLayoutBox}>
           <Footer />
         </Box>
       )}

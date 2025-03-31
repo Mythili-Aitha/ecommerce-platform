@@ -6,6 +6,7 @@ import {
   updateAdminProduct,
 } from "../Utils/Api";
 import formatProductData from "../Components/Admin/SideBarFiles/ProductandPage/ProductFormFiles/FormatProductData";
+import flattenProductData from "../Components/Admin/SideBarFiles/ProductandPage/ProductFormFiles/FlattenedProductData";
 
 export const useProductForm = () => {
   const { productId } = useParams();
@@ -67,7 +68,8 @@ export const useProductForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const flattened = formatProductData(product);
+      const flattened = flattenProductData(product);
+      console.log("Flattened product payload:", flattened);
       if (productId) {
         await updateAdminProduct(productId, flattened);
         console.log("edited product", flattened);
