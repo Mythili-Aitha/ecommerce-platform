@@ -169,22 +169,58 @@ public class EService {
         return Mapper.toPaymentInfoDto(paymentInfoRepo.save(paymentInfo));
     }
 
-    public void setSelectedPayment(Long userId, Long paymentId) {
-        List<PaymentInfo> payments = paymentInfoRepo.findByUserUserId(userId);
-        for (PaymentInfo p : payments) {
-            p.setSelected(p.getPaymentId().equals(paymentId));
+    public PaymentInfo selectPaymentMethod(Long userId, String method) {
+        List<PaymentInfo> all = paymentInfoRepo.findByUserUserId(userId);
+        for (PaymentInfo p : all) {
+            p.setSelected(false);
+            paymentInfoRepo.save(p);
         }
-        paymentInfoRepo.saveAll(payments);
+
+        PaymentInfo result = null;
+        if (method.startsWith("card-")) {
+            String idStr = method.substring(5);
+            try {
+                Long paymentId = Long.parseLong(idStr);
+                result = paymentInfoRepo.findById(paymentId).orElse(null);
+                if (result != null) {
+                    result.setSelected(true);
+                    result = paymentInfoRepo.save(result);
+                }
+            } catch (NumberFormatException e) {
+            }
+        } else {
+            Optional<PaymentInfo> match = all.stream()
+                    .filter(p -> method.equalsIgnoreCase(p.getPaymentMethod()))
+                    .findFirst();
+
+            if (match.isPresent()) {
+                result = match.get();
+                result.setSelected(true);
+            } else {
+                result = new PaymentInfo();
+                result.setUser(userRepo.findById(userId).orElseThrow());
+                result.setPaymentMethod(method);
+                result.setSelected(true);
+            }
+            result = paymentInfoRepo.save(result);
+        }
+
+        return result;
     }
 
-    public PaymentInfoDto getSelectedPayment(Long userId) {
-        PaymentInfo payment = paymentInfoRepo.findSelectedByUserId(userId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No selected payment found"));
-        return Mapper.toPaymentInfoDto(payment);
-    }
+//    public PaymentInfoDto getSelectedPayment(Long userId) {
+//        return paymentInfoRepo.findSelectedByUserId(userId)
+//                .map(Mapper::toPaymentInfoDto)
+//                .orElseGet(() -> {
+//                    PaymentInfoDto fallback = new PaymentInfoDto();
+//                    fallback.setPaymentMethod("None");
+//                    fallback.setSelected(false);
+//                    return fallback;
+//                });
+//    }
 
     public List<PaymentInfoDto> getUserPaymentInfos(Long userId) {
-        return paymentInfoRepo.findByUserUserId(userId).stream().map(Mapper::toPaymentInfoDto).collect(Collectors.toList());
+        return paymentInfoRepo.findByUserUserIdAndDeletedFalse(userId).stream().map(Mapper::toPaymentInfoDto).collect(Collectors.toList());
     }
 
     public PaymentInfoDto updatePaymentInfo(Long paymentId, PaymentInfoDto paymentInfoDto) {
@@ -201,11 +237,17 @@ public class EService {
     }
 
     public void deletePaymentInfo(Long id) {
-        if (!paymentInfoRepo.existsById(id)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "PaymentInfo not found");
+        PaymentInfo payment = paymentInfoRepo.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "PaymentInfo not found"));
+        List<Order> orders = orderRepo.findByPaymentInfoPaymentId(id);
+        if (!orders.isEmpty()) {
+            payment.setDeleted(true);
+            paymentInfoRepo.save(payment);
+        } else {
+            paymentInfoRepo.deleteById(id);
         }
-        paymentInfoRepo.deleteById(id);
     }
+
 
     //Product Methods
     public List<ProductDto> getAllProducts() {

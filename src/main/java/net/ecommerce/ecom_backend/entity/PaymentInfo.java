@@ -20,6 +20,8 @@ public class PaymentInfo {
     private Long paymentId;
     @Column(name = "is_selected")
     private boolean selected;
+    @Column(name = "payment_method")
+    private String paymentMethod;
     private String cardNumber;
     private String cardHolderName;
     private String expiryDate;
@@ -31,4 +33,6 @@ public class PaymentInfo {
     @ManyToOne
     @JoinColumn(name = "user_Id", nullable = false)
     private User user;
+    @Column(nullable = false)
+    private Boolean deleted = false;
 }
