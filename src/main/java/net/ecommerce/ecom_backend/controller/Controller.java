@@ -1,10 +1,9 @@
 package net.ecommerce.ecom_backend.controller;
 
 import net.ecommerce.ecom_backend.dto.*;
-import net.ecommerce.ecom_backend.entity.Order;
-import net.ecommerce.ecom_backend.entity.Product;
-import net.ecommerce.ecom_backend.entity.User;
+import net.ecommerce.ecom_backend.entity.*;
 import net.ecommerce.ecom_backend.repository.OrderRepo;
+import net.ecommerce.ecom_backend.repository.PaymentInfoRepo;
 import net.ecommerce.ecom_backend.repository.ProductRepo;
 import net.ecommerce.ecom_backend.repository.UserRepo;
 import net.ecommerce.ecom_backend.service.EService;
@@ -15,10 +14,14 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.security.Principal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
+
+import static net.ecommerce.ecom_backend.mapper.Mapper.toPaymentInfoDto;
 
 @RestController
 @RequestMapping("/api")
@@ -31,6 +34,8 @@ public class Controller {
     private UserRepo userRepo;
     @Autowired
     private ProductRepo productRepo;
+    @Autowired
+    private PaymentInfoRepo paymentInfoRepo;
 
 
     //USER API CALLS
@@ -94,15 +99,24 @@ public class Controller {
         return ResponseEntity.ok(service.addPaymentInfo(paymentInfoDto));
     }
 
-    @PutMapping("/payments/select/{userId}/{paymentId}")
-    public ResponseEntity<Void> selectPaymentMethod(@PathVariable Long userId, @PathVariable Long paymentId) {
-        service.setSelectedPayment(userId, paymentId);
-        return ResponseEntity.ok().build();
+    @PostMapping("/payments/select")
+    public ResponseEntity<?> selectPayment(@RequestBody PaymentSelectionRequest request) {
+        PaymentInfo updated = service.selectPaymentMethod(request.getUserId(), request.getMethod());
+        return ResponseEntity.ok(updated);
     }
 
     @GetMapping("/payments/selected/{userId}")
     public ResponseEntity<PaymentInfoDto> getSelectedPayment(@PathVariable Long userId) {
-        return ResponseEntity.ok(service.getSelectedPayment(userId));
+        Optional<PaymentInfo> selectedPayment = paymentInfoRepo.findByUserUserIdAndSelectedTrue(userId);
+        System.out.println("Selected payment found: " + selectedPayment.isPresent());
+        if (selectedPayment.isPresent()) {
+            System.out.println("Payment method: " + selectedPayment.get().getPaymentMethod());
+            System.out.println("Selected: " + selectedPayment.get().isSelected());
+        }
+        return selectedPayment
+                .map(payment -> ResponseEntity.ok(toPaymentInfoDto(payment)))
+                .orElse(ResponseEntity.notFound().build());
+
     }
 
     @GetMapping("/payments/users/{userId}")

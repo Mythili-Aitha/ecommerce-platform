@@ -29,5 +29,6 @@ public interface OrderRepo extends JpaRepository<Order, Long> {
     List<Order> findTop5ByOrderByOrderDateDesc();
     @Query("SELECT o FROM Order o WHERE o.address.id = :addressId")
     List<Order> findByAddressId(@Param("addressId") Long addressId);
+    List<Order> findByPaymentInfoPaymentId(Long paymentId);
 
 }

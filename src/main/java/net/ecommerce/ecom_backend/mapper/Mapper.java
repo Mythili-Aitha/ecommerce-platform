@@ -86,6 +86,8 @@ public class Mapper {
         }
         PaymentInfoDto paymentInfoDto = new PaymentInfoDto();
         paymentInfoDto.setPaymentId(paymentInfo.getPaymentId());
+        paymentInfoDto.setPaymentMethod(paymentInfo.getPaymentMethod());
+        paymentInfoDto.setSelected(paymentInfo.isSelected());
         paymentInfoDto.setCardNumber(paymentInfo.getCardNumber());
         paymentInfoDto.setCardHolderName(paymentInfo.getCardHolderName());
         paymentInfoDto.setExpiryDate(paymentInfo.getExpiryDate());
