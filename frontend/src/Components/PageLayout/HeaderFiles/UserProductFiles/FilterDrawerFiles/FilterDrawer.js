@@ -22,7 +22,6 @@ export default function FilterDrawer({
   const [rating, setRating] = useState("");
   const [sortBy, setSortBy] = useState("");
 
-  // Handle filter apply
   const handleApplyFilters = () => {
     applyFilters({
       category,
@@ -36,17 +35,11 @@ export default function FilterDrawer({
   };
 
   return (
-    <Drawer anchor="right" open={open} onClose={toggleDrawer(false)}>
-      <Box
-        sx={{
-          width: 300,
-          padding: 2,
-          backgroundColor: "rgba(255, 255, 255, 0.6)",
-        }}
-      >
+    <Drawer anchor="right" open={open} onClose={() => toggleDrawer(false)}>
+      <Box sx={{ width: 300, padding: 2 }}>
         <Box sx={{ display: "flex", justifyContent: "space-between" }}>
           <Typography variant="h6">Filters</Typography>
-          <IconButton onClick={toggleDrawer(false)}>
+          <IconButton onClick={() => toggleDrawer(false)}>
             <CloseIcon />
           </IconButton>
         </Box>

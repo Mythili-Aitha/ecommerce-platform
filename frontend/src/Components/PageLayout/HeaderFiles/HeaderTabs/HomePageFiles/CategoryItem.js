@@ -1,5 +1,5 @@
 import { Box, Avatar, Typography } from "@mui/material";
-import { avatar } from "../../../../../Utils/Styles";
+import { avatar, categoryName } from "../../../../../Utils/Styles";
 
 const CategoryItem = ({ category, onClick }) => (
   <Box
@@ -12,10 +12,7 @@ const CategoryItem = ({ category, onClick }) => (
     onClick={onClick}
   >
     <Avatar src={category.image} sx={avatar} />
-    <Typography
-      variant="body1"
-      sx={{ mt: 1, fontSize: "14px", fontWeight: 500 }}
-    >
+    <Typography variant="body1" sx={categoryName}>
       {category.name}
     </Typography>
   </Box>

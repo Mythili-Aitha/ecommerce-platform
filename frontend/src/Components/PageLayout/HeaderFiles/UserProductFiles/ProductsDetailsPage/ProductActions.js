@@ -9,7 +9,7 @@ import {
   productActionsButton,
 } from "../../../../../Utils/Styles";
 
-export default function ProductActions({ product }) {
+export default function ProductActions({ product, isOutOfStock }) {
   const { handleAddToFavorites } = Actions();
   const { handleAddToCart } = useCartActions();
   const [isFav, setIsFav] = useState(false);
@@ -33,8 +33,9 @@ export default function ProductActions({ product }) {
         variant="contained"
         sx={productActionsButton}
         onClick={() => handleAddToCart(product.id)}
+        disabled={isOutOfStock}
       >
-        Add to Cart
+        {isOutOfStock ? "Out of Stock" : "Add to Cart"}
       </Button>
     </Box>
   );

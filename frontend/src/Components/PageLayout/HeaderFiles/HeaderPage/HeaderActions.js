@@ -15,7 +15,9 @@ export default function HeaderActions({
   navigate,
 }) {
   return (
-    <Box sx={{ display: "flex", alignItems: "flex-end", gap: 3 }}>
+    <Box
+      sx={{ display: "flex", alignItems: "flex-end", gap: 3, marginRight: 3 }}
+    >
       {showFilter && (
         <Button onClick={toggleFilter}>
           <FilterListIcon /> Filter

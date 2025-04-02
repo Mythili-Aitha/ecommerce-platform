@@ -77,8 +77,8 @@ export const addPaymentInfo = async (paymentData) => {
   return await apiClient.post(`/payments`, paymentData);
 };
 
-export const selectPaymentMethod = async (userId, paymentId) => {
-  return await apiClient.put(`/payments/select/${userId}/${paymentId}`);
+export const selectPaymentMethod = async (userId, method) => {
+  return apiClient.post(`/payments/select`, { userId, method });
 };
 
 export const getSelectedPayment = async () => {

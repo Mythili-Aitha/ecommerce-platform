@@ -3,7 +3,7 @@
     opacity: 0.5;
 } */
 
-/* .para{
+.para{
     font-family: Georgia;
     font-size: larger;
     font-weight: bold;
@@ -24,4 +24,4 @@
 .fade-exit-active {
     opacity: 0;
     transition: opacity 0.3s ease-in-out;
-  } */
+  }

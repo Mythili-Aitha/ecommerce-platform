@@ -9,9 +9,7 @@ import { footerLayoutBox, LayoutBox, mainLayout } from "../../Utils/Styles";
 export default function Layout({ children }) {
   const location = useLocation();
   const hiddenHeaderPaths = ["/auth", "/admin"];
-  const hideHeader =
-    hiddenHeaderPaths.includes(location.pathname) ||
-    matchPath("/products/:id", location.pathname);
+  const hideHeader = hiddenHeaderPaths.includes(location.pathname);
   const { searchTerm, setSearchTerm, toggleFilter } = useSearchFilter();
   return (
     <Box sx={mainLayout}>

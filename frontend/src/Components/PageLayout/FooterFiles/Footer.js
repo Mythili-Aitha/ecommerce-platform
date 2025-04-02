@@ -36,6 +36,7 @@ export default function Footer() {
               justifyContent: "flex-end",
               gap: 1,
               flexDirection: "row",
+              marginRight: 3,
             }}
           >
             <IconButton color="inherit" sx={{ flexDirection: "column" }}>

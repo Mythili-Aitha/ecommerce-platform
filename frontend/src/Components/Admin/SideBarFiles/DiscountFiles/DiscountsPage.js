@@ -7,24 +7,22 @@ import {
   CardContent,
   CardMedia,
   Grid,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  IconButton,
 } from "@mui/material";
-import CloseIcon from "@mui/icons-material/Close";
 import {
   getDiscountedProducts,
   applyDiscounts,
   clearDiscounts,
   getDiscountHistory,
 } from "../../../../Utils/Api";
+import DiscountHistoryDialog from "./DiscountsHistoryDialog";
 
 const DiscountsPage = () => {
   const [discountedProducts, setDiscountedProducts] = useState([]);
-  const [historyOpen, setHistoryOpen] = useState(false);
   const [discountHistory, setDiscountHistory] = useState([]);
+  const [historyOpen, setHistoryOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize] = useState(15);
 
   const fetchDiscountedProducts = () => {
     getDiscountedProducts()
@@ -32,10 +30,17 @@ const DiscountsPage = () => {
       .catch((err) => console.error("Error fetching discounted products", err));
   };
 
+  const fetchDiscountHistory = () => {
+    getDiscountHistory()
+      .then((res) => setDiscountHistory(res.data))
+      .catch((err) => console.error("Error fetching discount history", err));
+  };
+
   useEffect(() => {
     fetchDiscountedProducts();
+    fetchDiscountHistory();
   }, []);
-  console.log("Product:", discountedProducts);
+
   const validDiscountedProducts = discountedProducts.filter(
     (p) => p.price !== undefined && p.discountPercentage !== undefined
   );
@@ -49,9 +54,7 @@ const DiscountsPage = () => {
   };
 
   const handleOpenHistory = () => {
-    getDiscountHistory()
-      .then((res) => setDiscountHistory(res.data))
-      .then(() => setHistoryOpen(true));
+    setHistoryOpen(true);
   };
 
   const handleCloseHistory = () => setHistoryOpen(false);
@@ -72,6 +75,7 @@ const DiscountsPage = () => {
           View History
         </Button>
       </Box>
+
       <Grid container spacing={2}>
         {validDiscountedProducts.map((product) => {
           const finalPrice =
@@ -108,42 +112,16 @@ const DiscountsPage = () => {
           );
         })}
       </Grid>
-
-      <Dialog
+      <DiscountHistoryDialog
         open={historyOpen}
         onClose={handleCloseHistory}
-        fullWidth
-        maxWidth="md"
-      >
-        <DialogTitle>
-          Discount History
-          <IconButton
-            aria-label="close"
-            onClick={handleCloseHistory}
-            sx={{ position: "absolute", right: 8, top: 8 }}
-          >
-            <CloseIcon />
-          </IconButton>
-        </DialogTitle>
-        <DialogContent dividers>
-          {discountHistory.length === 0 ? (
-            <Typography>No previous discount logs found.</Typography>
-          ) : (
-            discountHistory.map((log, index) => (
-              <Box key={index} sx={{ mb: 2 }}>
-                <Typography variant="subtitle1">{log.productTitle}</Typography>
-                <Typography variant="body2" color="textSecondary">
-                  Discounted: ${log.discountApplied} on{" "}
-                  {new Date(log.discountDate).toLocaleString()}
-                </Typography>
-              </Box>
-            ))
-          )}
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseHistory}>Close</Button>
-        </DialogActions>
-      </Dialog>
+        discountHistory={discountHistory}
+        searchQuery={searchQuery}
+        setSearchQuery={setSearchQuery}
+        currentPage={currentPage}
+        setCurrentPage={setCurrentPage}
+        pageSize={pageSize}
+      />
     </Box>
   );
 };

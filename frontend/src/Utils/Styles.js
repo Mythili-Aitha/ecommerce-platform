@@ -60,6 +60,8 @@ export const boxHSx = {
   gap: 3,
   overflowX: "auto",
   padding: 2,
+  marginRight: 3,
+  marginLeft: 3,
 };
 
 export const drawerBox = {
@@ -85,6 +87,7 @@ export const footerBox = {
   backgroundColor: "rgba(255, 255, 255, 0.6)",
   color: "#333",
   boxShadow: "0px -2px 5px rgba(0,0,0,0.1)",
+  marginRight: 3,
 };
 
 export const contactCard = {
@@ -97,10 +100,9 @@ export const contactCard = {
 
 export const footerLayoutBox = {
   width: "100%",
-  position: "absolute",
-  bottom: 0,
-  left: 0,
-  right: 0,
+  padding: 2,
+  textAlign: "center",
+  // position: "sticky",
 };
 
 export const cardFSx = {
@@ -261,4 +263,38 @@ export const productActionsButton = {
   backgroundColor: "black",
   color: "white",
   "&:hover": { backgroundColor: "#f0f0f0" },
+};
+
+export const categoryName = {
+  fontFamily: "Arial, sans-serif",
+  fontWeight: "bold",
+  textTransform: "capitalize",
+  mt: 1,
+  fontSize: "14px",
+  fontWeight: 500,
+};
+
+export const outofStock = {
+  position: "absolute",
+  backgroundColor: "rgba(0, 0, 0, 0.7)",
+  color: "white",
+  padding: "5px 10px",
+  fontWeight: "bold",
+  fontSize: "16px",
+  borderRadius: "0 5px",
+};
+
+export const lowStockcard = {
+  display: "flex",
+  flexDirection: "row",
+  gap: 2,
+  marginRight: 2,
+  justifyContent: "space-between",
+};
+
+export const categoryBox = {
+  display: "flex",
+  flexDirection: "row",
+  marginRight: 4,
+  justifyContent: "space-between",
 };
