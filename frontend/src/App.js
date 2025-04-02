@@ -32,7 +32,8 @@ import UserDetails from "./Components/Admin/SideBarFiles/UserFiles/UserDetails.j
 import TotalRevenueCard from "./Components/Admin/SideBarFiles/DashboardCards/TotalRevenueCard.js";
 import LowStockCard from "./Components/Admin/SideBarFiles/DashboardCards/LowStockCard.js";
 import OrdersPage from "./Components/Admin/AdminOrdersFiles/OrdersPage.js";
-import DiscountsPage from "./Components/Admin/SideBarFiles/DiscountsPage.js";
+import DiscountsPage from "./Components/Admin/SideBarFiles/DiscountFiles/DiscountsPage.js";
+import CategoriesPage from "./Components/PageLayout/HeaderFiles/HeaderPage/CategoriesPage.js";
 
 function App() {
   const location = useLocation();
@@ -85,6 +86,7 @@ function App() {
                     />
                   </Route>
                   <Route path="/cart" element={<Cart />} />
+                  <Route path="/categories" element={<CategoriesPage />} />
                   <Route path="/products" element={<Products />} />
                   <Route path="/products/:id" element={<ProductDetails />} />
                   <Route path="/favorite" element={<Favorites />} />

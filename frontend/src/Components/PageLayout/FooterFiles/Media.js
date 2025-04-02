@@ -9,7 +9,7 @@ import React from "react";
 
 export default function Media() {
   return (
-    <Card>
+    <Card sx={{ backgroundColor: "rgba(255, 255, 255, 0.6)" }}>
       <CardHeader title={<Typography variant="h4">DAISY</Typography>} />
       <CardMedia
         component="img"

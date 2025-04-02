@@ -3,20 +3,13 @@ import React from "react";
 import InstagramIcon from "@mui/icons-material/Instagram";
 import EmailIcon from "@mui/icons-material/Email";
 import { useNavigate } from "react-router-dom";
+import { footerBox } from "../../../Utils/Styles";
 
 export default function Footer() {
   const navigate = useNavigate();
   return (
     <>
-      <Box
-        sx={{
-          width: "100%",
-          py: 2,
-          textAlign: "center",
-          bgcolor: "white",
-          boxShadow: "0px -2px 5px rgba(0,0,0,0.1)",
-        }}
-      >
+      <Box sx={footerBox}>
         <Divider />
         <Box sx={{ display: "flex", justifyContent: "space-between" }}>
           <Box sx={{ display: "flex", flexDirection: "row", gap: 1 }}>
@@ -43,6 +36,7 @@ export default function Footer() {
               justifyContent: "flex-end",
               gap: 1,
               flexDirection: "row",
+              marginRight: 3,
             }}
           >
             <IconButton color="inherit" sx={{ flexDirection: "column" }}>

@@ -6,6 +6,7 @@ import {
   Login as LoginIcon,
   AccountCircle as AccountCircleIcon,
 } from "@mui/icons-material";
+import { drawerBox } from "../../../../Utils/Styles";
 
 export default function DrawerMenu({
   open,
@@ -18,15 +19,18 @@ export default function DrawerMenu({
   return (
     <>
       <Drawer
-        sx={{ "& .MuiPaper-root": { width: 250 } }}
+        sx={{
+          "& .MuiPaper-root": { width: 250 },
+          backgroundColor: "rgba(255, 255, 255, 0.6)",
+        }}
         anchor="left"
         open={open}
         onClose={() => toggleDrawer(false)}
       >
-        <Box sx={{ display: "flex", flexDirection: "column", padding: 3 }}>
+        <Box sx={drawerBox}>
           <Button onClick={() => navigate("/")}>Home</Button>
           <Button onClick={() => navigate("/products")}>Products</Button>
-          <Button>Categories</Button>
+          <Button onClick={() => navigate("/categories")}>Categories</Button>
           <Divider />
           <Button onClick={() => navigate("/orders")}>Orders</Button>
           <Button onClick={() => navigate("/history")}>History</Button>

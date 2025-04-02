@@ -77,8 +77,8 @@ export const addPaymentInfo = async (paymentData) => {
   return await apiClient.post(`/payments`, paymentData);
 };
 
-export const selectPaymentMethod = async (userId, paymentId) => {
-  return await apiClient.put(`/payments/select/${userId}/${paymentId}`);
+export const selectPaymentMethod = async (userId, method) => {
+  return apiClient.post(`/payments/select`, { userId, method });
 };
 
 export const getSelectedPayment = async () => {
@@ -305,6 +305,7 @@ export const blockUser = async (userId) => {
 };
 
 export const getAdminProducts = async () => {
+  console.log("admin product list");
   return apiClient.get(`/admin/products`);
 };
 

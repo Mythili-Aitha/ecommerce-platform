@@ -1,9 +1,8 @@
 import { Card, Button, Box, Snackbar } from "@mui/material";
 import React, { useEffect, useState } from "react";
-import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
 import { useNavigate } from "react-router-dom";
 import { Actions } from "../../../../Utils/Actions";
-import { buttonSx, cardSx } from "../../../../Utils/Styles";
+import { cardSx } from "../../../../Utils/Styles";
 import OrderAddress from "./OrderAddress";
 import ShippingMethod from "./ShippingMethod";
 import OrderSummary from "./OrderSummary";
@@ -30,6 +29,7 @@ export default function OrderConfo() {
     const fetchSelectedPayment = async () => {
       try {
         const response = await getSelectedPayment();
+        console.log("Selected Payment:", response.data);
         setSelectedPayment(response.data);
       } catch (error) {
         console.error("Error fetching selected payment method", error);
@@ -63,14 +63,6 @@ export default function OrderConfo() {
     <>
       <Card sx={cardSx}>
         <Box sx={{ display: "flex", flexDirection: "row" }}>
-          <Button
-            sx={buttonSx}
-            onClick={() => {
-              navigate(-1);
-            }}
-          >
-            <KeyboardArrowLeftIcon />
-          </Button>
           <h1>Order Confirmation</h1>
         </Box>
         <OrderAddress
@@ -84,7 +76,7 @@ export default function OrderConfo() {
             selectedPayment.cardNumber ? (
               <p>Card Ending in **** {selectedPayment.cardNumber.slice(-4)}</p>
             ) : (
-              <p>{selectedPayment}</p>
+              <p>{selectedPayment.paymentMethod || "No card details"}</p>
             )
           ) : (
             <p>No payment method selected</p>

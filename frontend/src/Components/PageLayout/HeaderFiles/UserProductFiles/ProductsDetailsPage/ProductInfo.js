@@ -3,6 +3,7 @@ import { Typography } from "@mui/material";
 export default function ProductInfo({ product }) {
   const { title, description, price, availabilityStatus, discountPercentage } =
     product;
+  const discountedPrice = price - (price * discountPercentage) / 100;
   return (
     <>
       <Typography variant="h4" sx={{ marginTop: 2 }}>
@@ -20,7 +21,7 @@ export default function ProductInfo({ product }) {
             ${price.toFixed(2)}
           </Typography>
           <Typography variant="h5" color="error">
-            ${(price - discountPercentage).toFixed(2)} (10% OFF)
+            ${discountedPrice.toFixed(2)} ({discountPercentage}% OFF)
           </Typography>
         </>
       ) : (

@@ -10,6 +10,7 @@ import {
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import { useNavigate } from "react-router-dom";
 import { Actions } from "../../../../../Utils/Actions";
+import { outofStock, productGridCard } from "../../../../../Utils/Styles";
 
 export default function ProductGrid({
   products,
@@ -27,13 +28,15 @@ export default function ProductGrid({
         {products.length > 0 ? (
           products.map((product) => (
             <Grid item xs={12} sm={6} md={4} lg={2.4} key={product.id}>
-              <Card sx={{ padding: 2, textAlign: "center" }}>
+              <Card sx={productGridCard}>
                 <CardMedia
                   component="img"
                   height="194"
                   image={product.images?.[0] || product.thumbnail}
                   alt={product.description}
+                  sx={{ position: "relative" }}
                 />
+                {product.stock === 0 && <Box sx={outofStock}>Out of Stock</Box>}
                 <Typography variant="subtitle1" sx={{ marginTop: 1 }}>
                   {product.title}
                 </Typography>

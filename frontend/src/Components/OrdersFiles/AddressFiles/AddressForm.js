@@ -112,13 +112,20 @@ const AddressForm = () => {
       console.error("Error saving address", error);
     }
   };
-
   const handleDelete = async (id) => {
-    try {
-      await deleteAddress(id);
-      fetchAddresses();
-    } catch (error) {
-      console.error("Error deleting address", error);
+    const isConfirmed = window.confirm(
+      "Are you sure you want to delete this address?"
+    );
+
+    if (isConfirmed) {
+      try {
+        await deleteAddress(id);
+        fetchAddresses();
+      } catch (error) {
+        console.error("Error deleting address", error);
+      }
+    } else {
+      console.log("Deletion canceled");
     }
   };
 

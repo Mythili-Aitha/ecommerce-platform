@@ -9,7 +9,12 @@ import {
 } from "../../../../../Utils/Api";
 import { useSearchFilter } from "../SearchFilterProvider";
 import CategoryItem from "./CategoryItem";
-import { boxhSx, boxHSx, styleSx } from "../../../../../Utils/Styles";
+import {
+  boxhSx,
+  boxHSx,
+  styleSx,
+  trendingCard,
+} from "../../../../../Utils/Styles";
 import ProductCard from "./ProductCard";
 import useFetchProducts from "../../../../../Hooks/useFetchProducts";
 import OffersSection from "./OffersSection";
@@ -92,7 +97,7 @@ const Home = () => {
         <Box sx={boxhSx}>
           <Typography variant="h6">🔥 Trending Product</Typography>
           <Card
-            sx={{ padding: 2, cursor: "pointer" }}
+            sx={trendingCard}
             onClick={() => navigate(`/products/${trendingProduct.id}`)}
           >
             <img

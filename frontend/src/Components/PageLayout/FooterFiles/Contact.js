@@ -7,6 +7,7 @@ import {
   TextField,
 } from "@mui/material";
 import React, { useState } from "react";
+import { contactCard } from "../../../Utils/Styles";
 
 export default function Contact() {
   const [formData, setFormData] = useState({
@@ -33,7 +34,7 @@ export default function Contact() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
   return (
-    <Card sx={{ maxWidth: 500, margin: "auto", mt: 5, p: 3 }}>
+    <Card sx={contactCard}>
       <CardHeader
         title={
           <Typography variant="h5" sx={{ textAlign: "center", width: "100%" }}>

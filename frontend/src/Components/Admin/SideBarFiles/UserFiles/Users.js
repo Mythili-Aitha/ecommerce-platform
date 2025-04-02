@@ -7,13 +7,25 @@ import {
   ListItem,
   ListItemText,
   ListItemSecondaryAction,
+  Pagination,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { blockUser, getAllUsers } from "../../../../Utils/Api";
+import SearchBox from "../../../PageLayout/HeaderFiles/HeaderPage/SearchBox";
+import { adminUCard } from "../../../../Utils/Styles";
 
 const Users = () => {
   const [users, setUsers] = useState([]);
   const navigate = useNavigate();
+  const [searchTerm, setSearchTerm] = useState("");
+  const filteredUsers = users.filter((user) => {
+    return (
+      user?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user?.email?.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  });
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -40,14 +52,23 @@ const Users = () => {
     }
   };
 
+  const paginatedUsers = filteredUsers.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
   return (
     <Box sx={{ display: "flex", flexDirection: "column" }}>
-      <Typography variant="h6" sx={{ mb: 6 }}>
-        User Management
-      </Typography>
+      <Box sx={adminUCard}>
+        <Typography variant="h6" sx={{ mb: 6 }}>
+          User Management
+        </Typography>
+        <SearchBox searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
+      </Box>
+
       <List>
-        {users.length > 0 ? (
-          users.map((user) => (
+        {paginatedUsers.length > 0 ? (
+          paginatedUsers.map((user) => (
             <ListItem
               key={user.userId}
               button
@@ -76,6 +97,14 @@ const Users = () => {
           <Typography align="center">No Users Found</Typography>
         )}
       </List>
+      <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
+        <Pagination
+          count={Math.ceil(filteredUsers.length / itemsPerPage)}
+          page={currentPage}
+          onChange={(e, page) => setCurrentPage(page)}
+          color="primary"
+        />
+      </Box>
     </Box>
   );
 };

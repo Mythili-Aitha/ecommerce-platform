@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useCallback } from "react";
 import {
   Box,
-  Button,
   FormControl,
   FormControlLabel,
   Radio,
@@ -43,20 +42,29 @@ const PaymentForm = () => {
   }, [userId]);
 
   useEffect(() => {
+    const savedMethod = localStorage.getItem(`selectedPaymentMethod_${userId}`);
+    if (savedMethod) {
+      setSelectedValue(savedMethod);
+    }
     fetchPaymentMethods();
   }, [fetchPaymentMethods]);
 
   const handlePaymentSelection = async (e) => {
     const value = e.target.value;
     setSelectedValue(value);
-
+    localStorage.setItem(`selectedPaymentMethod_${userId}`, value);
     if (value === "credit card") {
       setShowCardForm(true);
       return;
     }
-
     try {
-      await selectPaymentMethod(userId, value);
+      if (value.startsWith("card-")) {
+        const cardId = value.split("-")[1];
+        await selectPaymentMethod(userId, `card-${cardId}`);
+      } else {
+        await selectPaymentMethod(userId, value);
+      }
+      await fetchPaymentMethods();
       setShowCardForm(false);
       navigate("/oconfo");
     } catch (error) {
@@ -77,11 +85,16 @@ const PaymentForm = () => {
   };
 
   const handleDelete = async (paymentId) => {
-    try {
-      await deletePaymentInfo(paymentId);
-      await fetchPaymentMethods();
-    } catch (error) {
-      console.error("Error deleting payment method", error);
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this payment method?"
+    );
+    if (confirmDelete) {
+      try {
+        await deletePaymentInfo(paymentId);
+        await fetchPaymentMethods();
+      } catch (error) {
+        console.error("Error deleting payment method", error);
+      }
     }
   };
 
@@ -98,7 +111,11 @@ const PaymentForm = () => {
             label="Apple Pay"
           />
           <FormControlLabel value="venmo" control={<Radio />} label="Venmo" />
-
+          <FormControlLabel
+            value="credit card"
+            control={<Radio />}
+            label="Credit/Debit Card"
+          />
           {paymentMethods.map((payment) => (
             <SavedCard
               key={payment.paymentId}
@@ -106,14 +123,6 @@ const PaymentForm = () => {
               onDelete={handleDelete}
             />
           ))}
-
-          {paymentMethods.length === 0 && (
-            <FormControlLabel
-              value="credit card"
-              control={<Radio />}
-              label="Credit/Debit Card"
-            />
-          )}
         </RadioGroup>
       </FormControl>
 

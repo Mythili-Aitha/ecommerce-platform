@@ -1,5 +1,7 @@
-const formatProductFormData = (data) => {
+// FormatProductData.js
+const formatProductData = (data) => {
   return {
+    id: data.id,
     basicInfo: {
       title: data.title || "",
       description: data.description || "",
@@ -7,29 +9,28 @@ const formatProductFormData = (data) => {
       brand: data.brand || "",
     },
     pricing: {
-      price: data.price?.toString() || "",
-      stock: data.stock?.toString() || "",
+      price: data.price ? data.price.toString() : "",
+      stock: data.stock ? data.stock.toString() : "",
     },
     identifiers: {
       sku: data.sku || "",
-      tags: data.tags?.join(", ") || "",
+      tags: data.tags ? data.tags.join(", ") : "", // if tags is an array
     },
     dimensions: {
-      width: data.dimensions?.width?.toString() || "",
-      height: data.dimensions?.height?.toString() || "",
-      depth: data.dimensions?.depth?.toString() || "",
+      width: data.dimensions?.width ? data.dimensions.width.toString() : "",
+      height: data.dimensions?.height ? data.dimensions.height.toString() : "",
+      depth: data.dimensions?.depth ? data.dimensions.depth.toString() : "",
     },
     metadata: {
       barcode: data.meta?.barcode || "",
       qrCode: data.meta?.qrCode || "",
     },
     media: {
-      images: data.images?.join(", ") || "",
+      images: data.images ? data.images.join(", ") : "",
       thumbnail: data.thumbnail || "",
     },
     reviews: data.reviews || [],
-    id: data.id,
   };
 };
 
-export default formatProductFormData;
+export default formatProductData;
