@@ -13,6 +13,7 @@ import {
 } from "@mui/material";
 import { getAllOrders } from "../../../Utils/Api";
 import { useNavigate } from "react-router-dom";
+import { adminorderBox } from "../../../Utils/Styles";
 
 const OrdersPage = () => {
   const [orders, setOrders] = useState([]);
@@ -57,17 +58,8 @@ const OrdersPage = () => {
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-      <Box
-        sx={{
-          p: 3,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-        }}
-      >
+      <Box sx={adminorderBox}>
         <Typography variant="h4">All Orders</Typography>
-
-        {/* Sorting and Filtering */}
         <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
           <TextField
             label="Search Orders"
@@ -131,8 +123,6 @@ const OrdersPage = () => {
           <Typography>No orders found.</Typography>
         )}
       </Box>
-
-      {/* {filteredOrders.length > itemsPerPage && ( */}
       <Box sx={{ display: "flex", justifyContent: "center", mt: 3 }}>
         <Pagination
           count={Math.ceil(filteredOrders.length / itemsPerPage)}
@@ -141,7 +131,6 @@ const OrdersPage = () => {
           color="primary"
         />
       </Box>
-      {/* )} */}
     </Box>
   );
 };

@@ -22,7 +22,7 @@ const UserDetails = () => {
   if (!user) return <Typography>Loading...</Typography>;
 
   return (
-    <Card sx={{ mt: 4, p: 2 }}>
+    <Card sx={{ mt: 4, p: 2, marginRight: 3 }}>
       <CardContent>
         <Typography variant="h5">{user.name}</Typography>
         <Typography variant="body1">Email: {user.email}</Typography>

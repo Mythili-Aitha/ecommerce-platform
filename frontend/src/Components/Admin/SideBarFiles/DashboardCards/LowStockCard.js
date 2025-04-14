@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   Box,
   Card,
@@ -9,23 +9,16 @@ import {
   Grid,
   Button,
 } from "@mui/material";
-import { getProducts } from "../../../../Utils/Api";
 import { lowStockcard } from "../../../../Utils/Styles";
 import { useNavigate } from "react-router-dom";
+import useProductData from "../../../../Hooks/useProductData";
 
 const LowStockCard = () => {
-  const [products, setProducts] = useState([]);
+  const { products } = useProductData();
   const [searchTerm, setSearchTerm] = useState("");
   const [curPage, setCurPage] = useState(1);
   const [productsPerPage] = useState(10);
   const navigate = useNavigate();
-  useEffect(() => {
-    getProducts()
-      .then((data) => {
-        setProducts(data);
-      })
-      .catch((error) => console.log(error));
-  }, []);
   const lowStockProducts = products.filter((product) => product.stock < 10);
   const filteredProducts = lowStockProducts.filter((product) =>
     product.title.toLowerCase().includes(searchTerm.toLowerCase())
@@ -37,7 +30,7 @@ const LowStockCard = () => {
     indexOfLastProduct
   );
 
-  const handlePageChange = (event, value) => {
+  const handlePageChange = (value) => {
     setCurPage(value);
   };
 

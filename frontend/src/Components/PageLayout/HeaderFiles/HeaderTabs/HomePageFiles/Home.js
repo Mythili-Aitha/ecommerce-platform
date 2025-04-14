@@ -1,12 +1,7 @@
 import { Box, Typography, Grid, useMediaQuery, Card } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  getCategories,
-  getProducts,
-  getProductsByCategories,
-  getTrendingProduct,
-} from "../../../../../Utils/Api";
+import { getTrendingProduct } from "../../../../../Utils/Api";
 import { useSearchFilter } from "../SearchFilterProvider";
 import CategoryItem from "./CategoryItem";
 import {
@@ -18,6 +13,7 @@ import {
 import ProductCard from "./ProductCard";
 import useFetchProducts from "../../../../../Hooks/useFetchProducts";
 import OffersSection from "./OffersSection";
+import { useProductStore } from "../../../../../Stores/ProductStore";
 
 const Home = () => {
   const { searchTerm } = useSearchFilter();
@@ -28,9 +24,8 @@ const Home = () => {
 
   const featuredProducts = useFetchProducts(isMobile, isTablet);
 
-  const [allProducts, setAllProducts] = useState([]);
+  const { products: allProducts, categories } = useProductStore();
   const [filteredProducts, setFilteredProducts] = useState([]);
-  const [categories, setCategories] = useState([]);
   const [trendingProduct, setTrendingProduct] = useState(null);
 
   useEffect(() => {
@@ -43,41 +38,6 @@ const Home = () => {
       }
     }
     fetchTrendingProduct();
-  }, []);
-
-  useEffect(() => {
-    async function fetchCategories() {
-      try {
-        const data = await getCategories();
-        const categoriesWithImages = await Promise.all(
-          data.map(async (category) => {
-            const products = await getProductsByCategories(category); // Fetch category products
-            return {
-              name: category,
-              image:
-                products.length > 0
-                  ? products[0].images[0]
-                  : "https://via.placeholder.com/100",
-            };
-          })
-        );
-        setCategories(categoriesWithImages);
-      } catch (error) {
-        console.log("No Categories Fetched", error);
-      }
-    }
-    fetchCategories();
-  }, []);
-  useEffect(() => {
-    const fetchAllProducts = async () => {
-      try {
-        const all = await getProducts();
-        setAllProducts(all);
-      } catch (err) {
-        console.error("Error fetching all products", err);
-      }
-    };
-    fetchAllProducts();
   }, []);
 
   useEffect(() => {

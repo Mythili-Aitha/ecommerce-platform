@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import {
   Box,
   Typography,
@@ -8,19 +8,12 @@ import {
   Badge,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import { getDiscountedProducts } from "../../../../../Utils/Api";
 import { offerSx } from "../../../../../Utils/Styles";
+import { useDiscounts } from "../../../../../Stores/DiscountStore";
 
 const OffersSection = () => {
-  const [offers, setOffers] = useState([]);
+  const { offers } = useDiscounts();
   const navigate = useNavigate();
-
-  useEffect(() => {
-    getDiscountedProducts()
-      .then((res) => setOffers(res.data))
-      .catch((err) => console.error("Failed to fetch offers:", err));
-  }, []);
-
   return (
     <Box sx={{ padding: 3 }}>
       {offers.length > 0 ? (

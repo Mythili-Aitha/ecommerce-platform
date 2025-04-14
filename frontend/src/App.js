@@ -34,82 +34,103 @@ import LowStockCard from "./Components/Admin/SideBarFiles/DashboardCards/LowStoc
 import OrdersPage from "./Components/Admin/AdminOrdersFiles/OrdersPage.js";
 import DiscountsPage from "./Components/Admin/SideBarFiles/DiscountFiles/DiscountsPage.js";
 import CategoriesPage from "./Components/PageLayout/HeaderFiles/HeaderPage/CategoriesPage.js";
+import { DiscountProvider } from "./Stores/DiscountStore.js";
+import { ProductProvider } from "./Stores/ProductStore.js";
 
 function App() {
   const location = useLocation();
   const nodeRef = useRef(null);
 
   return (
-    <CartProvider>
-      <SearchFilterProvider>
-        <Layout>
-          <TransitionGroup>
-            <CSSTransition
-              key={location.key}
-              classNames="fade"
-              timeout={300}
-              nodeRef={nodeRef}
-            >
-              <div ref={nodeRef}>
-                <Routes location={location}>
-                  <Route path="/" element={<Home />} />
-                  <Route path="/auth" element={<Login />} />
-                  <Route element={<AdminRoute />}>
-                    <Route path="/admin" element={<Admin />} />
-                    <Route
-                      path="/admin/orders/:orderId"
-                      element={<OrderDetails />}
-                    />
-                    <Route path="/admin/users" element={<Users />} />
-                    <Route
-                      path="/admin/users/:userId"
-                      element={<UserDetails />}
-                    />
-                    <Route path="/admin/products" element={<AdminProducts />} />
-                    <Route
-                      path="/admin/products/new"
-                      element={<AdminProductForm />}
-                    />
-                    <Route
-                      path="/admin/products/:productId"
-                      element={<AdminProductForm />}
-                    />
-                    <Route
-                      path="/admin/revenue"
-                      element={<TotalRevenueCard />}
-                    />
-                    <Route path="/admin/lowstock" element={<LowStockCard />} />
-                    <Route path="/admin/orders" element={<OrdersPage />} />
-                    <Route
-                      path="/admin/discounts"
-                      element={<DiscountsPage />}
-                    />
-                  </Route>
-                  <Route path="/cart" element={<Cart />} />
-                  <Route path="/categories" element={<CategoriesPage />} />
-                  <Route path="/products" element={<Products />} />
-                  <Route path="/products/:id" element={<ProductDetails />} />
-                  <Route path="/favorite" element={<Favorites />} />
-                  <Route path="/oconfo" element={<OrderConfo />} />
-                  <Route path="/address" element={<AddressForm />} />
-                  <Route path="/payments" element={<PaymentForm />} />
-                  <Route path="/orderconfo" element={<OrderConfirmation />} />
-                  <Route path="/orders" element={<Orders />} />
-                  <Route path="/orders/:orderId" element={<OrderDetails />} />
-                  <Route path="/profile" element={<Profile />} />
-                  <Route path="/history" element={<History />} />
-                  <Route path="/about" element={<About />} />
-                  <Route path="/faq" element={<Faq />} />
-                  <Route path="/contact" element={<Contact />} />
-                  <Route path="/policy" element={<Policies />} />
-                  <Route path="/media" element={<Media />} />
-                </Routes>
-              </div>
-            </CSSTransition>
-          </TransitionGroup>
-        </Layout>
-      </SearchFilterProvider>
-    </CartProvider>
+    <ProductProvider>
+      <CartProvider>
+        <DiscountProvider>
+          <SearchFilterProvider>
+            <Layout>
+              <TransitionGroup>
+                <CSSTransition
+                  key={location.key}
+                  classNames="fade"
+                  timeout={300}
+                  nodeRef={nodeRef}
+                >
+                  <div ref={nodeRef}>
+                    <Routes location={location}>
+                      <Route path="/" element={<Home />} />
+                      <Route path="/auth" element={<Login />} />
+                      <Route element={<AdminRoute />}>
+                        <Route path="/admin" element={<Admin />} />
+                        <Route
+                          path="/admin/orders/:orderId"
+                          element={<OrderDetails />}
+                        />
+                        <Route path="/admin/users" element={<Users />} />
+                        <Route
+                          path="/admin/users/:userId"
+                          element={<UserDetails />}
+                        />
+                        <Route
+                          path="/admin/products"
+                          element={<AdminProducts />}
+                        />
+                        <Route
+                          path="/admin/products/new"
+                          element={<AdminProductForm />}
+                        />
+                        <Route
+                          path="/admin/products/:productId"
+                          element={<AdminProductForm />}
+                        />
+                        <Route
+                          path="/admin/revenue"
+                          element={<TotalRevenueCard />}
+                        />
+                        <Route
+                          path="/admin/lowstock"
+                          element={<LowStockCard />}
+                        />
+                        <Route path="/admin/orders" element={<OrdersPage />} />
+                        <Route
+                          path="/admin/discounts"
+                          element={<DiscountsPage />}
+                        />
+                      </Route>
+                      <Route path="/cart" element={<Cart />} />
+                      <Route path="/categories" element={<CategoriesPage />} />
+                      <Route path="/products" element={<Products />} />
+                      <Route
+                        path="/products/:id"
+                        element={<ProductDetails />}
+                      />
+                      <Route path="/favorite" element={<Favorites />} />
+                      <Route path="/oconfo" element={<OrderConfo />} />
+                      <Route path="/address" element={<AddressForm />} />
+                      <Route path="/payments" element={<PaymentForm />} />
+                      <Route
+                        path="/orderconfo"
+                        element={<OrderConfirmation />}
+                      />
+                      <Route path="/orders" element={<Orders />} />
+                      <Route
+                        path="/orders/:orderId"
+                        element={<OrderDetails />}
+                      />
+                      <Route path="/profile" element={<Profile />} />
+                      <Route path="/history" element={<History />} />
+                      <Route path="/about" element={<About />} />
+                      <Route path="/faq" element={<Faq />} />
+                      <Route path="/contact" element={<Contact />} />
+                      <Route path="/policy" element={<Policies />} />
+                      <Route path="/media" element={<Media />} />
+                    </Routes>
+                  </div>
+                </CSSTransition>
+              </TransitionGroup>
+            </Layout>
+          </SearchFilterProvider>
+        </DiscountProvider>
+      </CartProvider>
+    </ProductProvider>
   );
 }
 

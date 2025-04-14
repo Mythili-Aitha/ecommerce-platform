@@ -76,7 +76,7 @@ const DiscountHistoryDialog = ({
         <Pagination
           count={Math.ceil(filteredDiscountHistory.length / pageSize)}
           page={currentPage}
-          onChange={(e, page) => setCurrentPage(page)}
+          onChange={(page) => setCurrentPage(page)}
           color="primary"
         />
         <Button onClick={onClose}>Close</Button>

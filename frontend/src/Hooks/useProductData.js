@@ -1,14 +1,12 @@
 import { useCallback, useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { useSearchFilter } from "../Components/PageLayout/HeaderFiles/HeaderTabs/SearchFilterProvider";
-import { getProducts, getProductsByCategories } from "../Utils/Api";
+import { useProductStore } from "../Stores/ProductStore";
 
 export default function useProductData() {
   const { searchTerm, filterOpen, setFilterOpen } = useSearchFilter();
-  const [products, setProducts] = useState([]);
+  const { products, categories, brands } = useProductStore();
   const [filteredProducts, setFilteredProducts] = useState([]);
-  const [categories, setCategories] = useState([]);
-  const [brands, setBrands] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [curP, setCurrP] = useState(1);
@@ -16,27 +14,20 @@ export default function useProductData() {
 
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
-  const category = queryParams.get("category");
+  const categoryQuery = queryParams.get("category");
 
   useEffect(() => {
-    async function fetchProducts() {
-      try {
-        const data = category
-          ? await getProductsByCategories(category)
-          : await getProducts();
-
-        setCategories([...new Set(data.map((p) => p.category))]);
-        setBrands([...new Set(data.map((p) => p.brand))]);
-        setProducts(data);
-        setFilteredProducts(data);
-      } catch (err) {
-        setError("Failed to load products. Please try again.");
-      } finally {
-        setLoading(false);
+    try {
+      let initial = [...products];
+      if (categoryQuery) {
+        initial = initial.filter((p) => p.category === categoryQuery);
       }
+      setFilteredProducts(initial);
+      setLoading(false);
+    } catch (err) {
+      setError("Failed to load products. Please try again.");
     }
-    fetchProducts();
-  }, [category]);
+  }, [products, categoryQuery]);
 
   const applyFilters = (filters) => {
     let result = [...products];
@@ -105,7 +96,7 @@ export default function useProductData() {
     products,
     filteredProducts,
     currentProducts,
-    categories,
+    categories: categories.map((c) => c.name),
     brands,
     curP,
     setCurrP,

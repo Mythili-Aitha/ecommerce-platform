@@ -18,6 +18,13 @@ export const boxApSx = {
   gap: 3,
 };
 
+export const adminorderBox = {
+  p: 3,
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "space-between",
+};
+
 export const boxPaSx = {
   display: "flex",
   flexDirection: "column",
@@ -52,6 +59,7 @@ export const boxCSx = {
   display: "flex",
   flexDirection: "column",
   alignItems: "center",
+  marginRight: 3,
 };
 
 export const boxHSx = {
@@ -113,6 +121,13 @@ export const cardFSx = {
   backgroundColor: "rgba(255, 255, 255, 0.6)",
 };
 
+export const cartCheckoutButton = {
+  display: "flex",
+  justifyContent: "flex-end",
+  p: 2,
+  marginRight: 3,
+};
+
 export const boxhSx = {
   width: "90%",
   margin: "auto",
@@ -158,6 +173,10 @@ export const adminUCard = {
   flexDirection: "row",
   justifyContent: "space-between",
   backgroundColor: "rgba(255, 255, 255, 0.6)",
+  alignItems: "center",
+  borderBottom: 1,
+  borderColor: "divider",
+  p: 1,
 };
 
 export const userOcard = {
@@ -284,6 +303,16 @@ export const outofStock = {
   borderRadius: "0 5px",
 };
 
+export const lowStockItem = {
+  position: "absolute",
+  backgroundColor: "rgba(144, 27, 27, 0.7)",
+  color: "white",
+  padding: "5px 10px",
+  fontWeight: "bold",
+  fontSize: "16px",
+  borderRadius: "0 5px",
+};
+
 export const lowStockcard = {
   display: "flex",
   flexDirection: "row",
@@ -297,4 +326,20 @@ export const categoryBox = {
   flexDirection: "row",
   marginRight: 4,
   justifyContent: "space-between",
+};
+
+export const orderConfoBox = {
+  maxWidth: 500,
+  margin: "40px auto",
+  padding: 4,
+  textAlign: "center",
+  borderRadius: 2,
+  backgroundColor: "rgba(255, 255, 255, 0.6)",
+};
+
+export const statsCard = {
+  display: "flex",
+  alignItems: "center",
+  p: 2,
+  maxHeight: 100,
 };

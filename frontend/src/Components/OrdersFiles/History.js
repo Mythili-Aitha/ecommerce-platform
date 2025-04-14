@@ -18,7 +18,6 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 export default function History() {
   const { history, setHistory } = Actions();
   const [searchTerm, setSearchTerm] = useState("");
-  // const [filterOption, setFilterOption] = useState("all");
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);

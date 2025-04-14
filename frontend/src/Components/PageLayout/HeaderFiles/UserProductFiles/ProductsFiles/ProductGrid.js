@@ -10,7 +10,11 @@ import {
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import { useNavigate } from "react-router-dom";
 import { Actions } from "../../../../../Utils/Actions";
-import { outofStock, productGridCard } from "../../../../../Utils/Styles";
+import {
+  lowStockItem,
+  outofStock,
+  productGridCard,
+} from "../../../../../Utils/Styles";
 
 export default function ProductGrid({
   products,
@@ -37,6 +41,11 @@ export default function ProductGrid({
                   sx={{ position: "relative" }}
                 />
                 {product.stock === 0 && <Box sx={outofStock}>Out of Stock</Box>}
+                {product.stock > 0 && product.stock < 5 && (
+                  <Box sx={lowStockItem}>
+                    Hurry! Only {product.stock} left in stock.
+                  </Box>
+                )}
                 <Typography variant="subtitle1" sx={{ marginTop: 1 }}>
                   {product.title}
                 </Typography>

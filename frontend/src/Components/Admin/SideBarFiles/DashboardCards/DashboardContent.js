@@ -7,6 +7,7 @@ import WarningIcon from "@mui/icons-material/Warning";
 import { getStats } from "../../../../Utils/Api";
 import { useNavigate } from "react-router-dom";
 import { CircularProgress } from "@mui/material";
+import { statsCard } from "../../../../Utils/Styles";
 
 const DashboardContent = () => {
   const [stats, setStats] = useState({
@@ -67,10 +68,7 @@ const DashboardContent = () => {
         <Grid container spacing={3}>
           {statsCards.map((stat, index) => (
             <Grid item xs={12} sm={6} md={3} key={index}>
-              <Card
-                sx={{ display: "flex", alignItems: "center", p: 2 }}
-                onClick={stat.onclick}
-              >
+              <Card sx={statsCard} onClick={stat.onclick}>
                 <Box sx={{ mr: 2 }}>{stat.icon}</Box>
                 <CardContent>
                   <Typography variant="h5">{stat.title}</Typography>

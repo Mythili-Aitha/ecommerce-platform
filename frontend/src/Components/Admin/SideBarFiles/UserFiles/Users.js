@@ -58,7 +58,7 @@ const Users = () => {
   );
 
   return (
-    <Box sx={{ display: "flex", flexDirection: "column" }}>
+    <Box sx={{ display: "flex", flexDirection: "column", marginRight: 3 }}>
       <Box sx={adminUCard}>
         <Typography variant="h6" sx={{ mb: 6 }}>
           User Management

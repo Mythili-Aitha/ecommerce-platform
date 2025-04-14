@@ -27,7 +27,7 @@ const OrdersTable = () => {
     getRecentOrders()
       .then((response) => setOrders(response.data))
       .catch((error) => console.error("Error fetching Recent Orders", error));
-  });
+  }, []);
   return (
     <TableContainer component={Paper} sx={{ mt: 4 }}>
       <Typography variant="h6" sx={{ p: 2 }}>

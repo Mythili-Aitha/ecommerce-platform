@@ -12,7 +12,12 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import Add from "@mui/icons-material/Add";
 import Remove from "@mui/icons-material/Remove";
-import { avatar, boxCSx, cardCSx } from "../../../../Utils/Styles";
+import {
+  avatar,
+  boxCSx,
+  cardCSx,
+  cartCheckoutButton,
+} from "../../../../Utils/Styles";
 import { useCartActions } from "../../../../Hooks/useCartActions";
 
 export default function Cart() {
@@ -61,9 +66,13 @@ export default function Cart() {
                   onClick={() =>
                     handleUpdateCartQuantity(item.productId, item.quantity + 1)
                   }
+                  disabled={item.quantity >= item.stock}
                 >
                   <Add />
                 </IconButton>
+                {item.quantity >= item.stock && (
+                  <small style={{ color: "orange" }}>Max stock reached</small>
+                )}
               </Box>
               <Button onClick={() => handleRemoveFromCart(item.productId)}>
                 Remove
@@ -73,7 +82,7 @@ export default function Cart() {
         ))
       )}
       <h3>Total Price: ${totalPrice.toFixed(2)}</h3>
-      <Box sx={{ display: "flex", justifyContent: "flex-end", p: 2 }}>
+      <Box sx={cartCheckoutButton}>
         <Button variant="contained" onClick={() => navigate("/oconfo")}>
           CHECKOUT
         </Button>
