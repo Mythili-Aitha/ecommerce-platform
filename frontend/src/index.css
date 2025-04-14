@@ -2,3 +2,26 @@
     background-color: #99ddcc;
     opacity: 0.5;
 } */
+
+.para{
+    font-family: Georgia;
+    font-size: larger;
+    font-weight: bold;
+    text-align: center;
+    padding-left: 10px;
+    
+  }
+.fade-enter {
+    opacity: 0;
+  }
+.fade-enter-active {
+    opacity: 1;
+    transition: opacity 0.3s ease-in-out;
+}
+.fade-exit {
+    opacity: 1;
+  }
+.fade-exit-active {
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+  }
